@@ -37,8 +37,8 @@ export default [
     items: [
       {
         image: `${imagesPrefix}/headers.jpg`,
-        title: "Page Headers",
-        subtitle: "10 Examples",
+        title: "Curso JavaScript",
+        subtitle: "De cero a experto",
         route: "page-headers",
         pro: false
       },

@@ -103,7 +103,7 @@ const highlighter = (code) => {
                   role="tab"
                   aria-selected="true"
                 >
-                  <i class="fas fa-desktop text-sm me-2"></i> Preview
+                  <i class="fas fa-desktop text-sm me-2"></i> Avance
                 </a>
               </li>
               <li class="nav-item">
@@ -114,7 +114,7 @@ const highlighter = (code) => {
                   role="tab"
                   aria-selected="false"
                 >
-                  <i class="fas fa-code text-sm me-2"></i> Code
+                  <i class="fas fa-code text-sm me-2"></i> lecciones
                 </a>
               </li>
             </ul>
@@ -130,21 +130,10 @@ const highlighter = (code) => {
       </div>
       <div class="tab-pane" :id="`code-${id}`">
         <div class="position-relative p-4 pb-2">
-          <a
-            class="btn btn-sm bg-gradient-dark position-absolute end-4 mt-3 z-index-3"
-            @click="copy($event)"
-            href="javascript:;"
-            ><i class="fas fa-copy text-sm me-1"></i> Copy</a
-          >
-          <figure class="highlight">
-            <PrismEditor
-              class="p-2 bg-gray-100 border-radius-xl height-800 my-editor"
-              v-model="editorCode"
-              :highlight="highlighter"
-              line-numbers
-              readonly
-            ></PrismEditor>
-          </figure>
+          <h1>leccion 1</h1>
+          <h1>leccion 2</h1>
+          <h1>leccion 3</h1>
+
         </div>
       </div>
     </div>

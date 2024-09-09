@@ -1,20 +1,38 @@
 <script setup>
-//Vue Material Kit 2 components
+// Vue Material Kit 2 components
 import MaterialButton from "@/components/MaterialButton.vue";
+import { ref } from "vue";
 
 // image
 const bgImage =
-  "https://images.unsplash.com/photo-1520769945061-0a448c463865?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80";
+  "https://i0.wp.com/imgs.hipertextual.com/wp-content/uploads/2019/03/hipertextual-cursos-online-aprender-javascript-2019180345.jpg?fit=1200%2C800&quality=55&strip=all&ssl=1";
+
+// Estado para controlar la visibilidad del pop-up
+const showPopup = ref(false);
+
+// Función para abrir el pop-up
+const openPopup = () => {
+  showPopup.value = true;
+};
+
+// Función para cerrar el pop-up
+const closePopup = () => {
+  showPopup.value = false;
+};
+
+// Función para confirmar la inscripción
+const confirmInscription = () => {
+  showPopup.value = false;
+  alert("¡Inscripción confirmada!"); // Aquí puedes manejar la lógica de inscripción
+};
 </script>
+
 <template>
   <header>
     <nav
       class="navbar navbar-expand-lg navbar-dark navbar-absolute bg-transparent shadow-none"
     >
       <div class="container">
-        <a class="navbar-brand text-white" href="javascript:;"
-          >Material Design</a
-        >
         <button
           class="navbar-toggler"
           type="button"
@@ -26,57 +44,13 @@ const bgImage =
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbar-header-2">
-          <ul class="navbar-nav mx-auto">
-            <li class="nav-item">
-              <RouterLink class="nav-link text-white" to="#"> Home </RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link text-white" to="#">
-                About Us
-              </RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link text-white" to="#">
-                Contact Us
-              </RouterLink>
-            </li>
-          </ul>
-
-          <ul class="nav navbar-nav">
-            <li class="nav-item">
-              <a
-                class="nav-link text-white"
-                href="https://twitter.com/CreativeTim"
-              >
-                <i class="fab fa-twitter"></i>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link text-white mx-2"
-                href="https://www.facebook.com/CreativeTim"
-              >
-                <i class="fab fa-facebook"></i>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link text-white"
-                href="https://www.instagram.com/CreativeTimOfficial"
-              >
-                <i class="fab fa-instagram"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
+        <div class="collapse navbar-collapse" id="navbar-header-2"></div>
       </div>
     </nav>
+
     <div
       class="page-header min-vh-100"
-      :style="{
-        backgroundImage: `url(${bgImage})`
-      }"
+      :style="{ backgroundImage: `url(${bgImage})` }"
       loading="lazy"
     >
       <span class="mask bg-gradient-dark opacity-5"></span>
@@ -85,22 +59,62 @@ const bgImage =
           <div
             class="col-lg-6 col-md-7 d-flex justify-content-center flex-column"
           >
-            <h1 class="text-white mb-4">Material Kit</h1>
+            <h1 class="text-white mb-4">Javascript desde cero a experto</h1>
             <p class="text-white opacity-8 lead pe-5 me-5">
-              The time is now for it be okay to be great. People in this world
-              shun people for being nice.
+              Aprende a programar en este maravilloso lenguaje de principio a
+              fin con clases y ejercicios guiados por un experto en el tema.
             </p>
             <div class="buttons">
-              <MaterialButton color="white" class="mt-4"
-                >Get Started</MaterialButton
+              <MaterialButton color="white" class="mt-4" @click="openPopup"
+                >Inscribirse</MaterialButton
               >
-              <MaterialButton color="none" class="text-white shadow-none mt-4"
-                >Read more</MaterialButton
-              >
+              
             </div>
           </div>
         </div>
       </div>
     </div>
   </header>
+
+  <!-- Popup de confirmación -->
+  <div v-if="showPopup" class="popup-overlay">
+    <div class="popup">
+      <h2>Confirmar Inscripción</h2>
+      <p>¿Estás seguro de que deseas inscribirte en este curso?</p>
+      <div class="popup-buttons">
+        <MaterialButton color="white" @click="confirmInscription"
+          >Confirmar</MaterialButton
+        >
+        <MaterialButton color="none" @click="closePopup">Cancelar</MaterialButton>
+      </div>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+</style>
