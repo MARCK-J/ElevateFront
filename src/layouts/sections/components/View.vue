@@ -100,24 +100,8 @@ const goToLecciones = () => {
           <div class="nav-wrapper position-relative end-0">
             <ul class="nav nav-pills nav-fill flex-row p-1" role="tablist">
               <li class="nav-item">
-                <a
-                  class="nav-link mb-0 px-0 py-1 active"
-                  data-bs-toggle="tab"
-                  :href="`#preview-${id}`"
-                  role="tab"
-                  aria-selected="true"
-                >
+                <a>
                   <i class="fas fa-desktop text-sm me-2"></i> Avance
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link mb-0 px-0 py-1"
-                  role="tab"
-                  aria-selected="false"
-                  @click="goToLecciones"
-                >
-                  <i class="fas fa-code text-sm me-2"></i> lecciones
                 </a>
               </li>
             </ul>

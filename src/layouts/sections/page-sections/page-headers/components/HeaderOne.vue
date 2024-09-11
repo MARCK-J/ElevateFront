@@ -1,9 +1,10 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
 import { ref } from "vue";
+import { useRouter } from 'vue-router';
 
 // Imagen de fondo
-const bgImage = "https://i0.wp.com/imgs.hipertextual.com/wp-content/uploads/2019/03/hipertextual-cursos-online-aprender-javascript-2019180345.jpg?fit=1200%2C800&quality=55&strip=all&ssl=1";
+const bgImage = "https://midu.dev/images/wallpapers/una-taza-de-javascript.png";
 
 // Estado para controlar la visibilidad del pop-up
 const showPopup = ref(false);
@@ -21,9 +22,74 @@ const closePopup = () => {
 // Función para confirmar la inscripción
 const confirmInscription = () => {
   showPopup.value = false;
-  alert("¡Inscripción confirmada!"); // Aquí puedes manejar la lógica de inscripción
+  alert("¡Inscripción confirmada!");
 };
+
+const lecciones = ref([
+    {
+      title: 'Introducción a JavaScript',
+      duration: '1 hora',
+      description: 'Aprende los conceptos básicos de JavaScript, incluyendo variables, operadores y estructuras de control.',
+      image: 'https://www.thoughtco.com/thmb/094YF3bQBiuV_13n92GFQZWkM7k=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/JavaScript-58acbb8a3df78c345bad32c2.jpg'
+    },
+    {
+      title: 'Funciones y Objetos',
+      duration: '2 horas',
+      description: 'Profundiza en la creación y uso de funciones y objetos en JavaScript a traves de esta leccion guiada por un experto en el tema.',
+      image: 'https://www.in2code.de/fileadmin/_processed_/0/b/csm_code_javascript_49d002a67e.webp'
+    },
+    {
+      title: 'Manipulación del DOM',
+      duration: '1.5 horas',
+      description: 'Aprende a interactuar y modificar el DOM usando JavaScript con tecnicas y aprendizaje facil de entender con una metodologia guiada.',
+      image: 'https://global.discourse-cdn.com/sitepoint/original/3X/b/5/b59a78e2ed76c705f3c0dcb300f3f222aefdcd99.png'
+    },
+    {
+      title: 'Programación Asíncrona',
+      duration: '2 horas',
+      description: 'Explora las técnicas de programación asíncrona como callbacks, promesas y async/await.',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAg2n68y5tSKqRK_tw4ioZHQGT7zi1Piutng&s'
+    },
+    {
+      title: 'Proyecto Final',
+      duration: '3 horas',
+      description: 'Aplica lo aprendido en un proyecto práctico que involucra todos los aspectos del curso.',
+      image: 'https://www.grupocodesi.com/images/curso-de-javascript.png'
+    },
+    {
+      title: 'html y CSS',
+      duration: '3 horas',
+      description: 'Aplica lo aprendido en un proyecto práctico que involucra todos los aspectos del curso.',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLqloMjRuU-_aRgqZ6mBERu9kbXbWTS2OPBSndmYjEPDzFZFukdNa9G6ZfH0yOsd-qHD4&usqp=CAU'
+    },
+    {
+      title: 'bootstrap',
+      duration: '3 horas',
+      description: 'Aplica lo aprendido en un proyecto práctico que involucra todos los aspectos del curso.',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHkqXg1XZbA2khjBKYUSKiNszY6N4bA-tx_w&s'
+    },
+    {
+      title: 'Bucles y condicionales',
+      duration: '3 horas',
+      description: 'Aplica lo aprendido en un proyecto práctico que involucra todos los aspectos del curso.',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSINvcMxzTIWldaarL3dEktNXD0uLu_WmcWATl5CSDoS8qajdUCmxVgS5XGUXebksC8wQc&usqp=CAU'
+    }
+  ]);
+  
+  // Función para iniciar una lección
+  const startLesson = (title) => {
+    alert(`Iniciando la lección: ${title}`);
+  };
+  
+  // Usar el router para navegar
+  const router = useRouter();
+  
+  // Función para ir hacia atrás
+  const goBack = () => {
+    router.push('/sections/page-sections/page-headers'); 
+  };
 </script>
+
 <template>
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-transparent shadow-none">
@@ -44,36 +110,52 @@ const confirmInscription = () => {
     </nav>
 
     <div
-      class="page-header min-vh-100 d-flex align-items-center"
+      class="page-header min-vh-100 d-flex align-items-center justify-content-center"
       :style="{ backgroundImage: `url(${bgImage})` }"
     >
       <span class="mask bg-gradient-dark opacity-7"></span>
       <div class="container text-center text-white">
         <div class="row">
           <div class="col-lg-8 mx-auto">
-            <h1 class="display-3 mb-4">JavaScript desde Cero a Experto</h1>
+            <h1 class="display-3 mb-4 font-weight-bold">JavaScript desde Cero a Experto</h1>
             <p class="lead mb-4">
-              Aprende a programar en este maravilloso lenguaje de principio a fin con clases y ejercicios guiados por un experto en el tema.
+              Aprende a programar en este maravilloso lenguaje con clases guiadas y ejercicios prácticos.
             </p>
             <MaterialButton color="white" class="mt-4" @click="openPopup">Inscribirse</MaterialButton>
           </div>
         </div>
       </div>
     </div>
-
+    
     <section class="skills py-5">
       <div class="container">
-        <h2 class="text-center mb-4">Habilidades que Obtendrás</h2>
-        <ul class="list-unstyled">
-          <li><i class="fas fa-check-circle"></i> Desarrollo de aplicaciones web</li>
-          <li><i class="fas fa-check-circle"></i> Desarrollo de aplicaciones móviles</li>
-          <li><i class="fas fa-check-circle"></i> Desarrollo de videojuegos</li>
-          <li><i class="fas fa-check-circle"></i> Desarrollo de aplicaciones de escritorio</li>
+        <h2 class="text-center mb-5">Habilidades que Obtendrás</h2>
+        <ul class="list-unstyled d-flex justify-content-center flex-wrap">
+          <li class="mb-4 px-4"><i class="fas fa-check-circle mr-2"></i> Desarrollo de aplicaciones web</li>
+          <li class="mb-4 px-4"><i class="fas fa-check-circle mr-2"></i> Desarrollo de aplicaciones móviles</li>
+          <li class="mb-4 px-4"><i class="fas fa-check-circle mr-2"></i> Desarrollo de videojuegos</li>
+          <li class="mb-4 px-4"><i class="fas fa-check-circle mr-2"></i> Desarrollo de aplicaciones de escritorio</li>
         </ul>
       </div>
     </section>
 
-    <!-- Sección del Instructor -->
+    <div class="info-curso py-5">
+      <div class="container">
+        <h1 class="text-center mb-5">Listado de Lecciones</h1>
+        <div class="lecciones-list d-flex justify-content-center flex-wrap">
+          <div v-for="(leccion, index) in lecciones" :key="index" class="leccion-card">
+            <img :src="leccion.image" alt="Lección" class="leccion-image" />
+            <div class="leccion-content p-3">
+              <h2>{{ leccion.title }}</h2>
+              <p><strong>Duración:</strong> {{ leccion.duration }}</p>
+              <p>{{ leccion.description }}</p>
+              <button @click="startLesson(leccion.title)" class="btn-start">Iniciar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <section class="instructor py-5 bg-light">
       <div class="container">
         <h2 class="text-center mb-4">Instructor</h2>
@@ -81,9 +163,9 @@ const confirmInscription = () => {
           <img :src="'https://cdn-icons-png.flaticon.com/512/3135/3135768.png'" alt="Instructor Photo" class="instructor-photo">
           <div class="instructor-bio">
             <h3 class="mb-2">Nombre del Instructor: Camilo Mendez</h3>
-            <p class="mb-1">Información académica: Ph.D. en Ciencias de la Computación, Universidad de XYZ</p>
-            <p class="mb-1">Experiencia laboral: 10 años de experiencia en desarrollo de software, incluyendo 5 años como instructor de cursos de programación</p>
-            <p class="mb-0">Áreas de especialización: Desarrollo web, aplicaciones móviles, videojuegos</p>
+            <p class="mb-1">Ph.D. en Ciencias de la Computación, Universidad de XYZ</p>
+            <p class="mb-1">10 años de experiencia en desarrollo de software</p>
+            <p class="mb-0">Especialización en desarrollo web, apps móviles y videojuegos</p>
           </div>
         </div>
       </div>
@@ -102,7 +184,16 @@ const confirmInscription = () => {
     </div>
   </div>
 </template>
+
 <style scoped>
+h1.display-3 {
+  color: white; /* Cambia el color del título a blanco */
+}
+/* Fondo de la página principal */
+.skills[data-v-607194c2] {
+    background-color: #eee3c5;
+    padding: 2rem 0;
+}
 .page-header {
   position: relative;
   background-size: cover;
@@ -111,7 +202,8 @@ const confirmInscription = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: rgb(170, 158, 133);
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://midu.dev/images/wallpapers/una-taza-de-javascript.png');
 }
 
 .mask {
@@ -123,8 +215,115 @@ const confirmInscription = () => {
   background: rgba(0, 0, 0, 0.5);
 }
 
+/* Sección de Habilidades */
+.skills {
+  background-color: #f3f3f3;
+  padding: 2rem 0;
+}
+
+.skills ul {
+  font-size: 1.2rem;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: space-around; 
+  flex-wrap: wrap; 
+}
+
+.skills ul li {
+  background-color: #28a745;
+  color: white;
+  padding: 1.5rem 2rem; 
+  margin: 10px 20px; 
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  min-width: 220px; 
+}
+
+.skills ul li:hover {
+  background-color: #218838;
+  transform: translateY(-5px);
+}
+
+.skills ul li i {
+  margin-right: 10px;
+}
+
+
+/* Listado de Lecciones */
+.lecciones-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  background-color: #f0c0c7;
+  padding: 2rem 0;
+}
+
+.leccion-card {
+  width: 260px;
+  margin: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.leccion-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.leccion-image {
+  width: 100%;
+  border-radius: 12px 12px 0 0;
+  height: 150px;
+  object-fit: cover;
+}
+
+.leccion-content {
+  padding: 1.5rem;
+  background-color: #ffedda;
+}
+
+.leccion-content h2 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.leccion-content p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.btn-start {
+  background-color: #ffc107;
+  color: #333;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-start:hover {
+  background-color: #e0a800;
+}
+
+/* Sección del Instructor */
+
+.bg-light {
+    background-color: #c5d9f7 !important;
+}
+.instructor {
+
+  padding: 2rem 0;
+}
+
 .instructor-info {
-  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
 }
 
 .instructor-photo {
@@ -132,38 +331,26 @@ const confirmInscription = () => {
   height: 120px;
   border-radius: 50%;
   margin-right: 20px;
-  border: 2px solid #ddd;
+  border: 2px solid #ffc107;
 }
 
-.instructor-bio {
-  max-width: 600px;
+.instructor-bio h3 {
+  font-size: 1.5rem;
+  color: #333;
 }
 
-.skills {
-  background-color: #f8f9fa;
+.instructor-bio p {
+  font-size: 1.1rem;
+  color: #2b2626;
 }
 
-.skills ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.skills li {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.skills .fas {
-  color: #28a745;
-  margin-right: 10px;
-}
-
+/* Popup overlay */
 .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
@@ -173,15 +360,48 @@ const confirmInscription = () => {
 
 .popup {
   background-color: white;
-  padding: 20px;
-  border-radius: 8px;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   text-align: center;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+.popup h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #333;
 }
 
 .popup-buttons {
   display: flex;
   justify-content: space-around;
-  margin-top: 20px;
+  margin-top: 1.5rem;
 }
+
+.popup-buttons button {
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup-buttons button:first-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.popup-buttons button:first-child:hover {
+  background-color: #218838;
+}
+
+.popup-buttons button:last-child {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.popup-buttons button:last-child:hover {
+  background-color: #e0a800;
+}
+
 </style>
