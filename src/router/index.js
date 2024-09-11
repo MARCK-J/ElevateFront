@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import PresentationView from "../views/Presentation/PresentationView.vue";
 import AboutView from "../views/LandingPages/AboutUs/AboutView.vue";
+import LoginView from "../views/LandingPages/Login/LoginView.vue";
+import RegisterView from "../views/LandingPages/Register/RegisterView.vue";
 import ContactView from "../views/LandingPages/ContactUs/ContactView.vue";
 import AuthorView from "../views/LandingPages/Author/AuthorView.vue";
-import SignInBasicView from "../views/LandingPages/SignIn/BasicView.vue";
 import PageHeaders from "../layouts/sections/page-sections/page-headers/HeadersView.vue";
 import PageFeatures from "../layouts/sections/page-sections/features/FeaturesView.vue";
 import NavigationNavbars from "../layouts/sections/navigation/navbars/NavbarsView.vue";
@@ -47,9 +48,14 @@ const router = createRouter({
       component: AuthorView,
     },
     {
-      path: "/pages/landing-pages/basic",
-      name: "signin-basic",
-      component: SignInBasicView,
+      path: "/pages/landing-pages/login",
+      name: "login-view",
+      component: LoginView,
+    },
+    {
+      path: "/pages/landing-pages/register",
+      name: "register-view",
+      component: RegisterView,
     },
     {
       path: "/sections/page-sections/page-headers",
