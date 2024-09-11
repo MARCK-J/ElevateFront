@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router"; // Importa useRouter
 
 // import Prism Editor
 import { PrismEditor } from "vue-prism-editor"; //
@@ -72,7 +73,6 @@ const copy = async (event) => {
     setTimeout(function () {
       el.parentElement.querySelector(".alert").remove();
     }, 2500);
-
   } catch (e) {
     console.error(e);
   }
@@ -81,12 +81,16 @@ const copy = async (event) => {
 const highlighter = (code) => {
   return prism.highlight(code, prism.languages.html);
 };
+
+// Redirige a la ruta 'info-curso' cuando se hace clic en la pestaña 'lecciones'
+const router = useRouter();
+const goToLecciones = () => {
+  router.push({ name: 'info-curso' });
+};
 </script>
 
 <template>
-  <div
-    class="position-relative border-radius-xl overflow-hidden shadow-lg mb-7"
-  >
+  <div class="position-relative border-radius-xl overflow-hidden shadow-lg mb-7">
     <div class="container border-bottom">
       <div class="row justify-space-between py-2">
         <div class="col-lg-3 me-auto">
@@ -109,10 +113,9 @@ const highlighter = (code) => {
               <li class="nav-item">
                 <a
                   class="nav-link mb-0 px-0 py-1"
-                  data-bs-toggle="tab"
-                  :href="`#code-${id}`"
                   role="tab"
                   aria-selected="false"
+                  @click="goToLecciones"
                 >
                   <i class="fas fa-code text-sm me-2"></i> lecciones
                 </a>
@@ -128,17 +131,10 @@ const highlighter = (code) => {
           <slot />
         </div>
       </div>
-      <div class="tab-pane" :id="`code-${id}`">
-        <div class="position-relative p-4 pb-2">
-          <h1>leccion 1</h1>
-          <h1>leccion 2</h1>
-          <h1>leccion 3</h1>
-
-        </div>
-      </div>
     </div>
   </div>
 </template>
+
 <style>
 .my-editor {
   /* we dont use `language-` classes anymore so thats why we need to add background and text color manually */

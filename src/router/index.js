@@ -23,9 +23,21 @@ import ElDropdowns from "../layouts/sections/elements/dropdowns/DropdownsView.vu
 import ElProgressBars from "../layouts/sections/elements/progress-bars/ProgressBarsView.vue";
 import ElToggles from "../layouts/sections/elements/toggles/TogglesView.vue";
 import ElTypography from "../layouts/sections/elements/typography/TypographyView.vue";
+import InfoCurso from "../layouts/sections/page-sections/page-headers/components/InfoCurso.vue";
+import HeaderOne from "../layouts/sections/page-sections/page-headers/components/HeaderOne.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: "/sections/page-sections/page-headers",
+      name: "page-headers",
+      component: HeaderOne,
+    },
+    {
+      path: "/info-curso",  // Define el path de la ruta
+      name: "info-curso",   // Asigna un nombre a la ruta
+      component: InfoCurso, // Especifica el componente que debe cargar
+    },
     {
       path: "/",
       name: "presentation",
