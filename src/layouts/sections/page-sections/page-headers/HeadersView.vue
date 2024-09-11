@@ -21,13 +21,13 @@ onMounted(() => {
 </script>
 <template>
   <BaseLayout
-    title="Page Headers"
+    title="Programacion"
     :breadcrumb="[
       { label: 'Page Sections', route: '/sections/page-sections/page-headers' },
       { label: 'Page Headers' },
     ]"
   >
-    <View title="Header 1" :code="header1Code" id="header-1">
+    <View title="Curso JavaScript" :code="header1Code" id="header-1">
       <HeaderOne />
     </View>
   </BaseLayout>
