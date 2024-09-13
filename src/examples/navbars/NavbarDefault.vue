@@ -233,7 +233,7 @@ watch(
                   :to="{ name: 'register-view' }"
                   class="dropdown-item border-radius-md"
                 >
-                  <span>Register</span>
+                  <span>Registro</span>
                 </RouterLink>
                     </div>
                   </div>

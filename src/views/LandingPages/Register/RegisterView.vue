@@ -151,6 +151,14 @@
         </p>
       </div>
     </div>
+    <!-- Pop-up de éxito -->
+    <div v-if="showSuccessPopup" class="popup-overlay" @click="closePopup">
+      <div class="popup-content" @click.stop>
+        <h3>Registro exitoso</h3>
+        <p>¡Te has registrado correctamente!</p>
+        <button @click="closePopup" class="btn btn-primary">Cerrar</button>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -166,67 +174,77 @@ export default {
       correo: "",
       password: "",
       passwordConf: "",
-      // validacion de igualdad
-      icon_validacion0:"fluent:error-circle-20-regular",
-      estilo_validacion0:'red',
-      confirmacion0:'validation_error',
-      // validacion de longitud
-      icon_validacion1:"fluent:error-circle-20-regular",
-      estilo_validacion1:'red',
-      confirmacion1:'validation_error',
-      // validacion de minuscula
-      icon_validacion2:"fluent:error-circle-20-regular",
-      estilo_validacion2:'red',
-      confirmacion2:'validation_error',
-      // validacion de mayuscula
-      icon_validacion3:"fluent:error-circle-20-regular",
-      estilo_validacion3:'red',
-      confirmacion3:'validation_error',
-      // validacion de caracter especial
-      icon_validacion4:"fluent:error-circle-20-regular",
-      estilo_validacion4:'red',
-      confirmacion4:'validation_error',
-      // validacion de numero
-      icon_validacion5:"fluent:error-circle-20-regular",
-      estilo_validacion5:'red',
-      confirmacion5:'validation_error',
+      // Validación de igualdad
+      icon_validacion0: "fluent:error-circle-20-regular",
+      estilo_validacion0: 'red',
+      confirmacion0: 'validation_error',
+      // Validación de longitud
+      icon_validacion1: "fluent:error-circle-20-regular",
+      estilo_validacion1: 'red',
+      confirmacion1: 'validation_error',
+      // Validación de minúscula
+      icon_validacion2: "fluent:error-circle-20-regular",
+      estilo_validacion2: 'red',
+      confirmacion2: 'validation_error',
+      // Validación de mayúscula
+      icon_validacion3: "fluent:error-circle-20-regular",
+      estilo_validacion3: 'red',
+      confirmacion3: 'validation_error',
+      // Validación de carácter especial
+      icon_validacion4: "fluent:error-circle-20-regular",
+      estilo_validacion4: 'red',
+      confirmacion4: 'validation_error',
+      // Validación de número
+      icon_validacion5: "fluent:error-circle-20-regular",
+      estilo_validacion5: 'red',
+      confirmacion5: 'validation_error',
+      // Estado para el pop-up de éxito
+      showSuccessPopup: false,
     };
   },
   methods: {
     goBack() {
       this.$router.push("/");
     },
+    createPersona() {
+      // Validar todos los campos
+      if (!this.nombre || !this.apellidoP || !this.correo || !this.password || !this.passwordConf) {
+        alert("Todos los campos obligatorios deben estar llenos.");
+        return;
+      }
+
+      // Validar contraseñas
+      if (this.password !== this.passwordConf) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
+
+      if (!this.validatePassword(this.password)) {
+        alert("La contraseña no cumple con los requisitos.");
+        return;
+      }
+
+      // Aquí va tu lógica de registro
+      // Si el registro es exitoso, muestra el pop-up
+      this.showSuccessPopup = true;
+    },
+    closePopup() {
+      this.showSuccessPopup = false;
+    },
     // Función para validar la complejidad de la contraseña
     validatePassword(password) {
-      console.log(password);
       // Al menos 8 caracteres
-      if (password.length < 8) {
-        console.log("Tamanio");
-        return false;
-      }
+      if (password.length < 8) return false;
       // Al menos un número
-      if (!/\d/.test(password)) {
-        console.log("un numero");
-        return false;
-      }
+      if (!/\d/.test(password)) return false;
       // Al menos una letra minúscula
-      if (!/[a-z]/.test(password)) {
-        console.log("minu");
-        return false;
-      }
+      if (!/[a-z]/.test(password)) return false;
       // Al menos una letra mayúscula
-      if (!/[A-Z]/.test(password)) {
-        console.log("mayu");
-        return false;
-      }
+      if (!/[A-Z]/.test(password)) return false;
       // Al menos un carácter especial
-      if (!/[^a-zA-Z0-9]/.test(password)) {
-        console.log("espec");
-        return false;
-      }
+      if (!/[^a-zA-Z0-9]/.test(password)) return false;
       return true;
     },
-
     validaciones(password, passwordConf) {
       // Restablecer estados de validación
       this.icon_validacion0 = 'fluent:error-circle-20-regular';
@@ -287,19 +305,21 @@ export default {
       }
     },
   },
-  watch:{
+  watch: {
     password(newPassword) {
       this.validaciones(newPassword, this.passwordConf);
     },
     passwordConf(newPasswordConf) {
       this.validaciones(this.password, newPasswordConf);
-    }
+    },
   },
   components: {
-      Icon,
+    Icon,
   },
 };
 </script>
+
+
 
 <style scoped>
 .validation {
@@ -448,5 +468,60 @@ export default {
     padding: 15px;
     width: 90%;
   }
+}
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  animation: scaleUp 0.3s ease-in;
+}
+
+.popup-content h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.popup-content p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.popup-content .btn-primary {
+  margin-top: 10px;
 }
 </style>
