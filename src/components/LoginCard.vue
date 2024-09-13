@@ -3,13 +3,12 @@
     <img src="../assets/img/Register_Login/Elevate.png" alt="Logo Elevate" />
     <h3>Bienvenido</h3>
     <p>Inicie su sesión para continuar en Elevate</p>
-    <form @submit.prevent="continuar" class="form">
+    <form  class="form">
       <div class="CustomInput">
         <p>Correo electronico:</p>
         <input
           placeholder="Ingrese su correo electronico"
           type="text"
-          v-model="correo"
         />
       </div>
       <div class="CustomInput">
@@ -17,10 +16,9 @@
         <input
           placeholder="Ingrese su contraseña"
           type="password"
-          v-model="password"
         />
       </div>
-      <router-link to="" @click="olvideContrasena" class="enlace"
+      <router-link to="" class="enlace"
         >¿Olvidaste tu contraseña?</router-link
       >
       <button type="submit">CONTINUAR</button>
