@@ -52,19 +52,16 @@ onUnmounted(() => {
   <Header>
     <div
       class="page-header min-vh-75"
-      :style="`background-image: url(${vueMkHeader})`"
+      :style="{ backgroundImage: `url(${vueMkHeader})` }"
       loading="lazy"
     >
       <div class="container">
         <div class="row">
           <div class="col-lg-7 text-center mx-auto position-relative">
-            <h1
-              class="text-white pt-3 mt-n5 me-2"
-              :style="{ display: 'inline-block ' }"
-            >
+            <h1 class="custom-title">
               ELEVATE
             </h1>
-            <p class="lead text-white px-5 mt-3" :style="{ fontWeight: '500' }">
+            <p class="custom-subtitle">
               Donde tu aprendizaje se eleva
             </p>
           </div>
@@ -294,3 +291,29 @@ onUnmounted(() => {
   </div>
   <DefaultFooter />
 </template>
+
+<style>
+/* Asegúrate de que estos estilos sean cargados después de cualquier otro CSS que pueda sobrescribirlos */
+
+/* Estilo para el título */
+.custom-title {
+  font-size: 6rem; /* Ajusta el tamaño del texto según sea necesario */
+  font-weight: 700; /* Peso de la fuente más grueso */
+  letter-spacing: -1px; /* Espaciado de letras más ajustado */
+  text-shadow: 2px 2px 4px rgba(253, 253, 253, 0.5); /* Sombra para hacer el texto más legible sobre fondos claros */
+  margin: 0; /* Asegúrate de que no haya márgenes inesperados */
+}
+
+/* Estilo para el subtítulo */
+.custom-subtitle {
+  font-size: 2rem; /* Tamaño del texto ajustado para mejor visualización */
+  font-weight: 400; /* Peso de la fuente */
+  line-height: 1.5; /* Altura de línea para mejorar la legibilidad */
+  color: rgb(35, 38, 39); /* Color del texto */
+  text-shadow: 2px 2px 4px rgba(253, 253, 253, 0.5);
+  margin: 0; /* Asegúrate de que no haya márgenes inesperados */
+  padding: 0.5rem; /* Añadido para visualizar el borde claramente */
+  border-radius: 5px; /* Opcional: redondear las esquinas del borde */
+}
+
+</style>

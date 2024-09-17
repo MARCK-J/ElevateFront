@@ -25,9 +25,15 @@ import ElProgressBars from "../layouts/sections/elements/progress-bars/ProgressB
 import ElToggles from "../layouts/sections/elements/toggles/TogglesView.vue";
 import ElTypography from "../layouts/sections/elements/typography/TypographyView.vue";
 import VerificationView from "../views/LandingPages/Login/VerificationView.vue";
+import PerfilUsuario from "../examples/navbars/PerfilUsuario.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: "/perfil-usuario", // Define la ruta que desees
+      name: "perfil-usuario",
+      component: PerfilUsuario,
+    },
     {
       path: "/",
       name: "presentation",
