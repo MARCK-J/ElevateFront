@@ -134,13 +134,9 @@ watch(
         title="Designed and Coded by Creative Tim"
         data-placement="bottom"
       >
-        Material Design
+        ELEVATE
       </RouterLink>
-      <a
-        href="https://www.creative-tim.com/product/vue-material-kit-pro"
-        class="btn btn-sm bg-gradient-success mb-0 ms-auto d-lg-none d-block"
-        >Buy Now</a
-      >
+      
       <button
         class="navbar-toggler shadow-none ms-2"
         type="button"
@@ -212,12 +208,7 @@ watch(
                       >
                         <span>Contactanos</span>
                       </RouterLink>
-                      <RouterLink
-                        :to="{ name: 'author' }"
-                        class="dropdown-item border-radius-md"
-                      >
-                        <span>Autor</span>
-                      </RouterLink>
+                      
                       <div
                         class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0 mt-3"
                       >
@@ -367,9 +358,8 @@ watch(
                             <h6
                               class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
                             >
-                              Navigation
+                              Matematicas
                             </h6>
-                            <span class="text-sm">See all navigations</span>
                           </div>
                           <img
                             :src="downArrow"
@@ -384,19 +374,19 @@ watch(
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'navigation-navbars' }"
                       >
-                        Navbars
+                        Aritmetica
                       </RouterLink>
                       <RouterLink
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'navigation-navtabs' }"
                       >
-                        Nav Tabs
+                        Algebra
                       </RouterLink>
                       <RouterLink
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'navigation-pagination' }"
                       >
-                        Pagination
+                        Trigonometria
                       </RouterLink>
                     </div>
                   </li>
@@ -415,9 +405,8 @@ watch(
                             <h6
                               class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
                             >
-                              Input Areas
+                              Fisica
                             </h6>
-                            <span class="text-sm">See all input areas</span>
                           </div>
                           <img
                             :src="downArrow"
@@ -432,13 +421,13 @@ watch(
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'inputareas-inputs' }"
                       >
-                        Inputs
+                        Vectores
                       </RouterLink>
                       <RouterLink
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'inputareas-forms' }"
                       >
-                        Forms
+                        MRU y MRUV
                       </RouterLink>
                     </div>
                   </li>
@@ -457,9 +446,9 @@ watch(
                             <h6
                               class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
                             >
-                              Attention Catchers
+                              Quimica
                             </h6>
-                            <span class="text-sm">See all examples</span>
+                            
                           </div>
                           <img
                             :src="downArrow"
@@ -474,19 +463,19 @@ watch(
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'ac-alerts' }"
                       >
-                        Alerts
+                        Tabla periodica
                       </RouterLink>
                       <RouterLink
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'ac-modals' }"
                       >
-                        Modals
+                        Densidades
                       </RouterLink>
                       <RouterLink
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'ac-tooltips-popovers' }"
                       >
-                        Tooltips & Popovers
+                        Tabla de valencias
                       </RouterLink>
                     </div>
                   </li>
@@ -505,9 +494,9 @@ watch(
                             <h6
                               class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
                             >
-                              Elements
+                              Historia
                             </h6>
-                            <span class="text-sm">See all elements</span>
+                            
                           </div>
                           <img
                             :src="downArrow"
@@ -522,56 +511,21 @@ watch(
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'el-avatars' }"
                       >
-                        Avatars
+                        Historia de Bolivia
                       </RouterLink>
                       <RouterLink
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'el-badges' }"
                       >
-                        Badges
+                        Hitos patrios
                       </RouterLink>
                       <RouterLink
                         class="dropdown-item ps-3 border-radius-md mb-1"
                         :to="{ name: 'el-breadcrumbs' }"
                       >
-                        Breadcrumbs
+                        Independencia del estado
                       </RouterLink>
-                      <RouterLink
-                        class="dropdown-item ps-3 border-radius-md mb-1"
-                        :to="{ name: 'el-buttons' }"
-                      >
-                        Buttons
-                      </RouterLink>
-                      <RouterLink
-                        class="dropdown-item ps-3 border-radius-md mb-1"
-                        :to="{ name: 'el-button-groups' }"
-                      >
-                        Button Groups
-                      </RouterLink>
-                      <RouterLink
-                        class="dropdown-item ps-3 border-radius-md mb-1"
-                        :to="{ name: 'el-dropdowns' }"
-                      >
-                        Dropdowns
-                      </RouterLink>
-                      <RouterLink
-                        class="dropdown-item ps-3 border-radius-md mb-1"
-                        :to="{ name: 'el-progress-bars' }"
-                      >
-                        Progress Bars
-                      </RouterLink>
-                      <RouterLink
-                        class="dropdown-item ps-3 border-radius-md mb-1"
-                        :to="{ name: 'el-toggles' }"
-                      >
-                        Toggles
-                      </RouterLink>
-                      <RouterLink
-                        class="dropdown-item ps-3 border-radius-md mb-1"
-                        :to="{ name: 'el-typography' }"
-                      >
-                        Typography
-                      </RouterLink>
+                      
                     </div>
                   </li>
                 </ul>
@@ -761,172 +715,18 @@ watch(
               </div>
             </div>
           </li>
-          <li class="nav-item dropdown dropdown-hover mx-2">
+          <li class="nav-item mx-2">
             <a
               role="button"
               class="nav-link ps-2 d-flex cursor-pointer align-items-center"
               :class="getTextColor()"
-              id="dropdownMenuDocs"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+              href="/perfil-usuario" 
             >
-              <i
-                class="material-icons opacity-6 me-2 text-md"
-                :class="getTextColor()"
-                >article</i
-              >
-              Docs
-              <img
-                :src="getArrowColor()"
-                alt="down-arrow"
-                class="arrow ms-2 d-lg-block d-none"
-              />
-              <img
-                :src="getArrowColor()"
-                alt="down-arrow"
-                class="arrow ms-1 d-lg-none d-block ms-auto"
-              />
+              <i class="material-icons opacity-6 me-2 text-md" :class="getTextColor()">person</i>
+              Mi perfil
             </a>
-            <div
-              class="dropdown-menu dropdown-menu-end dropdown-menu-animation dropdown-md mt-0 mt-lg-3 p-3 border-radius-lg"
-              aria-labelledby="dropdownMenuDocs"
-            >
-              <div class="d-none d-lg-block">
-                <ul class="list-group">
-                  <li class="nav-item list-group-item border-0 p-0">
-                    <a
-                      class="dropdown-item py-2 ps-3 border-radius-md"
-                      href=" https://www.creative-tim.com/learning-lab/vue/overview/material-kit/"
-                    >
-                      <h6
-                        class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
-                      >
-                        Getting Started
-                      </h6>
-                      <span class="text-sm"
-                        >All about overview, quick start, license and
-                        contents</span
-                      >
-                    </a>
-                  </li>
-                  <li class="nav-item list-group-item border-0 p-0">
-                    <a
-                      class="dropdown-item py-2 ps-3 border-radius-md"
-                      href=" https://www.creative-tim.com/learning-lab/vue/colors/material-kit/"
-                    >
-                      <h6
-                        class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
-                      >
-                        Foundation
-                      </h6>
-                      <span class="text-sm"
-                        >See our colors, icons and typography</span
-                      >
-                    </a>
-                  </li>
-                  <li class="nav-item list-group-item border-0 p-0">
-                    <a
-                      class="dropdown-item py-2 ps-3 border-radius-md"
-                      href=" https://www.creative-tim.com/learning-lab/vue/alerts/material-kit/"
-                    >
-                      <h6
-                        class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
-                      >
-                        Components
-                      </h6>
-                      <span class="text-sm"
-                        >Explore our collection of fully designed
-                        components</span
-                      >
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div class="row d-lg-none">
-                <div class="col-md-12 g-0">
-                  <a
-                    class="dropdown-item py-2 ps-3 border-radius-md"
-                    href="./pages/about-us.html"
-                  >
-                    <h6
-                      class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
-                    >
-                      Getting Started
-                    </h6>
-                    <span class="text-sm"
-                      >All about overview, quick start, license and
-                      contents</span
-                    >
-                  </a>
-                  <a
-                    class="dropdown-item py-2 ps-3 border-radius-md"
-                    href="./pages/about-us.html"
-                  >
-                    <h6
-                      class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
-                    >
-                      Foundation
-                    </h6>
-                    <span class="text-sm"
-                      >See our colors, icons and typography</span
-                    >
-                  </a>
-                  <a
-                    class="dropdown-item py-2 ps-3 border-radius-md"
-                    href="./pages/about-us.html"
-                  >
-                    <h6
-                      class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
-                    >
-                      Components
-                    </h6>
-                    <span class="text-sm"
-                      >Explore our collection of fully designed components</span
-                    >
-                  </a>
-                  <a
-                    class="dropdown-item py-2 ps-3 border-radius-md"
-                    href="./pages/about-us.html"
-                  >
-                    <h6
-                      class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
-                    >
-                      Plugins
-                    </h6>
-                    <span class="text-sm"
-                      >Check how you can integrate our plugins</span
-                    >
-                  </a>
-                  <a
-                    class="dropdown-item py-2 ps-3 border-radius-md"
-                    href="./pages/about-us.html"
-                  >
-                    <h6
-                      class="dropdown-header text-dark font-weight-bolder d-flex justify-content-cente align-items-center p-0"
-                    >
-                      Utility Classes
-                    </h6>
-                    <span class="text-sm"
-                      >For those who want flexibility, use our utility
-                      classes</span
-                    >
-                  </a>
-                </div>
-              </div>
-            </div>
           </li>
-          
-        </ul>
-        <ul class="navbar-nav d-lg-block d-none">
-          <li class="nav-item">
-            <a
-              :href="action.route"
-              class="btn btn-sm mb-0"
-              :class="action.color"
-              onclick="smoothToPricing('pricing-soft-ui')"
-              >{{ action.label }}</a
-            >
-          </li>
+
         </ul>
       </div>
     </div>

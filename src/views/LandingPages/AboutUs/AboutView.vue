@@ -3,7 +3,7 @@ import { onMounted, onUnmounted } from "vue";
 
 //example components
 import DefaultNavbar from "../../../examples/navbars/NavbarDefault.vue";
-import DefaultFooter from "../../../examples/footers/FooterDefault.vue";
+//import DefaultFooter from "../../../examples/footers/FooterDefault.vue";
 
 //image
 import bg0 from "@/assets/img/bg9.jpg";
@@ -12,10 +12,9 @@ import bg0 from "@/assets/img/bg9.jpg";
 import Typed from "typed.js";
 
 //sections
-import Information from "./Sections/AboutInformation.vue";
+
 import AboutTeam from "./Sections/AboutTeam.vue";
 import Featuring from "./Sections/AboutFeaturing.vue";
-import Newsletter from "./Sections/AboutNewsletter.vue";
 
 const body = document.getElementsByTagName("body")[0];
 //hooks
@@ -60,35 +59,19 @@ onUnmounted(() => {
         <div class="row justify-content-center">
           <div class="col-lg-8 text-center mx-auto my-auto">
             <h1 class="text-white">
-              Work with an amazing <span class="text-white" id="typed"></span>
+              Sobre nuestro equipo de <span class="text-white" id="typed"></span>
             </h1>
             <div id="typed-strings">
-              <h1>team</h1>
-              <h1>design</h1>
-              <h1>tool</h1>
+              <h1>frontend</h1>
+              <h1>Backend</h1>
+              <h1>UI/UX</h1>
             </div>
             <p class="lead mb-4 text-white opacity-8">
-              We’re constantly trying to express ourselves and actualize our
-              dreams. If you have the opportunity to play this game
+              "Somos un equipo de cinco apasionados por la tecnología y la educación. 
+              Nuestro objetivo es ofrecer una plataforma de aprendizaje en línea accesible, 
+              intuitiva y efectiva, combinando nuestras habilidades en desarrollo web, 
+              diseño y creación de contenido."
             </p>
-            <button type="submit" class="btn bg-white text-dark">
-              Create Account
-            </button>
-            <h6 class="text-white mb-2 mt-5">Find us on</h6>
-            <div class="d-flex justify-content-center">
-              <a href="javascript:;"
-                ><i class="fab fa-facebook text-lg text-white me-4"></i
-              ></a>
-              <a href="javascript:;"
-                ><i class="fab fa-instagram text-lg text-white me-4"></i
-              ></a>
-              <a href="javascript:;"
-                ><i class="fab fa-twitter text-lg text-white me-4"></i
-              ></a>
-              <a href="javascript:;"
-                ><i class="fab fa-google-plus text-lg text-white"></i
-              ></a>
-            </div>
           </div>
         </div>
       </div>
