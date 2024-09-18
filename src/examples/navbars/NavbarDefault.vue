@@ -715,21 +715,37 @@ watch(
               </div>
             </div>
           </li>
-          <li class="nav-item mx-2">
+          <li v-if="hasIdentificador" class="nav-item mx-2">
             <a
               role="button"
               class="nav-link ps-2 d-flex cursor-pointer align-items-center"
               :class="getTextColor()"
-              href="/perfil-usuario" 
+              href="/perfil-usuario"
             >
               <i class="material-icons opacity-6 me-2 text-md" :class="getTextColor()">person</i>
               Mi perfil
             </a>
           </li>
-
         </ul>
       </div>
     </div>
   </nav>
   <!-- End Navbar -->
 </template>
+
+<script>
+import { computed } from "vue";
+import { useAppStore } from "../../stores";
+
+export default {
+  setup() {
+    const appStore = useAppStore;
+    
+    const hasIdentificador = computed(() => appStore.login );
+
+    return {
+      hasIdentificador
+    };
+  },
+};
+</script>
