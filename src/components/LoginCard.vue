@@ -3,24 +3,16 @@
     <img src="../assets/img/Register_Login/Elevate.png" alt="Logo Elevate" />
     <h3>Bienvenido</h3>
     <p>Inicie su sesión para continuar en Elevate</p>
-    <form  class="form">
+    <form @submit.prevent="continuar" class="form">
       <div class="CustomInput">
         <p>Correo electronico:</p>
-        <input
-          placeholder="Ingrese su correo electronico"
-          type="text"
-        />
+        <input v-model="correo" placeholder="Ingrese su correo electronico" type="email" required>
       </div>
       <div class="CustomInput">
         <p>Contraseña:</p>
-        <input
-          placeholder="Ingrese su contraseña"
-          type="password"
-        />
+        <input v-model="password" placeholder="Ingrese su contraseña" type="password" required/>
       </div>
-      <router-link to="" class="enlace"
-        >¿Olvidaste tu contraseña?</router-link
-      >
+      <router-link to="" class="enlace">¿Olvidaste tu contraseña?</router-link>
       <button type="submit">CONTINUAR</button>
     </form>
     <div class="registro-enlace-container">
@@ -29,6 +21,61 @@
     </div>
   </div>
 </template>
+
+
+<script>
+import Swal from "sweetalert2";
+import axios from "axios";
+import { useAppStore } from "@/stores/index.js"; // Ajusta la ruta según tu estructura de carpetas
+
+export default {
+  data() {
+    return {
+      correo: "",
+      password: "",
+    };
+  },
+  methods: {
+    async continuar() {
+      try {
+        const response = await axios.post("http://localhost:9999/api/v1/user/login", {
+          email: this.correo,
+          password: this.password,
+        });
+
+        const { code, result } = response.data;
+
+        if (code === "200-OK") {
+          const { userId, firstName, lastName, role } = result;
+          
+          // Guardar datos en el store
+          const appStore = useAppStore();
+          appStore.setIdentificador(userId);
+          appStore.setTipoPersona(role);
+          appStore.setLogin(true); 
+          
+          
+          Swal.fire({
+            title: "Éxito",
+            text: "Inicio de sesión exitoso",
+            icon: "success",
+          });
+          this.$router.push("/"); // Ajusta la ruta de redirección según tu aplicación
+        } else {
+          throw new Error(`Código de respuesta inesperado: ${code}`);
+        }
+      } catch (error) {
+        console.error('Error en la solicitud:', error);
+        Swal.fire({
+          title: "Error",
+          text: error.response && error.response.data ? error.response.data.message : "Correo electrónico o contraseña incorrectos",
+          icon: "error",
+        });
+      }
+    },
+  },
+};
+</script>
 
 <style>
 .CustomInput {
@@ -56,7 +103,7 @@
 }
 
 .TarjetaLogin {
-  background: #D5F3FB;
+  background: #d5f3fb;
   border: 3px solid black;
   height: fit-content;
   display: flex;
@@ -74,7 +121,7 @@
 
 .enlace {
   margin: 10px 0px;
-  color: #0026FF;
+  color: #0026ff;
   text-decoration: underline;
 }
 
@@ -82,7 +129,7 @@
   width: 85%;
   border-radius: 25px;
   padding: 10px;
-  background-color: #007BFF;
+  background-color: #007bff;
   border: 2px solid black;
   color: #fff;
 }
