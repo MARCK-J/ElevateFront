@@ -3,7 +3,7 @@ import { onMounted } from "vue";
 
 //example components
 import DefaultNavbar from "@/examples/navbars/NavbarDefault.vue";
-import DefaultFooter from "@/examples/footers/FooterDefault.vue";
+//import DefaultFooter from "@/examples/footers/FooterDefault.vue";
 
 //image
 import image from "@/assets/img/illustrations/illustration-signin.jpg";
@@ -19,6 +19,7 @@ onMounted(() => {
   setMaterialInput();
 });
 </script>
+
 <template>
   <div class="container position-sticky z-index-sticky top-0">
     <div class="row">
@@ -35,7 +36,7 @@ onMounted(() => {
     </div>
   </div>
   <section>
-    <div class="page-header min-vh-100">
+    <div class="page-header min-vh-100 custom-background"> <!-- Color de fondo de la página -->
       <div class="container">
         <div class="row">
           <div
@@ -53,23 +54,15 @@ onMounted(() => {
           <div
             class="mt-8 col-xl-5 col-lg-6 col-md-7 d-flex flex-column ms-auto me-auto ms-lg-auto me-lg-5"
           >
-            <div
-              class="card d-flex blur justify-content-center shadow-lg my-sm-0 my-sm-6 mt-8 mb-5"
-            >
-              <div
-                class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent"
-              >
-                <div
-                  class="bg-gradient-success shadow-success border-radius-lg p-3"
-                >
-                  <h3 class="text-white text-success mb-0">Contact us</h3>
+            <div class="card custom-card d-flex justify-content-center shadow-lg my-sm-0 my-sm-6 mt-8 mb-5">
+              <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                <div class="header-title p-3">
+                  <h3 class="text-white mb-0">Contáctanos</h3>
                 </div>
               </div>
               <div class="card-body">
                 <p class="pb-3">
-                  For further questions, including partnership opportunities,
-                  please email hello@creative-tim.com or contact using our
-                  contact form.
+                  Si tienes algún problema o duda respecto a nuestro sistema, no dudes en contactarnos.
                 </p>
                 <form id="contact-form" method="post" autocomplete="off">
                   <div class="card-body p-0 my-3">
@@ -78,16 +71,16 @@ onMounted(() => {
                         <MaterialInput
                           class="input-group-static mb-4"
                           type="text"
-                          label="Full Name"
-                          placeholder="Full Name"
+                          label="Nombre Completo"
+                          placeholder="Nombre Completo"
                         />
                       </div>
                       <div class="col-md-6 ps-md-2">
                         <MaterialInput
                           class="input-group-static mb-4"
                           type="email"
-                          label="Email"
-                          placeholder="hello@creative-tim.com"
+                          label="Correo electrónico"
+                          placeholder="NombreUsuario@gmail.com"
                         />
                       </div>
                     </div>
@@ -96,18 +89,16 @@ onMounted(() => {
                         id="message"
                         class="input-group-static mb-4"
                         :rows="6"
-                        placeholder="Describe your problem in at least 250 characters"
-                        >How can we help you?</MaterialTextArea
-                      >
+                        placeholder="Describe tu problema o duda"
+                      >¿En qué podemos ayudarte?</MaterialTextArea>
                     </div>
                     <div class="row">
                       <div class="col-md-12 text-center">
                         <MaterialButton
                           variant="gradient"
                           color="success"
-                          class="mt-3 mb-0"
-                          >Send Message</MaterialButton
-                        >
+                          class="mt-3 mb-0 custom-button"
+                        >Enviar mensaje</MaterialButton>
                       </div>
                     </div>
                   </div>
@@ -121,3 +112,40 @@ onMounted(() => {
   </section>
   <DefaultFooter />
 </template>
+
+<style scoped>
+/* Fondo personalizado */
+.custom-background {
+  background-color: #c2d1b9; /* Fondo gris claro para toda la página */
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* Estilo personalizado para la tarjeta */
+.custom-card {
+  background: #ffffff; /* Fondo blanco */
+  border-radius: 10px; /* Bordes ligeramente redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para darle profundidad */
+  padding: 20px; /* Espaciado interno */
+}
+
+/* Estilo para el encabezado de la tarjeta */
+.header-title {
+  background: #4caf50; /* Fondo verde */
+  border-radius: 10px 10px 0 0; /* Bordes redondeados solo en la parte superior */
+  text-align: center;
+}
+
+/* Estilo para el botón */
+.custom-button {
+  background-color: #4caf50; /* Fondo verde */
+  color: white;
+  border-radius: 20px; /* Bordes redondeados */
+  padding: 10px 20px;
+  transition: background-color 0.3s ease; /* Transición suave */
+}
+
+.custom-button:hover {
+  background-color: #388e3c; /* Cambiar color al pasar el ratón */
+}
+</style>
