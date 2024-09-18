@@ -8,45 +8,30 @@
       />
       <div class="form-container">
         <h2 class="form-title">Registro</h2>
+        <p>Complete los siguientes campos, por favor</p>
         <form @submit.prevent="createPersona" class="form">
           <div class="form-group">
             <input
               type="text"
-              v-model="nombre"
+              v-model="firstName"
               class="form-control"
-              placeholder="Nombre"
+              placeholder="Nombres"
               required
             />
           </div>
           <div class="form-group">
             <input
               type="text"
-              v-model="apellidoP"
+              v-model="lastName"
               class="form-control"
-              placeholder="Apellido Paterno"
+              placeholder="Apellidos"
               required
-            />
-          </div>
-          <div class="form-group">
-            <input
-              type="text"
-              v-model="apellidoM"
-              class="form-control"
-              placeholder="Apellido Materno"
-            />
-          </div>
-          <div class="form-group">
-            <input
-              type="tel"
-              v-model="telefono"
-              class="form-control"
-              placeholder="Teléfono"
             />
           </div>
           <div class="form-group">
             <input
               type="email"
-              v-model="correo"
+              v-model="email"
               class="form-control"
               placeholder="Correo electrónico"
               required
@@ -70,70 +55,23 @@
               required
             />
           </div>
+          <div class="form-group">
+            <select v-model="userType" class="form-control" required>
+              
+              <option value="" disabled>Selecciona tu rol</option>
+              <option value="estudiante">Estudiante</option>
+              <option value="docente">Docente</option>
+            </select>
+          </div>
           <div class="validation">
-            <div>
+            <div v-for="(validation, index) in validations" :key="index">
               <Icon
-                :icon="icon_validacion0"
+                :icon="validation.icon"
                 width="16"
                 height="16"
-                :color="estilo_validacion0"
+                :color="validation.color"
               />
-              <p :class="confirmacion0">Las contraseñas deben ser iguales</p>
-            </div>
-            <div>
-              <Icon
-                :icon="icon_validacion1"
-                width="16"
-                height="16"
-                :color="estilo_validacion1"
-              />
-              <p :class="confirmacion1">
-                La contraseña debe ser de al menos 8 caracteres
-              </p>
-            </div>
-            <div>
-              <Icon
-                :icon="icon_validacion2"
-                width="16"
-                height="16"
-                :color="estilo_validacion2"
-              />
-              <p :class="confirmacion2">
-                La contraseña debe contener al menos una minuscula
-              </p>
-            </div>
-            <div>
-              <Icon
-                :icon="icon_validacion3"
-                width="16"
-                height="16"
-                :color="estilo_validacion3"
-              />
-              <p :class="confirmacion3">
-                La contraseña debe contener al menos una mayuscula
-              </p>
-            </div>
-            <div>
-              <Icon
-                :icon="icon_validacion4"
-                width="16"
-                height="16"
-                :color="estilo_validacion4"
-              />
-              <p :class="confirmacion4">
-                La contraseña debe contener al menos un caracter especial
-              </p>
-            </div>
-            <div>
-              <Icon
-                :icon="icon_validacion5"
-                width="16"
-                height="16"
-                :color="estilo_validacion5"
-              />
-              <p :class="confirmacion5">
-                La contraseña debe contener al menos un numero
-              </p>
+              <p :class="validation.class">{{ validation.message }}</p>
             </div>
           </div>
           <div class="button-group">
@@ -151,7 +89,6 @@
         </p>
       </div>
     </div>
-    <!-- Pop-up de éxito -->
     <div v-if="showSuccessPopup" class="popup-overlay" @click="closePopup">
       <div class="popup-content" @click.stop>
         <h3>Registro exitoso</h3>
@@ -163,154 +100,252 @@
 </template>
 <script>
 import { Icon } from "@iconify/vue";
+import Swal from "sweetalert2";
+import axios from 'axios';
+
 
 export default {
   data() {
     return {
-      nombre: "",
-      apellidoP: "",
-      apellidoM: "",
-      telefono: "",
-      correo: "",
+      firstName: "",
+      lastName: "",
+      email: "",
       password: "",
       passwordConf: "",
-      // Validación de igualdad
-      icon_validacion0: "fluent:error-circle-20-regular",
-      estilo_validacion0: 'red',
-      confirmacion0: 'validation_error',
-      // Validación de longitud
-      icon_validacion1: "fluent:error-circle-20-regular",
-      estilo_validacion1: 'red',
-      confirmacion1: 'validation_error',
-      // Validación de minúscula
-      icon_validacion2: "fluent:error-circle-20-regular",
-      estilo_validacion2: 'red',
-      confirmacion2: 'validation_error',
-      // Validación de mayúscula
-      icon_validacion3: "fluent:error-circle-20-regular",
-      estilo_validacion3: 'red',
-      confirmacion3: 'validation_error',
-      // Validación de carácter especial
-      icon_validacion4: "fluent:error-circle-20-regular",
-      estilo_validacion4: 'red',
-      confirmacion4: 'validation_error',
-      // Validación de número
-      icon_validacion5: "fluent:error-circle-20-regular",
-      estilo_validacion5: 'red',
-      confirmacion5: 'validation_error',
-      // Estado para el pop-up de éxito
+      userType:"",
       showSuccessPopup: false,
+      validations: [
+        {
+          key: "confirmPassword",
+          icon: "fluent:error-circle-20-regular",
+          color: "red",
+          class: "validation_error",
+          message: "Las contraseñas deben ser iguales",
+        },
+        {
+          key: "minLength",
+          icon: "fluent:error-circle-20-regular",
+          color: "red",
+          class: "validation_error",
+          message: "La contraseña debe ser de al menos 8 caracteres",
+        },
+        {
+          key: "lowercase",
+          icon: "fluent:error-circle-20-regular",
+          color: "red",
+          class: "validation_error",
+          message: "La contraseña debe contener al menos una minuscula",
+        },
+        {
+          key: "uppercase",
+          icon: "fluent:error-circle-20-regular",
+          color: "red",
+          class: "validation_error",
+          message: "La contraseña debe contener al menos una mayuscula",
+        },
+        {
+          key: "specialChar",
+          icon: "fluent:error-circle-20-regular",
+          color: "red",
+          class: "validation_error",
+          message: "La contraseña debe contener al menos un caracter especial",
+        },
+        {
+          key: "number",
+          icon: "fluent:error-circle-20-regular",
+          color: "red",
+          class: "validation_error",
+          message: "La contraseña debe contener al menos un numero",
+        },
+      ],
     };
   },
   methods: {
     goBack() {
       this.$router.push("/");
     },
-    createPersona() {
-      // Validar todos los campos
-      if (!this.nombre || !this.apellidoP || !this.correo || !this.password || !this.passwordConf) {
-        alert("Todos los campos obligatorios deben estar llenos.");
-        return;
-      }
-
-      // Validar contraseñas
-      if (this.password !== this.passwordConf) {
-        alert("Las contraseñas no coinciden.");
-        return;
-      }
-
-      if (!this.validatePassword(this.password)) {
-        alert("La contraseña no cumple con los requisitos.");
-        return;
-      }
-
-      // Aquí va tu lógica de registro
-      // Si el registro es exitoso, muestra el pop-up
-      this.showSuccessPopup = true;
-    },
-    closePopup() {
-      this.showSuccessPopup = false;
-    },
-    // Función para validar la complejidad de la contraseña
-    validatePassword(password) {
-      // Al menos 8 caracteres
-      if (password.length < 8) return false;
-      // Al menos un número
-      if (!/\d/.test(password)) return false;
-      // Al menos una letra minúscula
-      if (!/[a-z]/.test(password)) return false;
-      // Al menos una letra mayúscula
-      if (!/[A-Z]/.test(password)) return false;
-      // Al menos un carácter especial
-      if (!/[^a-zA-Z0-9]/.test(password)) return false;
-      return true;
-    },
-    validaciones(password, passwordConf) {
-      // Restablecer estados de validación
-      this.icon_validacion0 = 'fluent:error-circle-20-regular';
-      this.estilo_validacion0 = 'red';
-      this.confirmacion0 = 'validation_error';
-      this.icon_validacion1 = 'fluent:error-circle-20-regular';
-      this.estilo_validacion1 = 'red';
-      this.confirmacion1 = 'validation_error';
-      this.icon_validacion2 = 'fluent:error-circle-20-regular';
-      this.estilo_validacion2 = 'red';
-      this.confirmacion2 = 'validation_error';
-      this.icon_validacion3 = 'fluent:error-circle-20-regular';
-      this.estilo_validacion3 = 'red';
-      this.confirmacion3 = 'validation_error';
-      this.icon_validacion4 = 'fluent:error-circle-20-regular';
-      this.estilo_validacion4 = 'red';
-      this.confirmacion4 = 'validation_error';
-      this.icon_validacion5 = 'fluent:error-circle-20-regular';
-      this.estilo_validacion5 = 'red';
-      this.confirmacion5 = 'validation_error';
-
-      if (password.length > 0 || passwordConf.length > 0) {
-        if (password === passwordConf) {
-          this.icon_validacion0 = 'lets-icons:check-fill';
-          this.estilo_validacion0 = 'green';
-          this.confirmacion0 = 'validation_check';
-          
-          if (password.length >= 8) {
-            this.icon_validacion1 = 'lets-icons:check-fill';
-            this.estilo_validacion1 = 'green';
-            this.confirmacion1 = 'validation_check';
-          }
-          
-          if (/[a-z]/.test(password)) {
-            this.icon_validacion2 = 'lets-icons:check-fill';
-            this.estilo_validacion2 = 'green';
-            this.confirmacion2 = 'validation_check';
-          }
-          
-          if (/[A-Z]/.test(password)) {
-            this.icon_validacion3 = 'lets-icons:check-fill';
-            this.estilo_validacion3 = 'green';
-            this.confirmacion3 = 'validation_check';
-          }
-          
-          if (/[^a-zA-Z0-9]/.test(password)) {
-            this.icon_validacion4 = 'lets-icons:check-fill';
-            this.estilo_validacion4 = 'green';
-            this.confirmacion4 = 'validation_check';
-          }
-          
-          if (/\d/.test(password)) {
-            this.icon_validacion5 = 'lets-icons:check-fill';
-            this.estilo_validacion5 = 'green';
-            this.confirmacion5 = 'validation_check';
-          }
+    showError(message) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message,
+        showClass: {
+          popup: 'animate__animated animate__bounceIn'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__fadeOut'
         }
+      });
+    },
+    getCurrentDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0'); // Mes en formato MM
+      const day = String(today.getDate()).padStart(2, '0'); // Día en formato DD
+      return `${year}-${month}-${day}`; // Devuelve la fecha en formato YYYY-MM-DD
+    },
+    async createPersona() {
+      try{
+        if (
+          !this.firstName ||
+          !this.lastName ||
+          !this.email ||
+          !this.password ||
+          !this.passwordConf
+        ) {
+          this.showError("Todos los campos obligatorios deben estar llenos.");
+          return;
+        }
+        if (this.password !== this.passwordConf) {
+          this.showError("Las contraseñas no coinciden.");
+          return;
+        }
+  
+        if (!this.validatePassword(this.password)) {
+          this.showError("La contraseña no cumple con los requisitos.");
+          return;
+        }
+
+        // Validar tipo de usuario
+        const userRole = this.userType === "docente" ? 2 : this.userType === "estudiante" ? 1 : null;
+        if (userRole === null) {
+          this.showError("Debe seleccionar un tipo de usuario válido.");
+          return;
+        }
+
+        const currentDate = this.getCurrentDate(); // Obtener la fecha actual
+
+        // Enviar solicitud para crear la persona
+        const response = await axios.post(
+          "http://localhost:9999/api/v1/user/signup",
+          {
+            firstName: this.firstName,
+            lastName: this.lastName,
+            email: this.email,
+            password: this.password,
+            role: userRole,
+            dateJoin: currentDate // Usar la fecha actual
+          }
+        );
+        // Mostrar éxito y reiniciar el formulario
+        Swal.fire({
+          icon: "success",
+          title: "Registro exitoso",
+          text: "Te has registrado correctamente.",
+          timer: 2000,
+          showConfirmButton: false
+        });
+        this.resetForm(); // Reiniciar formulario
+        this.$router.push('/'); // Redirigir a la página principal
+
+
+      }catch (error){
+        console.error("Error al crear la persona", error);
+        this.showError("Error al crear la persona");
       }
+    },
+    resetForm() {
+      this.firstName = "";
+      this.lastName = "";
+      this.email = "";
+      this.password = "";
+      this.passwordConf = "";
+      this.userType = "";
+    },
+    validatePassword(password) {
+      return (
+        password.length >= 8 &&
+        /\d/.test(password) &&
+        /[a-z]/.test(password) &&
+        /[A-Z]/.test(password) &&
+        /[^a-zA-Z0-9]/.test(password)
+      );
+    },
+    validateForm() {
+      this.validations.forEach((validation) => {
+        switch (validation.key) {
+          case "confirmPassword":
+            validation.icon =
+              this.password === this.passwordConf
+                ? "lets-icons:check-fill"
+                : "fluent:error-circle-20-regular";
+            validation.color =
+              this.password === this.passwordConf ? "green" : "red";
+            validation.class =
+              this.password === this.passwordConf
+                ? "validation_check"
+                : "validation_error";
+            break;
+          case "minLength":
+            validation.icon =
+              this.password.length >= 8
+                ? "lets-icons:check-fill"
+                : "fluent:error-circle-20-regular";
+            validation.color = this.password.length >= 8 ? "green" : "red";
+            validation.class =
+              this.password.length >= 8
+                ? "validation_check"
+                : "validation_error";
+            break;
+          case "lowercase":
+            validation.icon = /[a-z]/.test(this.password)
+              ? "lets-icons:check-fill"
+              : "fluent:error-circle-20-regular";
+            validation.color = /[a-z]/.test(this.password) ? "green" : "red";
+            validation.class = /[a-z]/.test(this.password)
+              ? "validation_check"
+              : "validation_error";
+            break;
+          case "uppercase":
+            validation.icon = /[A-Z]/.test(this.password)
+              ? "lets-icons:check-fill"
+              : "fluent:error-circle-20-regular";
+            validation.color = /[A-Z]/.test(this.password) ? "green" : "red";
+            validation.class = /[A-Z]/.test(this.password)
+              ? "validation_check"
+              : "validation_error";
+            break;
+          case "specialChar":
+            validation.icon = /[^a-zA-Z0-9]/.test(this.password)
+              ? "lets-icons:check-fill"
+              : "fluent:error-circle-20-regular";
+            validation.color = /[^a-zA-Z0-9]/.test(this.password)
+              ? "green"
+              : "red";
+            validation.class = /[^a-zA-Z0-9]/.test(this.password)
+              ? "validation_check"
+              : "validation_error";
+            break;
+          case "number":
+            validation.icon = /\d/.test(this.password)
+              ? "lets-icons:check-fill"
+              : "fluent:error-circle-20-regular";
+            validation.color = /\d/.test(this.password) ? "green" : "red";
+            validation.class = /\d/.test(this.password)
+              ? "validation_check"
+              : "validation_error";
+            break;
+        }
+      });
+    },
+    correctRegister() {
+      this.$swal({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        icon: "success",
+        title: "Felicidades",
+        text: "Su registro se realizo correctamente, ahora puede iniciar sesion en la pagina",
+      });
     },
   },
   watch: {
-    password(newPassword) {
-      this.validaciones(newPassword, this.passwordConf);
+    password() {
+      this.validateForm();
     },
-    passwordConf(newPasswordConf) {
-      this.validaciones(this.password, newPasswordConf);
+    passwordConf() {
+      this.validateForm();
     },
   },
   components: {
@@ -318,9 +353,6 @@ export default {
   },
 };
 </script>
-
-
-
 <style scoped>
 .validation {
   padding: 8px;
@@ -366,12 +398,11 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(255, 255, 255, 0.8); 
+  background-color: rgba(255, 255, 255, 0.8);
   border-radius: 10px;
   padding: 30px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 80%; 
-  max-width: 550px; 
+  width: 32%;
 }
 .form-title {
   color: #333;
@@ -379,7 +410,10 @@ export default {
   text-align: center;
 }
 .form-group {
-  width: 75%;
+  width: 90%;
+}
+.form {
+  display: flex;
 }
 
 .form-control {
@@ -389,7 +423,7 @@ export default {
   background-color: transparent;
   width: 100%;
   font-size: 16px;
-  transition: border-color 0.3s ease; 
+  transition: border-color 0.3s ease;
 }
 
 .form-control:focus {
@@ -410,8 +444,8 @@ export default {
   cursor: pointer;
   font-size: 16px;
   text-transform: uppercase;
-  transition: all 0.3s ease; 
-  margin: 0 10px; 
+  transition: all 0.3s ease;
+  margin: 0 10px;
 }
 
 .btn-secondary {
