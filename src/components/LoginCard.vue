@@ -54,7 +54,7 @@ export default {
 
             await AuthService.sendMail(this.correo, this.randomCode);
             // Redirige a la pantalla de verificación
-            this.$router.push({ name: 'verification-view', params: { userId, role, code: this.randomCode } });
+            this.$router.push({ name: 'verification-view', params: { userId: userId, role: role, code: this.randomCode } });
             Swal.fire({
               title: "Código enviado",
               text: "Se ha enviado un código de verificación a tu correo",
@@ -82,13 +82,13 @@ export default {
       appStore.setIdentificador(userId);
       appStore.setTipoPersona(role);
       appStore.setLogin(true);
-
+      
       Swal.fire({
         title: "Éxito",
         text: "Inicio de sesión exitoso",
         icon: "success",
       });
-
+      
       this.$router.push("/");
     },
   },

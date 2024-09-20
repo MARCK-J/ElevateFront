@@ -27,7 +27,7 @@ export const AuthService = {
     const data = {
         subject: "Código de Verificación - Autenticación en Dos Pasos",
         message: `
-        Estimado/a [Nombre del Usuario],
+        Estimado/a Cliente,
 
         Le informamos que hemos generado un código de verificación para completar su proceso de autenticación en dos pasos en Elevate. Este método de seguridad añade una capa adicional de protección a su cuenta, asegurando que solo usted pueda acceder a ella.
 
