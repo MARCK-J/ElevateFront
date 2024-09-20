@@ -3,12 +3,14 @@ import { ref, onMounted } from "vue";
 import ExampleCard from "../Components/ExampleCard.vue";
 import MaterialBadge from "../../../components/MaterialBadge.vue";
 import axios from "axios";
+import { useRouter } from 'vue-router'; // Importar useRouter
 
 const imagesPrefix =
   "https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections";
 
 // Estado para almacenar los datos
 const data = ref([]);
+const router = useRouter(); // Crear instancia de router
 
 // Función para obtener las categorías desde el endpoint
 const fetchCategories = async () => {
@@ -57,10 +59,10 @@ const generateContent = async () => {
       categoryMap[categoryId] = [];
     }
     categoryMap[categoryId].push({
+      id: course.id, // Agregar ID del curso
       image: "", // Imagen vacía por ahora
       title: course.title,
       available: course.available,
-      route: "" // Define la ruta correspondiente si es necesario
     });
   });
 
@@ -73,11 +75,15 @@ const generateContent = async () => {
   });
 };
 
+// Función para manejar la selección de un curso
+const selectCourse = (courseId) => {
+  router.push({ path: '/sections/page-sections/page-headers', query: { courseId } });
+};
+
 // Llamar a la función en el montaje del componente
 onMounted(() => {
   generateContent();
 });
-
 </script>
 
 <template>
@@ -113,14 +119,14 @@ onMounted(() => {
           <div :class="`row ${index > 0 ? 'mt-4' : ''}`">
             <div
               class="col-md-6 col-lg-4 mt-4"
-              v-for="{ image, title, available, route } in items"
+              v-for="{ id, image, title, available } in items"
               :key="title"
             >
               <ExampleCard
                 class="min-height-200 shadow-lg rounded-3 p-3"
                 :image="image"
                 :title="title"
-                :route="route"
+                @click="selectCourse(id)"
               />
               <p class="text-muted">{{ available ? 'Disponible' : 'No disponible' }}</p>
             </div>
@@ -130,36 +136,3 @@ onMounted(() => {
     </div>
   </section>
 </template>
-
-
-<style scoped>
-/* Estilo general para la sección */
-section {
-  background-color: #c3dbe4; /* Fondo suave para destacar el contenido */
-}
-
-/* Estilo para el título principal */
-h2 {
-  font-family: 'Montserrat', sans-serif; /* Fuente moderna */
-  font-size: 2.5rem; /* Tamaño del texto */
-  font-weight: 700; /* Peso del texto */
-  color: #007bff; /* Color primario */
-}
-
-/* Estilo para el texto de párrafo */
-p.lead {
-  font-family: 'Open Sans', sans-serif; /* Fuente legible */
-  font-size: 1.125rem; /* Tamaño del texto */
-  color: #2f3235; /* Color de texto suave */
-}
-
-/* Estilo para las tarjetas */
-.ExampleCard {
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición suave para efectos */
-}
-
-.ExampleCard:hover {
-  transform: translateY(-10px); /* Efecto de elevación al pasar el ratón */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra más prominente */
-}
-</style>
