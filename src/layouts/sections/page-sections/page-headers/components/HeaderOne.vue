@@ -1,7 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
+import Swal from "sweetalert2";
+
+import MaterialButton from "@/components/MaterialButton.vue";
+
 
 // Estado para almacenar la información del curso
 const courseData = ref(null);
@@ -26,8 +30,10 @@ const closePopup = () => {
 // Función para confirmar la inscripción
 const confirmInscription = () => {
   showPopup.value = false;
-  alert("¡Inscripción confirmada!");
+  Swal.fire('Éxito', `Inscripcion Confirmada!!!`, 'success');
+
 };
+const courseId=1;
 
 console.log(courseId)
 
@@ -111,7 +117,7 @@ const lecciones = ref([
   
   // Función para iniciar una lección
   const startLesson = (title) => {
-    alert(`Iniciando la lección: ${title}`);
+    Swal.fire('Éxito', `Iniciando la leccion : ${title}`, 'success');
   };
   
   // Usar el router para navegar

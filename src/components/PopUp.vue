@@ -23,7 +23,9 @@
             <label for="file">Archivo:</label>
             <input ref="fileInput" id="file" type="file" @change="handleFileUpload" required>
           </div>
-          <button type="submit">Enviar</button>
+          <div class="pop-up-button">
+            <button type="submit">Enviar</button>
+          </div>
         </form>
         <div class="pop-up-button">
           <button @click="close">Cerrar</button>
@@ -32,6 +34,8 @@
     </div>
   </template>
   <script>
+  import Swal from "sweetalert2";
+
   export default {
     data() {
       return {
@@ -71,7 +75,7 @@
         */
   
         // Simulación de respuesta exitosa
-        console.log('Datos del formulario:', this.form);
+        Swal.fire('Éxito', `Archivo subido con exito`, 'success');
         this.close();
       },
       handleFileUpload(event) {
