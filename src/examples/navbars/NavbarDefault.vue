@@ -3,6 +3,8 @@ import { RouterLink } from "vue-router";
 import { computed, ref, watch } from "vue";
 import { useWindowsWidth } from "../../assets/js/useWindowsWidth";
 import { useAppStore } from "@/stores"; // Pinia store
+import Swal from "sweetalert2";
+
 
 import ArrDark from "@/assets/img/down-arrow-dark.svg";
 import downArrow from "@/assets/img/down-arrow.svg";
@@ -48,7 +50,6 @@ const appStore = useAppStore();
 const isLoggedIn = ref(appStore.login); // Estado reactivo para el login
 const identidad = ref(appStore.identificador);
 
-
 // Escuchar cambios en el estado de 'login'
 watch(
   () => appStore.login,
@@ -71,6 +72,11 @@ function getArrowColor() {
   } else {
     return ArrDark;
   }
+}
+function cerrarSesion() {
+  Swal.fire('Éxito', 'Perfil actualizado correctamente.', 'success');
+  window.location.reload();
+  
 }
 
 // set text color
@@ -751,50 +757,14 @@ const showProfileButton = computed(() => isLoggedIn.value);
               Mi perfil
             </router-link>
           </li>
-          <li>
-        <button @click="cerrarSesion" class="btn btn-danger ms-2">
-          Cerrar Sesión
-        </button>
-      </li>
-
+          <li v-if="isLoggedIn">
+            <button @click="cerrarSesion" class="btn btn-danger ms-2" href="/">
+              Cerrar Sesión
+            </button>
+          </li>
         </ul>
       </div>
     </div>
   </nav>
   <!-- End Navbar -->
 </template>
-
-// AnotherComponent.vue
-<script>
-import { computed } from "vue";
-import { useAppStore } from "../../stores"; 
-
-export default {
-  setup() {
-    const appStore = useAppStore();
-
-    const isLoggedIn = computed(() => appStore.login);
-    const identificador = computed(() => appStore.identificador);
-    const tipoPersona = computed(() => appStore.tipoPersona);
-
-    console.log('Is Logged In:', isLoggedIn.value);
-    console.log('Identificador:', identificador.value);
-    console.log('Tipo Persona:', tipoPersona.value);
-
-    return {
-      isLoggedIn,
-      identificador,
-      tipoPersona,
-    };
-  },
-  methods: {
-    cerrarSesion() {
-      // Aquí puedes agregar cualquier lógica adicional para cerrar sesión
-      window.location.reload();
-    }
-  }
-};
-</script>
-
-
-

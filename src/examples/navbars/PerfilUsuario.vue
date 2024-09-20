@@ -107,8 +107,10 @@ export default {
           lastName: lastName.value,
           email: email.value,
           password: updatedPassword,  // Actualizar con la nueva o mantener la original
-          verification: verification.value == true,
+          verification: verification.value,  // Asegurar que sea booleano
         };
+
+        console.log("VERIFICACION: " + verification.value);
 
         // Hacer la solicitud PUT para actualizar el perfil
         await axios.put(`http://localhost:9999/api/v1/user/${identificador}`, payload);
