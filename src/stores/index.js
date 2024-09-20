@@ -7,6 +7,7 @@ export const useAppStore = defineStore("storeId", {
     identificador: null, // Almacena el identificador del usuario
     tipoPersona: null,   // Almacena el tipo de persona
     login: false,
+    verificationCode:''
   }),
 
   actions: {
@@ -18,6 +19,9 @@ export const useAppStore = defineStore("storeId", {
     },
     setLogin(login) {
       this.login = login; 
+    },
+    setVerificationCode(verificationCode) {
+      this.verificationCode = verificationCode; 
     },
     clearSession() {
       this.identificador = null;

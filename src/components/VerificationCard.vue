@@ -5,10 +5,11 @@
       <h3>Verificacion de dos pasos</h3>
       <p>Se le envio un codigo de verificacion a su correo</p>
       <p>por favor ingrese ese codigo en el siguiente campo para la validacion</p>
-      <form class="form">
+      <form @submit.prevent="validacion" class="form">
         <div class="CustomInput">
           <p>Codigo de verificacion:</p>
         <input
+          v-model="codigoIngresado"
           placeholder="Ingrese su codigo de verificacion"
           type="text"
           required
@@ -21,21 +22,30 @@
 <script lang="ts">
 import { defineComponent } from 'vue'; 
 import Swal from 'sweetalert2'; 
+import { useAppStore } from "@/stores/"; 
 
 export default defineComponent({
   name: "NavBar",
-  setup() {
-    const mostrarError = (message:string) => {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        timer: 2000,
-        text: message,
-      });
+  data() {
+    return {
+      codigoIngresado: "",
+      codigoEsperado: this.$route.params.code,
+      userId:this.$route.params.userId,
+      role:this.$route.params.role,
     };
+  },
+  methods:{
+    validacion(){
+      if (this.codigoIngresado === this.codigoEsperado) {
 
-    const toastTopEnd = () => {
-      Swal.fire({
+        const appStore = useAppStore();
+        appStore.setIdentificador(this.userId);
+        appStore.setTipoPersona(this.role);
+        appStore.setLogin(true);
+        
+        this.$router.push("/");
+
+        Swal.fire({
         toast: true,
         position: 'top-end',
         showConfirmButton: false,
@@ -44,12 +54,15 @@ export default defineComponent({
         title: 'Felicidades',
         text: 'Su inicio de sesion se completo correctamente',
       });
-    };
-
-    return {
-      mostrarError,
-      toastTopEnd,
-    };
+      }else{
+        Swal.fire({
+        icon: 'error',
+        title: 'Codigo incorrecto',
+        timer: 2000,
+        text: 'Introduzca el codigo enviado a su correo',
+      });
+      }
+    }
   },
 });
 </script>
