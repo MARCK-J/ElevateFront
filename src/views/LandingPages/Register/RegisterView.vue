@@ -224,6 +224,7 @@ export default {
             email: this.email,
             password: this.password,
             role: userRole,
+            verification: true,
             dateJoin: currentDate // Usar la fecha actual
           }
         );
