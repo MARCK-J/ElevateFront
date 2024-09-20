@@ -22,7 +22,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'; 
 import Swal from 'sweetalert2'; 
-import { useAppStore } from "@/stores/"; 
+import { useAppStore } from "@/stores"; 
 
 export default defineComponent({
   name: "NavBar",
@@ -38,22 +38,26 @@ export default defineComponent({
     validacion(){
       if (this.codigoIngresado === this.codigoEsperado) {
 
+        
         const appStore = useAppStore();
         appStore.setIdentificador(this.userId);
         appStore.setTipoPersona(this.role);
         appStore.setLogin(true);
         
-        this.$router.push("/");
-
         Swal.fire({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        icon: 'success',
-        title: 'Felicidades',
-        text: 'Su inicio de sesion se completo correctamente',
-      });
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          icon: 'success',
+          title: 'Felicidades',
+          text: 'Su inicio de sesion se completo correctamente',
+        });
+        this.$router.push("/");
+        // Accede al estado del store para imprimir los valores
+        console.log(appStore.identificador);
+        console.log(appStore.tipoPersona);
+        console.log(appStore.login);
       }else{
         Swal.fire({
         icon: 'error',

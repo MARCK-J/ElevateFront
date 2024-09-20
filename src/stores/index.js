@@ -4,10 +4,10 @@ import bootstrap from "bootstrap/dist/js/bootstrap.min.js";
 export const useAppStore = defineStore("storeId", {
   state: () => ({
     bootstrap,
-    identificador: null, // Almacena el identificador del usuario
-    tipoPersona: null,   // Almacena el tipo de persona
+    identificador: '', // Almacena el identificador del usuario
+    tipoPersona: '',   // Almacena el tipo de persona
     login: false,
-    verificationCode:''
+    verificationCode: ''
   }),
 
   actions: {
@@ -27,5 +27,12 @@ export const useAppStore = defineStore("storeId", {
       this.identificador = null;
       this.tipoPersona = null;
     },
+  },
+
+  getters: {
+    getIdentificador: (state) => state.identificador,
+    getTipoPersona: (state) => state.tipoPersona,
+    isLoggedIn: (state) => state.login,
+    getVerificationCode: (state) => state.verificationCode,
   },
 });
