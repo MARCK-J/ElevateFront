@@ -1,7 +1,11 @@
 <script setup>
-import MaterialButton from "@/components/MaterialButton.vue";
-import { ref } from "vue";
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import axios from 'axios';
+
+// Estado para almacenar la información del curso
+const courseData = ref(null);
+const route = useRoute(); // Obtener la ruta actual
 
 // Imagen de fondo
 const bgImage = "https://midu.dev/images/wallpapers/una-taza-de-javascript.png";
@@ -24,6 +28,35 @@ const confirmInscription = () => {
   showPopup.value = false;
   alert("¡Inscripción confirmada!");
 };
+
+console.log(courseId)
+
+// Función para obtener el curso por ID
+const fetchCourseById = async (id) => {
+  try {
+    const response = await axios.get(`http://localhost:9999/api/v1/courses/${id}`, {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+    
+    if (response.data.code === "200-OK") {
+      courseData.value = response.data.result; // Guardar el curso
+    } else {
+      console.error("Error al obtener el curso:", response.data.message);
+    }
+  } catch (error) {
+    console.error("Error en la solicitud del curso:", error);
+  }
+};
+
+// Llamar a la función en el montaje del componente
+onMounted(() => {
+  const courseId = route.query.courseId; // Obtener el courseId de la consulta
+  if (courseId) {
+    fetchCourseById(courseId); // Llamar a la función para obtener el curso
+  }
+});
 
 const lecciones = ref([
     {
