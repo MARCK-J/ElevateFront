@@ -27,6 +27,7 @@
 import Swal from "sweetalert2";
 import axios from "axios";
 import { useAppStore } from "@/stores/index.js"; // Ajusta la ruta según tu estructura de carpetas
+import { AuthService } from "../services/authService";
 
 export default {
   data() {
@@ -46,21 +47,24 @@ export default {
         const { code, result } = response.data;
 
         if (code === "200-OK") {
-          const { userId, firstName, lastName, role } = result;
+          const { userId, role, verification } = result;          
           
-          // Guardar datos en el store
-          const appStore = useAppStore();
-          appStore.setIdentificador(userId);
-          appStore.setTipoPersona(role);
-          appStore.setLogin(true); 
+          if(verification){
+            this.randomCode = AuthService.generateCode();
+
+            await AuthService.sendMail(this.correo, this.randomCode);
+            // Redirige a la pantalla de verificación
+            this.$router.push({ name: 'verification-view', params: { userId, role, code: this.randomCode } });
+            Swal.fire({
+              title: "Código enviado",
+              text: "Se ha enviado un código de verificación a tu correo",
+              icon: "info",
+            });
+          } else {
+            // Si no requiere verificación, iniciar sesión directamente
+            this.iniciarSesion(userId, role);
+          }  
           
-          
-          Swal.fire({
-            title: "Éxito",
-            text: "Inicio de sesión exitoso",
-            icon: "success",
-          });
-          this.$router.push("/"); // Ajusta la ruta de redirección según tu aplicación
         } else {
           throw new Error(`Código de respuesta inesperado: ${code}`);
         }
@@ -72,6 +76,20 @@ export default {
           icon: "error",
         });
       }
+    },
+    iniciarSesion(userId, role) {
+      const appStore = useAppStore();
+      appStore.setIdentificador(userId);
+      appStore.setTipoPersona(role);
+      appStore.setLogin(true);
+
+      Swal.fire({
+        title: "Éxito",
+        text: "Inicio de sesión exitoso",
+        icon: "success",
+      });
+
+      this.$router.push("/");
     },
   },
 };
