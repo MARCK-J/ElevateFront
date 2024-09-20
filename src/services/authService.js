@@ -25,24 +25,31 @@ export const AuthService = {
   async sendMail(email, code) {
     const url = `http://localhost:9999/api/v1/mail/send/${email}`;
     const data = {
-      subject: "Código de Verificación en Dos Pasos",
-      message: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd;">
-          <h2 style="background-color: #4CAF50; color: white; padding: 10px; text-align: center;">Verificación en Dos Pasos</h2>
-          <p>Estimado/a Usuario/a,</p>
-          <p>Para completar el proceso de verificación en dos pasos, utiliza el siguiente código:</p>
-          <div style="background-color: #f2f2f2; padding: 10px; text-align: center; font-size: 24px; font-weight: bold;">
-            ${code}
-          </div>
-          <p>Introduce este código en la pantalla de inicio de sesión para completar el proceso.</p>
-          <p>Si no solicitaste este código, por favor ignora este correo o contacta con nuestro equipo de soporte.</p>
-          <p>Atentamente,<br/>Tu equipo de soporte</p>
-          <footer style="font-size: 12px; color: #888; text-align: center; padding: 10px; border-top: 1px solid #ddd;">
-            <p>Este es un mensaje automático, por favor no respondas a este correo.</p>
-          </footer>
-        </div>
-      `,
-    };
+        subject: "Código de Verificación - Autenticación en Dos Pasos",
+        message: `
+        Estimado/a [Nombre del Usuario],
+
+        Le informamos que hemos generado un código de verificación para completar su proceso de autenticación en dos pasos en Elevate. Este método de seguridad añade una capa adicional de protección a su cuenta, asegurando que solo usted pueda acceder a ella.
+
+        Código de Verificación:
+
+        Su código de verificación es: ${code}
+
+        Por favor, introduzca este código en la pantalla de inicio de sesión para completar el proceso.
+
+        Importante:
+
+        Si no solicitó este código, le recomendamos que cambie su contraseña de inmediato y se comunique con nuestro equipo de soporte.
+        No comparta su código de verificación con nadie. Es exclusivo para su uso y no debe ser revelado a terceros.
+        Agradecemos su atención a esta medida de seguridad. Si tiene alguna pregunta o necesita asistencia adicional, no dude en ponerse en contacto con nuestro servicio de atención al cliente.
+
+        Atentamente,
+
+        El equipo de soporte de Elevate
+        Marco Reynolds
+        `,
+      };
+      
 
     try {
       await axios.post(url, data);
