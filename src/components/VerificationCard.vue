@@ -27,10 +27,14 @@ import { useAppStore } from '../stores';
 export default defineComponent({
   name: "NavBar",
   data() {
+    const appStore = useAppStore();
+    const codigoEsperadoN = appStore.getVerificationCode; 
+    const identificador = appStore.getIdentificador; 
+    
     return {
       codigoIngresado: "",
-      codigoEsperado: this.$route.params.code,
-      userId:this.$route.params.userId,
+      codigoEsperado: codigoEsperadoN,
+      userId:identificador,
       role:this.$route.params.role,
     };
   },
