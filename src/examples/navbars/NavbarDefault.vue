@@ -725,6 +725,11 @@ watch(
               Mi perfil
             </a>
           </li>
+          <li>
+        <button @click="cerrarSesion" class="btn btn-danger ms-2">
+          Cerrar Sesión
+        </button>
+      </li>
 
         </ul>
       </div>
@@ -756,6 +761,12 @@ export default {
       tipoPersona,
     };
   },
+  methods: {
+    cerrarSesion() {
+      // Aquí puedes agregar cualquier lógica adicional para cerrar sesión
+      window.location.reload();
+    }
+  }
 };
 </script>
 
