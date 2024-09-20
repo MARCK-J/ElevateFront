@@ -751,9 +751,50 @@ const showProfileButton = computed(() => isLoggedIn.value);
               Mi perfil
             </router-link>
           </li>
+          <li>
+        <button @click="cerrarSesion" class="btn btn-danger ms-2">
+          Cerrar Sesión
+        </button>
+      </li>
+
         </ul>
       </div>
     </div>
   </nav>
   <!-- End Navbar -->
 </template>
+
+// AnotherComponent.vue
+<script>
+import { computed } from "vue";
+import { useAppStore } from "../../stores"; 
+
+export default {
+  setup() {
+    const appStore = useAppStore();
+
+    const isLoggedIn = computed(() => appStore.login);
+    const identificador = computed(() => appStore.identificador);
+    const tipoPersona = computed(() => appStore.tipoPersona);
+
+    console.log('Is Logged In:', isLoggedIn.value);
+    console.log('Identificador:', identificador.value);
+    console.log('Tipo Persona:', tipoPersona.value);
+
+    return {
+      isLoggedIn,
+      identificador,
+      tipoPersona,
+    };
+  },
+  methods: {
+    cerrarSesion() {
+      // Aquí puedes agregar cualquier lógica adicional para cerrar sesión
+      window.location.reload();
+    }
+  }
+};
+</script>
+
+
+
