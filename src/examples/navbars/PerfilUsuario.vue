@@ -21,6 +21,10 @@
           <input :disabled="!editMode" v-model="email" />
         </div>
         <div class="field-group">
+          <label>Contraseña</label>
+          <input type="password" :disabled="!editMode" v-model="password" />
+        </div>
+        <div class="field-group">
           <label>Rol</label>
           <input v-model="role" disabled />
         </div>
@@ -57,36 +61,77 @@ export default {
     NavbarDefault
   },
   setup() {
-    // Instancia del store de Pinia
     const appStore = useAppStore();
-    const identificador = appStore.getIdentificador; // Obtener el ID desde Pinia
+    const identificador = appStore.getIdentificador;
 
-    // Definir propiedades reactivas
+    // Definir las propiedades reactivas
     const firstName = ref('');
     const lastName = ref('');
     const email = ref('');
     const role = ref('');
     const creationDate = ref('');
+    const verification = ref(false);
+    const editMode = ref(false);  // Usar ref para el modo de edición
+    const password = ref('');  // Nueva propiedad para la contraseña
+    let originalPassword = '';  // Mantener la contraseña original
 
     // Función para obtener los datos del usuario
     const getUserData = async () => {
       try {
         const response = await axios.get(`http://localhost:9999/api/v1/user/${identificador}`);
-        const userData = response.data.result; // Supongo que los datos del usuario están en `result`
-        
-        // Asignar los datos recibidos a las variables reactivas
+        const userData = response.data.result;
+
         firstName.value = userData.firstName;
         lastName.value = userData.lastName;
         email.value = userData.email;
         role.value = userData.role;
         creationDate.value = userData.dateJoin;
+        verification.value = userData.verification ? 'Sí' : 'No';
+        password.value = '';  // Dejar vacío para evitar mostrar la contraseña
+        originalPassword = userData.password;  // Guardar la contraseña original
       } catch (error) {
         console.error('Error al obtener los datos del usuario:', error);
         Swal.fire('Error', 'No se pudo cargar la información del usuario.', 'error');
       }
     };
 
-    // Llamar a la función getUserData cuando se monte el componente
+    // Función para actualizar el perfil
+    const updateProfile = async () => {
+      try {
+        // Usar la nueva contraseña si fue cambiada, si no mantener la original
+        const updatedPassword = password.value ? password.value : originalPassword;
+
+        // Preparar el payload para la solicitud PUT
+        const payload = {
+          firstName: firstName.value,
+          lastName: lastName.value,
+          email: email.value,
+          password: updatedPassword,  // Actualizar con la nueva o mantener la original
+          verification: verification.value === 'Sí',
+        };
+
+        // Hacer la solicitud PUT para actualizar el perfil
+        await axios.put(`http://localhost:9999/api/v1/user/${identificador}`, payload);
+
+        Swal.fire('Éxito', 'Perfil actualizado correctamente.', 'success');
+        editMode.value = false;  // Desactivar el modo de edición después de actualizar
+      } catch (error) {
+        console.error('Error al actualizar el perfil:', error);
+        Swal.fire('Error', 'No se pudo actualizar el perfil.', 'error');
+      }
+    };
+
+    // Función para activar el modo de edición
+    const toggleEdit = () => {
+      editMode.value = true;
+    };
+
+    // Función para cancelar la edición
+    const cancelEdit = () => {
+      editMode.value = false;
+    };
+
+    // Cargar los datos del usuario al montar el componente
     onMounted(() => {
       if (identificador) {
         getUserData();
@@ -100,30 +145,23 @@ export default {
       email,
       role,
       creationDate,
-      getUserData
+      verification,
+      password,  // Agregar la propiedad para la contraseña
+      editMode,
+      toggleEdit,
+      cancelEdit,
+      updateProfile,
     };
   },
   data() {
     return {
-      editMode: false,
       profileImage: "https://img.freepik.com/vector-premium/icono-circulo-usuario-anonimo-ilustracion-vector-estilo-plano-sombra_520826-1931.jpg",
       userImage: new URL('@/assets/img/dg1.jpg', import.meta.url).href,
     };
   },
-  methods: {
-    toggleEdit() {
-      this.editMode = true;
-    },
-    cancelEdit() {
-      this.editMode = false;
-    },
-    updateProfile() {
-      alert('Perfil actualizado correctamente');
-      this.editMode = false;
-    }
-  }
 };
 </script>
+
 
 
 <style scoped>
