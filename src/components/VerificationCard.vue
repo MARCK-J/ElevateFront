@@ -22,7 +22,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'; 
 import Swal from 'sweetalert2'; 
-import { useAppStore } from "@/stores"; 
+import { useAppStore } from '../stores';
 
 export default defineComponent({
   name: "NavBar",
