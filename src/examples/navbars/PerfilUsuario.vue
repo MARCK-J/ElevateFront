@@ -1,4 +1,7 @@
 <template>
+  <div class="container center position-relative z-index-sticky top-0">
+    <NavbarDefault :sticky="true" />
+  </div>
   <div class="profile-container" :style="{ backgroundImage: 'url(' + userImage + ')' }">
     <div class="profile-card">
       <div class="profile-header">
@@ -43,18 +46,68 @@
 </template>
 
 <script>
+import NavbarDefault from "../../examples/navbars/NavbarDefault.vue";
+import Swal from "sweetalert2";
+import axios from "axios";
+import { ref, onMounted } from "vue";
+import { useAppStore } from "@/stores"; // Pinia store
+
 export default {
+  components: {
+    NavbarDefault
+  },
+  setup() {
+    // Instancia del store de Pinia
+    const appStore = useAppStore();
+    const identificador = appStore.getIdentificador; // Obtener el ID desde Pinia
+
+    // Definir propiedades reactivas
+    const firstName = ref('');
+    const lastName = ref('');
+    const email = ref('');
+    const role = ref('');
+    const creationDate = ref('');
+
+    // Función para obtener los datos del usuario
+    const getUserData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:9999/api/v1/user/${identificador}`);
+        const userData = response.data.result; // Supongo que los datos del usuario están en `result`
+        
+        // Asignar los datos recibidos a las variables reactivas
+        firstName.value = userData.firstName;
+        lastName.value = userData.lastName;
+        email.value = userData.email;
+        role.value = userData.role;
+        creationDate.value = userData.dateJoin;
+      } catch (error) {
+        console.error('Error al obtener los datos del usuario:', error);
+        Swal.fire('Error', 'No se pudo cargar la información del usuario.', 'error');
+      }
+    };
+
+    // Llamar a la función getUserData cuando se monte el componente
+    onMounted(() => {
+      if (identificador) {
+        getUserData();
+      }
+    });
+
+    return {
+      identificador,
+      firstName,
+      lastName,
+      email,
+      role,
+      creationDate,
+      getUserData
+    };
+  },
   data() {
     return {
       editMode: false,
       profileImage: "https://img.freepik.com/vector-premium/icono-circulo-usuario-anonimo-ilustracion-vector-estilo-plano-sombra_520826-1931.jpg",
       userImage: new URL('@/assets/img/dg1.jpg', import.meta.url).href,
-      firstName: "Juan",
-      lastName: "Pérez",
-      email: "juan.perez@example.com",
-      role: "Usuario", // Este valor será fijo
-      verification: "No",
-      creationDate: "2024-09-20", // Simula la fecha de creación de la cuenta
     };
   },
   methods: {
@@ -72,6 +125,7 @@ export default {
 };
 </script>
 
+
 <style scoped>
 .profile-container {
   display: flex;
@@ -85,14 +139,15 @@ export default {
 .profile-card {
   background-color: rgba(255, 255, 255, 0.9);
   padding: 2.5rem;
+  margin-top: 150px;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   width: 500px;
+  
 }
 
 .profile-header {
   text-align: center;
-  margin-bottom: 1rem;
 }
 
 .profile-pic {
@@ -103,9 +158,6 @@ export default {
   background-color: #f0f0f0;
 }
 
-.field-group {
-  margin-bottom: 1.5rem;
-}
 
 .field-group input {
   width: 100%;

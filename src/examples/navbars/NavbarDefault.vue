@@ -2,12 +2,11 @@
 import { RouterLink } from "vue-router";
 import { computed, ref, watch } from "vue";
 import { useWindowsWidth } from "../../assets/js/useWindowsWidth";
-import { useAppStore } from '@/stores'; // Pinia store
+import { useAppStore } from "@/stores"; // Pinia store
 
 import ArrDark from "@/assets/img/down-arrow-dark.svg";
 import downArrow from "@/assets/img/down-arrow.svg";
 import DownArrWhite from "@/assets/img/down-arrow-white.svg";
-
 
 // Variables relacionadas con el props
 const props = defineProps({
@@ -45,20 +44,23 @@ const props = defineProps({
 });
 
 // Acceso al store de la aplicación
-const appStore = useAppStore(); 
+const appStore = useAppStore();
 const isLoggedIn = ref(appStore.login); // Estado reactivo para el login
+const identidad = ref(appStore.identificador);
+
 
 // Escuchar cambios en el estado de 'login'
 watch(
   () => appStore.login,
   (newValue) => {
-    console.log('Login state changed:', newValue); // Depuración
+    console.log("Login state changed:", newValue); // Depuración
     isLoggedIn.value = newValue;
   }
 );
 
 // Logs iniciales para verificar el estado de login al cargar
-console.log('Is Logged In:', isLoggedIn.value);
+console.log("Is Logged In:", isLoggedIn.value);
+console.log("Identificador del usuario:", identidad.value);
 
 // set arrow  color
 function getArrowColor() {
@@ -107,7 +109,6 @@ watch(
 );
 
 const showProfileButton = computed(() => isLoggedIn.value);
-
 </script>
 
 <template>
@@ -736,25 +737,23 @@ const showProfileButton = computed(() => isLoggedIn.value);
             </div>
           </li>
           <li v-if="isLoggedIn" class="nav-item mx-2">
-            <a
+            <router-link
               role="button"
               class="nav-link ps-2 d-flex cursor-pointer align-items-center"
               :class="getTextColor()"
-              href="/perfil-usuario"
+              to="/perfil-usuario"
             >
-              <i class="material-icons opacity-6 me-2 text-md" :class="getTextColor()">person</i>
+              <i
+                class="material-icons opacity-6 me-2 text-md"
+                :class="getTextColor()"
+                >person</i
+              >
               Mi perfil
-            </a>
+            </router-link>
           </li>
-
         </ul>
       </div>
     </div>
   </nav>
   <!-- End Navbar -->
 </template>
-
-
-
-
-
