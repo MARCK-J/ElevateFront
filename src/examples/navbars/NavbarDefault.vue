@@ -1,13 +1,15 @@
 <script setup>
 import { RouterLink } from "vue-router";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useWindowsWidth } from "../../assets/js/useWindowsWidth";
+import { useAppStore } from '@/stores'; // Pinia store
 
-// images
 import ArrDark from "@/assets/img/down-arrow-dark.svg";
 import downArrow from "@/assets/img/down-arrow.svg";
 import DownArrWhite from "@/assets/img/down-arrow-white.svg";
 
+
+// Variables relacionadas con el props
 const props = defineProps({
   action: {
     type: Object,
@@ -42,6 +44,22 @@ const props = defineProps({
   },
 });
 
+// Acceso al store de la aplicación
+const appStore = useAppStore(); 
+const isLoggedIn = ref(appStore.login); // Estado reactivo para el login
+
+// Escuchar cambios en el estado de 'login'
+watch(
+  () => appStore.login,
+  (newValue) => {
+    console.log('Login state changed:', newValue); // Depuración
+    isLoggedIn.value = newValue;
+  }
+);
+
+// Logs iniciales para verificar el estado de login al cargar
+console.log('Is Logged In:', isLoggedIn.value);
+
 // set arrow  color
 function getArrowColor() {
   if (props.transparent && textDark.value) {
@@ -68,7 +86,6 @@ const getTextColor = () => {
 };
 
 // set nav color on mobile && desktop
-
 let textDark = ref(props.darkText);
 const { type } = useWindowsWidth();
 
@@ -88,7 +105,11 @@ watch(
     }
   }
 );
+
+const showProfileButton = computed(() => isLoggedIn.value);
+
 </script>
+
 <template>
   <nav
     class="navbar navbar-expand-lg top-0"
@@ -733,31 +754,7 @@ watch(
   <!-- End Navbar -->
 </template>
 
-// AnotherComponent.vue
-<script>
-import { computed } from "vue";
-import { useAppStore } from "../../stores"; 
 
-export default {
-  setup() {
-    const appStore = useAppStore();
-
-    const isLoggedIn = computed(() => appStore.login);
-    const identificador = computed(() => appStore.identificador);
-    const tipoPersona = computed(() => appStore.tipoPersona);
-
-    console.log('Is Logged In:', isLoggedIn.value);
-    console.log('Identificador:', identificador.value);
-    console.log('Tipo Persona:', tipoPersona.value);
-
-    return {
-      isLoggedIn,
-      identificador,
-      tipoPersona,
-    };
-  },
-};
-</script>
 
 
 
