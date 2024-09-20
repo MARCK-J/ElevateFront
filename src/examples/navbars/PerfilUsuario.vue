@@ -31,8 +31,8 @@
         <div class="field-group">
           <label>Verificación</label>
           <div class="verification-options">
-            <label><input type="radio" v-model="verification" value="Sí" :disabled="!editMode" /> Sí</label>
-            <label><input type="radio" v-model="verification" value="No" :disabled="!editMode" /> No</label>
+            <label><input type="radio" v-model="verification" value=true :disabled="!editMode" /> Sí</label>
+            <label><input type="radio" v-model="verification" value=false :disabled="!editMode" /> No</label>
           </div>
         </div>
         <div class="field-group">
@@ -86,7 +86,7 @@ export default {
         email.value = userData.email;
         role.value = userData.role;
         creationDate.value = userData.dateJoin;
-        verification.value = userData.verification ? 'Sí' : 'No';
+        verification.value = userData.verification;
         password.value = '';  // Dejar vacío para evitar mostrar la contraseña
         originalPassword = userData.password;  // Guardar la contraseña original
       } catch (error) {
@@ -107,8 +107,10 @@ export default {
           lastName: lastName.value,
           email: email.value,
           password: updatedPassword,  // Actualizar con la nueva o mantener la original
-          verification: verification.value === 'Sí',
+          verification: verification.value,  // Asegurar que sea booleano
         };
+
+        console.log("VERIFICACION: " + verification.value);
 
         // Hacer la solicitud PUT para actualizar el perfil
         await axios.put(`http://localhost:9999/api/v1/user/${identificador}`, payload);
