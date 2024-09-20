@@ -22,10 +22,10 @@
               Si estás comprometido con la educación y deseas generar un impacto en la sociedad, puedes unirte como docente y publicar tus cursos en nuestra plataforma.
             </p>
             <a
-              href="https://www.creative-tim.com/learning-lab/vue/overview/material-kit/"
+              href="/pages/landing-pages/register"
               class="btn btn-light text-dark btn-lg"
             >
-              Más información
+              Registrate con nosotros
               <i class="fas fa-arrow-right ms-2"></i>
             </a>
           </div>
