@@ -59,8 +59,8 @@
             <select v-model="userType" class="form-control" required>
               
               <option value="" disabled>Selecciona tu rol</option>
-              <option value="estudiante">Estudiante</option>
-              <option value="docente">Docente</option>
+              <option value="student">Estudiante</option>
+              <option value="teacher">Docente</option>
             </select>
           </div>
           <div class="validation">
@@ -207,7 +207,7 @@ export default {
         }
 
         // Validar tipo de usuario
-        const userRole = this.userType === "docente" ? 2 : this.userType === "estudiante" ? 1 : null;
+        const userRole = this.userType === "student" ? 1 : this.userType === "teacher" ? 2 : null;
         if (userRole === null) {
           this.showError("Debe seleccionar un tipo de usuario válido.");
           return;
