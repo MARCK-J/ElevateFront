@@ -47,8 +47,10 @@ export default {
         const { code, result } = response.data;
 
         if (code === "200-OK") {
-          const { userId, role, verification } = result;          
+          const appStore = useAppStore();
           
+          const { userId, role, verification } = result;          
+          appStore.setIdentificador(userId);
           if(verification){
             this.randomCode = AuthService.generateCode();
 
