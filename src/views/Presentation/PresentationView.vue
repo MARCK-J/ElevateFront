@@ -12,7 +12,7 @@ import MaterialSocialButton from "@/components/MaterialSocialButton.vue";
 
 // sections
 import PresentationCounter from "./Sections/PresentationCounter.vue";
-//import PresentationPages from "./Sections/PresentationPages.vue";
+import PresentationPages from "./Sections/PresentationPages.vue";
 import PresentationExample from "./Sections/PresentationExample.vue";
 import BuiltByDevelopers from "./Components/BuiltByDevelopers.vue";
 import PresentationTestimonials from "./Sections/PresentationTestimonials.vue";
