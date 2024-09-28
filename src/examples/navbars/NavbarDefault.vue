@@ -74,10 +74,11 @@ function getArrowColor() {
   }
 }
 function cerrarSesion() {
-  Swal.fire('Éxito', 'Perfil actualizado correctamente.', 'success');
-  window.location.reload();
-  
+  Swal.fire('Éxito', 'Cierre de sesión exitoso', 'success').then(() => {
+    window.location.href = '/'; // Asegúrate de ajustar la ruta a la correcta
+  });
 }
+
 
 // set text color
 const getTextColor = () => {

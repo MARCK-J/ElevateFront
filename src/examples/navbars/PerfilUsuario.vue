@@ -26,7 +26,7 @@
         </div>
         <div class="field-group">
           <label>Rol</label>
-          <input v-model="role" disabled />
+          <input v-model="roleText" disabled />
         </div>
         <div class="field-group">
           <label>Verificación</label>
@@ -53,7 +53,7 @@
 import NavbarDefault from "../../examples/navbars/NavbarDefault.vue";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useAppStore } from "@/stores"; // Pinia store
 
 export default {
@@ -133,6 +133,10 @@ export default {
       editMode.value = false;
     };
 
+    const roleText = computed(() => {
+      return role.value === 1 ? "Estudiante" : role.value === 2 ? "Docente" : "Otro";
+    });
+
     // Cargar los datos del usuario al montar el componente
     onMounted(() => {
       if (identificador) {
@@ -145,7 +149,7 @@ export default {
       firstName,
       lastName,
       email,
-      role,
+      roleText,
       creationDate,
       verification,
       password,  // Agregar la propiedad para la contraseña
