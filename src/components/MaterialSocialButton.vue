@@ -2,7 +2,7 @@
 defineProps({
   route: {
     type: String,
-    required: true,
+    required: false,
   },
   color: {
     type: String,

@@ -32,7 +32,7 @@ import DefaultCounterCard from "../../../examples/cards/counterCards/DefaultCoun
             </div>
             <div class="col-md-4 d-flex justify-content-center align-items-center">
               <DefaultCounterCard
-                color="danger"
+                color="primary"
                 title="Cuestionarios"
                 description="Porque la práctica es igual de importante que la teoría, preparamos cuestionarios para cada curso."
                 :count="4"

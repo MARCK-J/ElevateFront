@@ -11,7 +11,7 @@ const store = useAppStore();
 defineProps({
   route: {
     type: String,
-    required: true,
+    required: false,
   },
   image: {
     type: String,

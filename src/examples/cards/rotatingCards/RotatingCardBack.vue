@@ -17,7 +17,7 @@ defineProps({
     route: String,
     label: String,
     color: String,
-    required: true,
+    required: false,
   },
 });
 </script>
