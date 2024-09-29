@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
-import PresentationView from "../views/Presentation/PresentationView.vue";
-import AboutView from "../views/LandingPages/AboutUs/AboutView.vue";
-import LoginView from "../views/LandingPages/Login/LoginView.vue";
-import RegisterView from "../views/LandingPages/Register/RegisterView.vue";
-import ContactView from "../views/LandingPages/ContactUs/ContactView.vue";
-import AuthorView from "../views/LandingPages/Author/AuthorView.vue";
-import VerificationView from "../views/LandingPages/Login/VerificationView.vue";
 import PerfilUsuario from "../examples/navbars/PerfilUsuario.vue";
+import PresentationView from "../views/PresentationView.vue";
+import AboutView from "../views/AboutView.vue";
+import ContactView from "../views/ContactView.vue";
+import LoginView from "../views/LoginView.vue";
+import VerificationView from "../views/VerificationView.vue";
+import RegisterView from "../views/RegisterView.vue";
+import AuthorView from "../views/AuthorView.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -21,32 +21,32 @@ const router = createRouter({
       component: PresentationView,
     },
     {
-      path: "/pages/landing-pages/about-us",
+      path: "/pages/about-us",
       name: "about",
       component: AboutView,
     },
     {
-      path: "/pages/landing-pages/contact-us",
+      path: "/pages/contact-us",
       name: "contactus",
       component: ContactView,
     },
     {
-      path: "/pages/landing-pages/author",
+      path: "/pages/author",
       name: "author",
       component: AuthorView,
     },
     {
-      path: "/pages/landing-pages/login",
+      path: "/pages/login",
       name: "login-view",
       component: LoginView,
     },
     {
-      path: "/pages/landing-pages/login/verification",
+      path: "/pages/login/verification",
       name: "verification-view",
       component: VerificationView,
     },
     {
-      path: "/pages/landing-pages/register",
+      path: "/pages/register",
       name: "register-view",
       component: RegisterView,
     },
