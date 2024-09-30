@@ -1,4 +1,11 @@
 <script setup>
+defineProps({
+  id: {
+    type: Number,
+    default: 0,
+    required: false,
+  },
+});
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
@@ -125,7 +132,7 @@ const lecciones = ref([
   
   // Función para ir hacia atrás
   const goBack = () => {
-    router.push('/sections/page-sections/page-headers'); 
+    router.push('/'); 
   };
 </script>
 

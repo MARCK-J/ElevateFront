@@ -1,12 +1,12 @@
 <template>
   <div class="verificacion">
-    <router-link to="/pages/landing-pages/login" class="back-link">Regresar</router-link>
+    <router-link to="/pages/login" class="back-link">Regresar</router-link>
     <VerificationCard/>
   </div>
 </template>
 
 <script>
-import VerificationCard from '../../../components/VerificationCard.vue';
+import VerificationCard from '../components/VerificationCard.vue';
 
 export default {
   name: "verificacion-view",
