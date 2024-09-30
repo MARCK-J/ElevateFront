@@ -6,11 +6,11 @@ import DefaultCounterCard from "../../examples/cards/counterCards/DefaultCounter
   <section class="pt-5 pb-5 bg-gradient-primary text-white" id="count-stats">
     <div class="container">
       <div class="row">
-        <div class="col-lg-10 mx-auto py-4 px-3 rounded-lg shadow-lg">
+        <div class="col-lg-10 mx-auto py-4 px-3 border border-dark rounded shadow-lg">
           <div class="row">
             <div class="col-md-4 d-flex justify-content-center align-items-center mb-4 mb-md-0">
               <DefaultCounterCard
-                color="warning"
+                color="primary"
                 title="Cursos pensando en tu educación"
                 description="Aprende con los mejores en su área de una manera didáctica"
                 :count="70"
@@ -21,7 +21,7 @@ import DefaultCounterCard from "../../examples/cards/counterCards/DefaultCounter
             </div>
             <div class="col-md-4 d-flex justify-content-center align-items-center mb-4 mb-md-0">
               <DefaultCounterCard
-                color="info"
+                color="warning"
                 title="Ejercicios de práctica"
                 description="Cada docente preparó prácticas en las que puedes repasar tu conocimiento"
                 :count="15"
@@ -32,7 +32,7 @@ import DefaultCounterCard from "../../examples/cards/counterCards/DefaultCounter
             </div>
             <div class="col-md-4 d-flex justify-content-center align-items-center">
               <DefaultCounterCard
-                color="primary"
+                color="success"
                 title="Cuestionarios"
                 description="Porque la práctica es igual de importante que la teoría, preparamos cuestionarios para cada curso."
                 :count="4"
@@ -97,7 +97,7 @@ section {
 section .row {
   margin: 0;
 }
-.bg-gradient-primary[data-v-d9c0623] {
-    background: linear-gradient(135deg, #afafaf, #c1c2c4);
+.bg-gradient-primary {
+  background: linear-gradient(100deg, #5bd4f9, #2567ed);
 }
 </style>

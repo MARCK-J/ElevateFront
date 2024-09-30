@@ -43,6 +43,7 @@ const props = defineProps({
 const appStore = useAppStore();
 const isLoggedIn = ref(appStore.login); // Estado reactivo para el login
 const identidad = ref(appStore.identificador);
+const rol = ref(appStore.tipoPersona);
 
 // Escuchar cambios en el estado de 'login'
 watch(
@@ -56,6 +57,7 @@ watch(
 // Logs iniciales para verificar el estado de login al cargar
 console.log("Is Logged In:", isLoggedIn.value);
 console.log("Identificador del usuario:", identidad.value);
+console.log("Rol del usuario:", rol.value);
 
 // set arrow  color
 function getArrowColor() {
@@ -249,14 +251,14 @@ const showProfileButton = computed(() => isLoggedIn.value);
               role="button"
               class="nav-link ps-2 d-flex cursor-pointer align-items-center"
               :class="getTextColor()"
-              to="/perfil-usuario"
+              to="/dashboard"
             >
               <i
                 class="material-icons opacity-6 me-2 text-md"
                 :class="getTextColor()"
                 >person</i
               >
-              Mi perfil
+              Panel
             </router-link>
           </li>
           <li v-if="isLoggedIn">

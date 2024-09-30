@@ -6,7 +6,7 @@ import DefaultInfoCard from "../../examples/cards/infoCards/DefaultInfoCard.vue"
 </script>
 
 <template>
-  <section class="my-5 py-5 bg-light-gray" id="features">
+  <section class="bg-light-gray" id="features">
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-5 mx-auto p-lg-4 mt-lg-0 mt-4">

@@ -8,10 +8,11 @@ import setTooltip from "@/assets/js/tooltip";
 import { useAppStore } from "@/stores";
 const store = useAppStore();
 
+// Definir propiedades (props)
 defineProps({
   route: {
     type: String,
-    required: false,
+    required: true,
   },
   image: {
     type: String,
@@ -29,19 +30,26 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  courseId:{
+    type: Number,
+    default: 0,
+    required: false, 
+  }
 });
 
 onMounted(() => {
   setTooltip(store.bootstrap);
 });
 </script>
+
 <script>
 export default {
   inheritAttrs: false,
 };
 </script>
+
 <template>
-  <RouterLink :to="{ name: route }" @click.native="$emit('click')">
+  <RouterLink :to="{ name: route, query: { courseId: courseId, title: title} }" @click.native="$emit('click')">
     <div
       class="card move-on-hover"
       v-bind="$attrs"
@@ -49,6 +57,7 @@ export default {
       :data-bs-placement="pro ? 'top' : null"
       :title="pro ? 'Pro Element' : null"
     >
+      <img :src="image" alt="course image" class="card-img-top" />
       <!-- resto del contenido -->
     </div>
     <div class="mt-2 ms-2">

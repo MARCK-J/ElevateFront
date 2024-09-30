@@ -39,6 +39,15 @@
           </div>
           <div class="form-group">
             <input
+              type="text"
+              v-model="username"
+              class="form-control"
+              placeholder="Nombre de usuario"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input
               type="password"
               v-model="password"
               class="form-control"
@@ -83,7 +92,7 @@
         </form>
         <p class="login-message">
           ¿Ya tienes una cuenta?
-          <router-link to="/pages/landing-pages/login"
+          <router-link to="/pages/login"
             >Inicia sesión aquí</router-link
           >
         </p>
@@ -110,6 +119,7 @@ export default {
       firstName: "",
       lastName: "",
       email: "",
+      username:"",
       password: "",
       passwordConf: "",
       userType:"",
@@ -190,6 +200,7 @@ export default {
           !this.firstName ||
           !this.lastName ||
           !this.email ||
+          !this.username ||
           !this.password ||
           !this.passwordConf
         ) {
@@ -222,9 +233,11 @@ export default {
             firstName: this.firstName,
             lastName: this.lastName,
             email: this.email,
+            username: this.username,
             password: this.password,
             role: userRole,
             verification: false,
+            activation: false,
             dateJoin: currentDate // Usar la fecha actual
           }
         );
@@ -249,6 +262,7 @@ export default {
       this.firstName = "";
       this.lastName = "";
       this.email = "";
+      this.username = "";
       this.password = "";
       this.passwordConf = "";
       this.userType = "";

@@ -6,7 +6,7 @@
     <form @submit.prevent="continuar" class="form">
       <div class="CustomInput">
         <p>Correo electronico:</p>
-        <input v-model="correo" placeholder="Ingrese su correo electronico" type="email" required>
+        <input v-model="identifier" placeholder="Ingrese su correo electronico/nombre de usuario" type="text" required>
       </div>
       <div class="CustomInput">
         <p>Contraseña:</p>
@@ -17,7 +17,7 @@
     </form>
     <div class="registro-enlace-container">
       <span>¿No tienes una cuenta?</span>
-      <router-link to="/pages/landing-pages/register" class="enlace">Regístrate</router-link>
+      <router-link to="/pages/register" class="enlace">Regístrate</router-link>
     </div>
   </div>
 </template>
@@ -32,7 +32,7 @@ import { AuthService } from "../services/authService";
 export default {
   data() {
     return {
-      correo: "",
+      identifier: "",
       password: "",
     };
   },
@@ -40,7 +40,7 @@ export default {
     async continuar() {
       try {
         const response = await axios.post("http://localhost:9999/api/v1/user/login", {
-          email: this.correo,
+          identifier: this.identifier,
           password: this.password,
         });
 
@@ -49,12 +49,14 @@ export default {
         if (code === "200-OK") {
           const appStore = useAppStore();
           
-          const { userId, role, verification } = result;          
+          const { email,userId, role, verification } = result;
+          
           appStore.setIdentificador(userId);
+          appStore.setTipoPersona(role);
           if(verification){
             this.randomCode = AuthService.generateCode();
 
-            await AuthService.sendMail(this.correo, this.randomCode);
+            await AuthService.sendMail(email, this.randomCode);
             // Redirige a la pantalla de verificación
             this.$router.push({ name: 'verification-view', params: { userId: userId, role: role, code: this.randomCode } });
             Swal.fire({
