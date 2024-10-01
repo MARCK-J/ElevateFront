@@ -6,17 +6,22 @@ defineProps({
     required: false,
   },
 });
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import Swal from "sweetalert2";
-
 import MaterialButton from "@/components/MaterialButton.vue";
+import { useAppStore } from "@/stores";
 
 
 // Estado para almacenar la información del curso
 const courseData = ref(null);
-const route = useRoute(); // Obtener la ruta actual
+const route = useRoute();// Obtener la ruta actual
+const router = useRouter(); // Usar el router para navegar
+const store = useAppStore();
+
+// Obtener el userId directamente desde el store usando computed
+const userId = computed(() => store.getIdentificador);
 
 // Imagen de fondo
 const bgImage = "https://midu.dev/images/wallpapers/una-taza-de-javascript.png";
@@ -35,14 +40,37 @@ const closePopup = () => {
 };
 
 // Función para confirmar la inscripción
-const confirmInscription = () => {
-  showPopup.value = false;
-  Swal.fire('Éxito', `Inscripcion Confirmada!!!`, 'success');
+const confirmInscription = async () => {
+  showPopup.value = false; // Obtener el userId del store
+  const courseId = route.query.courseId; // Obtener el courseId de la query
 
+  // Verificar el valor de studentUserId
+  console.log('studentUserId:', userId.value);
+  console.log('courseId:', courseId);
+
+  try {
+    const response = await axios.post('http://localhost:9999/api/v1/enrollments/create', {
+      studentUserId: userId.value,
+      coursesCourseId: courseId,
+      enrollmentDate: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    });
+
+    if (response.data.code === "200-OK") {
+      Swal.fire('Éxito', 'Inscripción Confirmada!!!', 'success');
+    } else {
+      console.error("Error al crear la inscripción:", response.data.message);
+      Swal.fire('Error', 'No se pudo confirmar la inscripción.', 'error');
+    }
+  } catch (error) {
+    console.error("Error en la solicitud de inscripción:", error);
+    Swal.fire('Error', 'No se pudo confirmar la inscripción.', 'error');
+  }
 };
-const courseId=1;
-
-console.log(courseId)
 
 // Función para obtener el curso por ID
 const fetchCourseById = async (id) => {
@@ -127,13 +155,11 @@ const lecciones = ref([
     Swal.fire('Éxito', `Iniciando la leccion : ${title}`, 'success');
   };
   
-  // Usar el router para navegar
-  const router = useRouter();
-  
   // Función para ir hacia atrás
   const goBack = () => {
     router.push('/'); 
   };
+
 </script>
 
 <template>
