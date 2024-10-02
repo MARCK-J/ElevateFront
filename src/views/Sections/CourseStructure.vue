@@ -182,6 +182,7 @@ const lecciones = ref([
     </nav>
 
     <div
+      v-if = "courseData"
       class="page-header min-vh-100 d-flex align-items-center justify-content-center"
       :style="{ 
         backgroundImage: `url(${courseData.image})`,
