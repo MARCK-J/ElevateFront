@@ -24,7 +24,6 @@
           </div>
         </div>
         <div class="second-part">
-
           <div class="field-group">
             <label>Contraseña</label>
             <input type="password" :disabled="!editMode" v-model="password" />
@@ -36,8 +35,24 @@
           <div class="field-group">
             <label>Verificación</label>
             <div class="verification-options">
-              <label><input type="radio" v-model="verification" value=true :disabled="!editMode" /> Sí</label>
-              <label><input type="radio" v-model="verification" value=false :disabled="!editMode" /> No</label>
+              <label
+                ><input
+                  type="radio"
+                  v-model="verification"
+                  value="true"
+                  :disabled="!editMode"
+                />
+                Sí</label
+              >
+              <label
+                ><input
+                  type="radio"
+                  v-model="verification"
+                  value="false"
+                  :disabled="!editMode"
+                />
+                No</label
+              >
             </div>
           </div>
           <div class="field-group">
@@ -47,12 +62,97 @@
           <i v-if="!editMode" class="fas fa-pencil-alt" @click="toggleEdit"></i>
           <div v-if="editMode" class="action-buttons">
             <button @click="cancelEdit" class="btn-cancel">Cancelar</button>
-            <button @click="updateProfile" class="btn-submit">Actualizar</button>
+            <button @click="updateProfile" class="btn-submit">
+              Actualizar
+            </button>
+          </div>
+        </div>
+      </div>
+      <br />
+      <div>
+        <div
+          class="d-flex justify-content-between align-items-center"
+          v-if="!verification"
+        >
+          <div class="d-flex align-items-center">
+            <Icon
+              icon="mdi:account-alert"
+              width="25"
+              height="25"
+              style="color: red"
+            />
+            <span class="ms-2">Su cuenta no se encuentra verificada</span>
+          </div>
+          <MaterialButton
+          variant="gradient"
+          color="info"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal">
+            Verificar Cuenta
+          </MaterialButton>
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="exampleModal"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">
+                    Verificación de cuenta
+                  </h5>
+                  <MaterialButton
+                    color="none"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  >
+                  </MaterialButton>
+                </div>
+                <div class="modal-body">
+                  Estimado usuario, <br>
+
+Para completar el proceso de activación de su cuenta, hemos enviado un enlace de verificación a la dirección de correo electrónico asociada con su perfil. Haga clic en el enlace que recibirá para confirmar su cuenta y acceder a todas las funcionalidades de la plataforma.
+
+Le recomendamos revisar su bandeja de entrada. <br> 
+Al hacer clic en "Continuar", se enviará el enlace de verificación a su correo. Si desea cancelar este proceso, presione el botón "Cancelar".
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <MaterialButton
+                    variant="gradient"
+                    color="dark"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancelar
+                  </MaterialButton>
+                  <MaterialButton
+                    variant="gradient"
+                    color="success"
+                    class="mb-0"
+                  >
+                    Continuar
+                  </MaterialButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center" v-else>
+          <div class="d-flex align-items-center">
+            <Icon
+              icon="mdi:account-check"
+              width="25"
+              height="25"
+              style="color: green"
+            />
+            <span class="ms-2">Su cuenta se encuentra verificada</span>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -62,31 +162,37 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { ref, onMounted, computed } from "vue";
 import { useAppStore } from "@/stores"; // Pinia store
+import { Icon } from "@iconify/vue";
+import MaterialButton from "@/components/MaterialButton.vue";
 
 export default {
   components: {
-    NavbarDefault
+    NavbarDefault,
+    Icon,
+    MaterialButton,
   },
   setup() {
     const appStore = useAppStore();
     const identificador = appStore.getIdentificador;
 
     // Definir las propiedades reactivas
-    const username = ref('');
-    const firstName = ref('');
-    const lastName = ref('');
-    const email = ref('');
-    const role = ref('');
-    const creationDate = ref('');
+    const username = ref("");
+    const firstName = ref("");
+    const lastName = ref("");
+    const email = ref("");
+    const role = ref("");
+    const creationDate = ref("");
     const verification = ref(false);
-    const editMode = ref(false);  // Usar ref para el modo de edición
-    const password = ref('');  // Nueva propiedad para la contraseña
-    let originalPassword = '';  // Mantener la contraseña original
+    const editMode = ref(false); // Usar ref para el modo de edición
+    const password = ref(""); // Nueva propiedad para la contraseña
+    let originalPassword = ""; // Mantener la contraseña original
 
     // Función para obtener los datos del usuario
     const getUserData = async () => {
       try {
-        const response = await axios.get(`http://localhost:9999/api/v1/user/${identificador}`);
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/user/${identificador}`
+        );
         const userData = response.data.result;
 
         username.value = userData.username;
@@ -96,11 +202,16 @@ export default {
         role.value = userData.role;
         creationDate.value = userData.dateJoin;
         verification.value = userData.verification;
-        password.value = '';  // Dejar vacío para evitar mostrar la contraseña
-        originalPassword = userData.password;  // Guardar la contraseña original
+        password.value = "";
+
+        originalPassword = userData.password; // Guardar la contraseña original
       } catch (error) {
-        console.error('Error al obtener los datos del usuario:', error);
-        Swal.fire('Error', 'No se pudo cargar la información del usuario.', 'error');
+        console.error("Error al obtener los datos del usuario:", error);
+        Swal.fire(
+          "Error",
+          "No se pudo cargar la información del usuario.",
+          "error"
+        );
       }
     };
 
@@ -108,7 +219,9 @@ export default {
     const updateProfile = async () => {
       try {
         // Usar la nueva contraseña si fue cambiada, si no mantener la original
-        const updatedPassword = password.value ? password.value : originalPassword;
+        const updatedPassword = password.value
+          ? password.value
+          : originalPassword;
 
         // Preparar el payload para la solicitud PUT
         const payload = {
@@ -116,23 +229,32 @@ export default {
           firstName: firstName.value,
           lastName: lastName.value,
           email: email.value,
-          password: updatedPassword,  // Actualizar con la nueva o mantener la original
-          verification: verification.value,  // Asegurar que sea booleano
+          password: updatedPassword, // Actualizar con la nueva o mantener la original
+          verification: verification.value, // Asegurar que sea booleano
         };
 
         console.log("VERIFICACION: " + verification.value);
 
         // Hacer la solicitud PUT para actualizar el perfil
-        await axios.put(`http://localhost:9999/api/v1/user/${identificador}`, payload);
+        await axios.put(
+          `http://localhost:9999/api/v1/user/${identificador}`,
+          payload
+        );
 
-        Swal.fire('Éxito', 'Perfil actualizado correctamente.', 'success');
-        editMode.value = false;  // Desactivar el modo de edición después de actualizar
+        Swal.fire("Éxito", "Perfil actualizado correctamente.", "success");
+        editMode.value = false; // Desactivar el modo de edición después de actualizar
       } catch (error) {
-        console.error('Error al actualizar el perfil:', error);
-        Swal.fire('Error', 'No se pudo actualizar el perfil.', 'error');
+        console.error("Error al actualizar el perfil:", error);
+        Swal.fire("Error", "No se pudo actualizar el perfil.", "error");
       }
     };
 
+    // Función para abrir el modal
+    const openModal = () => {
+      const modalElement = document.getElementById("exampleModal");
+      const modal = new bootstrap.Modal(modalElement); // Asegúrate de tener Bootstrap importado en tu proyecto
+      modal.show();
+    };
     // Función para activar el modo de edición
     const toggleEdit = () => {
       editMode.value = true;
@@ -144,7 +266,11 @@ export default {
     };
 
     const roleText = computed(() => {
-      return role.value === 1 ? "Estudiante" : role.value === 2 ? "Docente" : "Otro";
+      return role.value === 1
+        ? "Estudiante"
+        : role.value === 2
+        ? "Docente"
+        : "Otro";
     });
 
     // Cargar los datos del usuario al montar el componente
@@ -163,7 +289,7 @@ export default {
       roleText,
       creationDate,
       verification,
-      password,  // Agregar la propiedad para la contraseña
+      password, // Agregar la propiedad para la contraseña
       editMode,
       toggleEdit,
       cancelEdit,
@@ -172,14 +298,13 @@ export default {
   },
   data() {
     return {
-      profileImage: "https://img.freepik.com/vector-premium/icono-circulo-usuario-anonimo-ilustracion-vector-estilo-plano-sombra_520826-1931.jpg",
-      userImage: new URL('@/assets/img/dg1.jpg', import.meta.url).href,
+      profileImage:
+        "https://img.freepik.com/vector-premium/icono-circulo-usuario-anonimo-ilustracion-vector-estilo-plano-sombra_520826-1931.jpg",
+      userImage: new URL("@/assets/img/dg1.jpg", import.meta.url).href,
     };
   },
 };
 </script>
-
-
 
 <style scoped>
 .profile-container {
@@ -201,7 +326,7 @@ export default {
   height: fit-content;
 }
 
-.profile-info{
+.profile-info {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -218,7 +343,6 @@ export default {
   object-fit: cover;
   background-color: #f0f0f0;
 }
-
 
 .field-group input {
   width: 100%;
