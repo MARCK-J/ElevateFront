@@ -124,7 +124,7 @@
                   :courseId="id "
                   :style="{ width: '225px', height: '125px' }" 
                 />
-                <p class="text-muted">{{ available ? 'Disponible' : 'No disponible' }}</p>
+                <p class="text-muted">{{ available ? 'No disponible' : 'Disponible' }}</p>
               </div>
             </div>
           </div>
