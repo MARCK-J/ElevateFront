@@ -121,7 +121,8 @@
                   class=" shadow-lg rounded-3 p-3 border border-dark"
                   :image="image"
                   :route="'course'" 
-                  :courseId="id " 
+                  :courseId="id "
+                  :style="{ width: '225px', height: '125px' }" 
                 />
                 <p class="text-muted">{{ available ? 'Disponible' : 'No disponible' }}</p>
               </div>
