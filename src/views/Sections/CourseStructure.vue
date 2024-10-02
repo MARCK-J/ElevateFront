@@ -24,7 +24,7 @@ const store = useAppStore();
 const userId = computed(() => store.getIdentificador);
 
 // Imagen de fondo
-const bgImage = "https://midu.dev/images/wallpapers/una-taza-de-javascript.png";
+//const bgImage = "https://midu.dev/images/wallpapers/una-taza-de-javascript.png";
 
 // Estado para controlar la visibilidad del pop-up
 const showPopup = ref(false);
@@ -182,16 +182,22 @@ const lecciones = ref([
     </nav>
 
     <div
+      v-if = "courseData"
       class="page-header min-vh-100 d-flex align-items-center justify-content-center"
-      :style="{ backgroundImage: `url(${bgImage})` }"
+      :style="{ 
+        backgroundImage: `url(${courseData.image})`,
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover'
+      }"
     >
       <span class="mask bg-gradient-dark opacity-7"></span>
       <div class="container text-center text-white">
         <div class="row">
           <div class="col-lg-8 mx-auto">
-            <h1 class="display-3 mb-4 font-weight-bold">JavaScript desde Cero a Experto</h1>
+            <h1 class="display-3 mb-4 font-weight-bold">{{ courseData.title }}</h1>
             <p class="lead mb-4">
-              Aprende a programar en este maravilloso lenguaje con clases guiadas y ejercicios prácticos.
+              {{ courseData.description }}
             </p>
             <MaterialButton color="white" class="mt-4" @click="openPopup">Inscribirse</MaterialButton>
           </div>
