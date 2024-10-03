@@ -15,10 +15,14 @@ import { useAppStore } from "@/stores";
 
 
 // Estado para almacenar la información del curso
-const courseData = ref(null);
+const courseData = ref({
+  abilities: ""
+});
+
 const route = useRoute();// Obtener la ruta actual
 const router = useRouter(); // Usar el router para navegar
 const store = useAppStore();
+const lessonsData = ref([]);
 
 // Obtener el userId directamente desde el store usando computed
 const userId = computed(() => store.getIdentificador);
@@ -38,6 +42,10 @@ const openPopup = () => {
 const closePopup = () => {
   showPopup.value = false;
 };
+
+const abilitiesArray = computed(() => {
+  return courseData.value.abilities.split("; ");
+});
 
 // Función para confirmar la inscripción
 const confirmInscription = async () => {
@@ -82,7 +90,8 @@ const fetchCourseById = async (id) => {
     });
     
     if (response.data.code === "200-OK") {
-      courseData.value = response.data.result; // Guardar el curso
+      courseData.value = response.data.result;
+      await fetchLessonsByCourseId(id); // Guardar el curso
     } else {
       console.error("Error al obtener el curso:", response.data.message);
     }
@@ -91,64 +100,33 @@ const fetchCourseById = async (id) => {
   }
 };
 
+// Función para obtener las lecciones por courseId
+const fetchLessonsByCourseId = async (courseId) => {
+  try {
+    const response = await axios.get(`http://localhost:9999/api/v1/lessons/course/${courseId}`, {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    if (response.data.code === "200-OK") {
+      lessonsData.value = response.data.result; // Guardar las lecciones
+    } else {
+      console.error("Error al obtener las lecciones:", response.data.message);
+    }
+  } catch (error) {
+    console.error("Error en la solicitud de lecciones:", error);
+  }
+};
+
 // Llamar a la función en el montaje del componente
 onMounted(() => {
   const courseId = route.query.courseId; // Obtener el courseId de la consulta
   if (courseId) {
-    fetchCourseById(courseId); // Llamar a la función para obtener el curso
+    fetchCourseById(courseId);
+    fetchLessonsByCourseId(courseId); // Llamar a la función para obtener el curso
   }
 });
-
-const lecciones = ref([
-    {
-      title: 'Introducción a JavaScript',
-      duration: '1 hora',
-      description: 'Aprende los conceptos básicos de JavaScript, incluyendo variables, operadores y estructuras de control.',
-      image: 'https://www.thoughtco.com/thmb/094YF3bQBiuV_13n92GFQZWkM7k=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/JavaScript-58acbb8a3df78c345bad32c2.jpg'
-    },
-    {
-      title: 'Funciones y Objetos',
-      duration: '2 horas',
-      description: 'Profundiza en la creación y uso de funciones y objetos en JavaScript a traves de esta leccion guiada por un experto en el tema.',
-      image: 'https://www.in2code.de/fileadmin/_processed_/0/b/csm_code_javascript_49d002a67e.webp'
-    },
-    {
-      title: 'Manipulación del DOM',
-      duration: '1.5 horas',
-      description: 'Aprende a interactuar y modificar el DOM usando JavaScript con tecnicas y aprendizaje facil de entender con una metodologia guiada.',
-      image: 'https://global.discourse-cdn.com/sitepoint/original/3X/b/5/b59a78e2ed76c705f3c0dcb300f3f222aefdcd99.png'
-    },
-    {
-      title: 'Programación Asíncrona',
-      duration: '2 horas',
-      description: 'Explora las técnicas de programación asíncrona como callbacks, promesas y async/await.',
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAg2n68y5tSKqRK_tw4ioZHQGT7zi1Piutng&s'
-    },
-    {
-      title: 'Proyecto Final',
-      duration: '3 horas',
-      description: 'Aplica lo aprendido en un proyecto práctico que involucra todos los aspectos del curso.',
-      image: 'https://www.grupocodesi.com/images/curso-de-javascript.png'
-    },
-    {
-      title: 'html y CSS',
-      duration: '3 horas',
-      description: 'Aplica lo aprendido en un proyecto práctico que involucra todos los aspectos del curso.',
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLqloMjRuU-_aRgqZ6mBERu9kbXbWTS2OPBSndmYjEPDzFZFukdNa9G6ZfH0yOsd-qHD4&usqp=CAU'
-    },
-    {
-      title: 'bootstrap',
-      duration: '3 horas',
-      description: 'Aplica lo aprendido en un proyecto práctico que involucra todos los aspectos del curso.',
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHkqXg1XZbA2khjBKYUSKiNszY6N4bA-tx_w&s'
-    },
-    {
-      title: 'Bucles y condicionales',
-      duration: '3 horas',
-      description: 'Aplica lo aprendido en un proyecto práctico que involucra todos los aspectos del curso.',
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSINvcMxzTIWldaarL3dEktNXD0uLu_WmcWATl5CSDoS8qajdUCmxVgS5XGUXebksC8wQc&usqp=CAU'
-    }
-  ]);
   
   // Función para iniciar una lección
   const startLesson = (title) => {
@@ -209,10 +187,9 @@ const lecciones = ref([
       <div class="container">
         <h2 class="text-center mb-5">Habilidades que Obtendrás</h2>
         <ul class="list-unstyled d-flex justify-content-center flex-wrap">
-          <li class="mb-4 px-4"><i class="fas fa-check-circle mr-2"></i> Desarrollo de aplicaciones web</li>
-          <li class="mb-4 px-4"><i class="fas fa-check-circle mr-2"></i> Desarrollo de aplicaciones móviles</li>
-          <li class="mb-4 px-4"><i class="fas fa-check-circle mr-2"></i> Desarrollo de videojuegos</li>
-          <li class="mb-4 px-4"><i class="fas fa-check-circle mr-2"></i> Desarrollo de aplicaciones de escritorio</li>
+          <li v-for="(ability, index) in abilitiesArray" :key="index" class="mb-4 px-4">
+            <i class="fas fa-check-circle mr-2"></i> {{ ability }}
+          </li>
         </ul>
       </div>
     </section>
@@ -221,33 +198,19 @@ const lecciones = ref([
       <div class="container">
         <h1 class="text-center mb-5">Listado de Lecciones</h1>
         <div class="lecciones-list d-flex justify-content-center flex-wrap">
-          <div v-for="(leccion, index) in lecciones" :key="index" class="leccion-card">
-            <img :src="leccion.image" alt="Lección" class="leccion-image" />
+          <!-- Itera sobre lessonsData para mostrar las lecciones -->
+          <div v-for="(lesson, index) in lessonsData" :key="index" class="leccion-card">
+            <img :src="lesson.image" alt="Lección" class="leccion-image" />
             <div class="leccion-content p-3">
-              <h2>{{ leccion.title }}</h2>
-              <p><strong>Duración:</strong> {{ leccion.duration }}</p>
-              <p>{{ leccion.description }}</p>
-              <button @click="startLesson(leccion.title)" class="btn-start">Iniciar</button>
+              <h2>{{ lesson.title }}</h2>
+              <p><strong>Duración:</strong> {{ lesson.duration }}</p>
+              <p>{{ lesson.description }}</p>
+              <button @click="startLesson(lesson.title)" class="btn-start">Iniciar</button>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <section class="instructor py-5 bg-light">
-      <div class="container">
-        <h2 class="text-center mb-4">Instructor</h2>
-        <div class="instructor-info d-flex align-items-center justify-content-center">
-          <img :src="'https://cdn-icons-png.flaticon.com/512/3135/3135768.png'" alt="Instructor Photo" class="instructor-photo">
-          <div class="instructor-bio">
-            <h3 class="mb-2">Nombre del Instructor: Camilo Mendez</h3>
-            <p class="mb-1">Ph.D. en Ciencias de la Computación, Universidad de XYZ</p>
-            <p class="mb-1">10 años de experiencia en desarrollo de software</p>
-            <p class="mb-0">Especialización en desarrollo web, apps móviles y videojuegos</p>
-          </div>
-        </div>
-      </div>
-    </section>
   </header>
 
   <!-- Popup de confirmación -->
@@ -281,7 +244,6 @@ h1.display-3 {
   align-items: center;
   justify-content: center;
   color: rgb(170, 158, 133);
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://midu.dev/images/wallpapers/una-taza-de-javascript.png');
 }
 
 .mask {
