@@ -68,11 +68,10 @@
             <label for="course-category" class="form-label">Categoría</label>
             <select id="course-category" v-model="course.category" class="form-control" required>
               <option value="" disabled>Selecciona una categoría</option>
-              <!-- Cambiar a 'category' en el bucle -->
+              <!-- Cambiado a 'category' en el bucle -->
               <option v-for="category in categories" :key="category.id" :value="category.id">
                 {{ category.nameCategory }}
               </option>
-
             </select>
           </div>
 
@@ -107,22 +106,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useAppStore } from "@/stores";
 
+const store = useAppStore();
 // Datos del curso
 const course = ref({
-  profileImage: "",
   title: "",
+  profileImage: "",
   description: "",
   availability: true,
-  categories: "",
+  category: "",
   skills: [""],
 });
 
 // Lista de categorías
 const categories = ref([]);
+
+// Obtener el userId directamente desde el store usando computed
+const userId = computed(() => store.getIdentificador);
 
 // Función para obtener las categorías de la API
 const fetchCategories = async () => {
@@ -145,17 +149,29 @@ const fetchCategories = async () => {
 onMounted(fetchCategories);
 
 // Función para crear el curso
-const createCourse = () => {
-  console.log("Curso creado:", course.value);
-  // Lógica para enviar los datos al backend
+const createCourse = async () => {
+  const abilities = course.value.skills.join(';');
+  const payload = {
+    title: course.value.title,
+    image: course.value.profileImage,
+    description: course.value.description,
+    abilities: abilities,
+    avaibalable: course.value.availability,
+    categoryCourseId: course.value.category, // Asume que tienes el ID de la categoría
+    teacherUserId: userId.value // Asume que tienes el ID del profesor
+  };
 
-  // Mostrar mensaje de éxito
-  Swal.fire({
-    title: "¡Curso creado con éxito!",
-    text: "El curso ha sido creado y guardado correctamente.",
-    icon: "success",
-    confirmButtonText: "Aceptar",
-  });
+  try {
+    const response = await axios.post('http://localhost:9999/api/v1/courses/create', payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    });
+    console.log('Curso creado exitosamente:', response.data);
+  } catch (error) {
+    console.error('Error al crear el curso:', error);
+  }
 };
 
 // Función para añadir más habilidades

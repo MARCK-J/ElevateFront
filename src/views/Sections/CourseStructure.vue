@@ -44,7 +44,7 @@ const closePopup = () => {
 };
 
 const abilitiesArray = computed(() => {
-  return courseData.value.abilities.split("; ");
+  return courseData.value.abilities.split(";");
 });
 
 // Función para confirmar la inscripción
