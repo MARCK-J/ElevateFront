@@ -3,43 +3,50 @@
     <header class="header">
       <button @click="goBack" class="btn-back">Atrás</button>
     </header>
-    
+
     <main class="main-content">
       <div class="video-container">
         <iframe
-          src="https://www.youtube.com/embed/VIDEO_ID" 
+          src="https://youtu.be/vHv7n0wJD18?si=qWddZfC-xme7B8Im" 
           frameborder="0" 
           allowfullscreen
         ></iframe>
       </div>
 
-
-      
-      <div class="lesson-info">
-        <h2>Lección 1: Introducción y primeros pasos</h2>
-        <p>Duración: 1 hora</p>
-        <h3>Clases breves, entretenidas y super claras.</h3>
-        <p>
-          Nuestro programa está diseñado para que aprendas y practiques, 
-          independientemente de tu nivel, con un enfoque de 18 días de clases.
-        </p>
-        <ul>
-          <li>Desde la creación de tu sitio web hasta la creación de una API.</li>
-          <li>Clases teóricas y prácticas con recursos para llevar de la mano.</li>
-          <li>Acceso a una comunidad para resolver tus dudas y compartir tus experiencias.</li>
-        </ul>
-      </div>
-
       <aside class="sidebar">
-        <h3>Archivos descargables</h3>
-        <ul>
-          <li><a href="#">Ejercicios de práctica</a></li>
-          <li><a href="#">PDF - Guía de referencia</a></li>
-        </ul>
-        <h3>Evaluación de la lección</h3>
-        <button @click="evaluateLesson" class="btn-evaluate">Ingresar aquí</button>
+        <div class="download-section">
+          <h3>Archivos descargables</h3>
+          <ul>
+            <li>
+              <a href="#" class="btn-download-exercise">Ejercicios de práctica</a>
+            </li>
+            <li>
+              <a href="#" class="btn-download-resource">PDF - Teoría de la lección</a>
+            </li>
+          </ul>
+        </div>
+        <div class="evaluation-section">
+          <h3>Evaluación de la lección</h3>
+          <p>Una vez terminada la lección, realice la evaluación.</p>
+          <button @click="evaluateLesson" class="btn-evaluate">Ingresar aquí</button>
+        </div>
       </aside>
     </main>
+
+    <div class="lesson-info">
+      <h2>Lección 1: Introducción y primeros pasos</h2>
+      <p>Duración: 1 hora</p>
+      <h3>Clases breves, entretenidas y super claras.</h3>
+      <p>
+        Nuestro programa está diseñado para que aprendas y practiques, 
+        independientemente de tu nivel, con un enfoque de 18 días de clases.
+      </p>
+      <ul>
+        <li>Desde la creación de tu sitio web hasta la creación de una API.</li>
+        <li>Clases teóricas y prácticas con recursos para llevar de la mano.</li>
+        <li>Acceso a una comunidad para resolver tus dudas y compartir tus experiencias.</li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -60,7 +67,7 @@ export default {
 /* Estilos globales */
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: #f4f7fc;
+  background-color: #f8f8d9;
   margin: 0;
   padding: 0;
 }
@@ -86,11 +93,6 @@ body {
   border-radius: 8px;
 }
 
-.header h1 {
-  font-size: 24px;
-  margin: 0;
-}
-
 .btn-back {
   margin-right: auto; /* Empuja el botón hacia la izquierda */
   background-color: #f76c6c;
@@ -102,14 +104,14 @@ body {
   transition: background-color 0.3s ease;
 }
 
-
 .btn-back:hover {
   background-color: #f44747;
 }
 
 /* Estilo del contenido principal */
 .main-content {
-  display: block;
+  display: flex;
+  align-items: stretch;
   flex-wrap: wrap;
   gap: 20px;
 }
@@ -117,7 +119,6 @@ body {
 /* Video */
 .video-container {
   flex: 2;
-  margin-right: 20px;
 }
 
 .video-container iframe {
@@ -127,14 +128,69 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Sección de descarga y evaluación */
+.download-section,
+.evaluation-section {
+  background-color: #f8f8d9;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.btn-download-exercise {
+  display: inline-block;
+  background-color: #1231e0; /* Color de fondo azul */
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-download-resource {
+  display: inline-block;
+  background-color: #f50e21; /* Color de fondo azul */
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-download:hover {
+  background-color: #0056b3; /* Color al pasar el mouse */
+}
+
+.evaluation-section {
+  background-color: #e0f7e9; /* Color de fondo verde claro */
+}
+
+.btn-evaluate {
+  background-color: #086b1d;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-evaluate:hover {
+  background-color: #1f1e38;
+}
+
 /* Información de la lección */
 .lesson-info {
-  flex: 3;
-  background-color: #fff;
+  flex: 1 0 100%; /* Full width */
+  background-color: #f8f8d9;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
- 
+  margin-top: 20px; /* Espacio adicional en la parte superior */
 }
 
 .lesson-info h2 {
@@ -188,32 +244,5 @@ body {
 
 .sidebar ul li {
   margin-bottom: 15px;
-}
-
-.sidebar ul li a {
-  text-decoration: none;
-  color: #007bff;
-  transition: color 0.3s ease;
-}
-
-.sidebar ul li a:hover {
-  color: #0056b3;
-}
-
-.btn-evaluate {
-  background-color: #2b2e4a;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  display: block;
-  width: 100%;
-  text-align: center;
-}
-
-.btn-evaluate:hover {
-  background-color: #1f1e38;
 }
 </style>
