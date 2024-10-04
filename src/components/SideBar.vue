@@ -24,13 +24,7 @@
               </div>
             </li>
 
-            <!-- Creación de Lecciones -->
-            <li class="nav-item">
-              <div class="nav-link" @click="selectOption('create_lessons')">
-                <span v-if="isCollapsed">✍️</span>
-                <span v-else>✍️ Crear Lecciones</span>
-              </div>
-            </li>
+           
           </template>
         </ul>
       </nav>

@@ -72,7 +72,7 @@
       <div>
         <div
           class="d-flex justify-content-between align-items-center"
-          v-if="!verification"
+          v-if="!activation"
         >
           <div class="d-flex align-items-center">
             <Icon
@@ -115,16 +115,17 @@
                 <div class="modal-body">
                   Estimado usuario, <br>
 
-Para completar el proceso de activación de su cuenta, hemos enviado un enlace de verificación a la dirección de correo electrónico asociada con su perfil. Haga clic en el enlace que recibirá para confirmar su cuenta y acceder a todas las funcionalidades de la plataforma.
+Se le envio una confirmacion de activacion de cuenta a la dirección de correo electrónico asociada con su perfil. Una vez recibido su correo de activacion podra acceder a todas las funcionalidades de la plataforma.
 
 Le recomendamos revisar su bandeja de entrada. <br> 
-Al hacer clic en "Continuar", se enviará el enlace de verificación a su correo. Si desea cancelar este proceso, presione el botón "Cancelar".
+Al hacer clic en "Continuar", se enviará el mensaje de activacion a su correo. Si desea cancelar este proceso, presione el botón "Cancelar".
                 </div>
                 <div class="modal-footer justify-content-between">
                   <MaterialButton
                     variant="gradient"
                     color="dark"
                     data-bs-dismiss="modal"
+
                   >
                     Cancelar
                   </MaterialButton>
@@ -132,6 +133,9 @@ Al hacer clic en "Continuar", se enviará el enlace de verificación a su correo
                     variant="gradient"
                     color="success"
                     class="mb-0"
+                    @click="profileActivation"
+                    data-bs-dismiss="modal"
+
                   >
                     Continuar
                   </MaterialButton>
@@ -164,6 +168,9 @@ import { ref, onMounted, computed } from "vue";
 import { useAppStore } from "@/stores"; // Pinia store
 import { Icon } from "@iconify/vue";
 import MaterialButton from "@/components/MaterialButton.vue";
+import { AuthService } from "../services/authService";
+import { Modal } from 'bootstrap'; // Importa Bootstrap Modal para cerrarlo programáticamente
+
 
 export default {
   components: {
@@ -183,9 +190,9 @@ export default {
     const role = ref("");
     const creationDate = ref("");
     const verification = ref(false);
+    const activation = ref(false);
     const editMode = ref(false); // Usar ref para el modo de edición
     const password = ref(""); // Nueva propiedad para la contraseña
-    let originalPassword = ""; // Mantener la contraseña original
 
     // Función para obtener los datos del usuario
     const getUserData = async () => {
@@ -202,9 +209,9 @@ export default {
         role.value = userData.role;
         creationDate.value = userData.dateJoin;
         verification.value = userData.verification;
+        activation.value = userData.activation;
         password.value = "";
 
-        originalPassword = userData.password; // Guardar la contraseña original
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
         Swal.fire(
@@ -221,7 +228,7 @@ export default {
         // Usar la nueva contraseña si fue cambiada, si no mantener la original
         const updatedPassword = password.value
           ? password.value
-          : originalPassword;
+          : null;
 
         // Preparar el payload para la solicitud PUT
         const payload = {
@@ -231,6 +238,7 @@ export default {
           email: email.value,
           password: updatedPassword, // Actualizar con la nueva o mantener la original
           verification: verification.value, // Asegurar que sea booleano
+          activation: activation.value,
         };
 
         console.log("VERIFICACION: " + verification.value);
@@ -249,12 +257,7 @@ export default {
       }
     };
 
-    // Función para abrir el modal
-    const openModal = () => {
-      const modalElement = document.getElementById("exampleModal");
-      const modal = new bootstrap.Modal(modalElement); // Asegúrate de tener Bootstrap importado en tu proyecto
-      modal.show();
-    };
+
     // Función para activar el modo de edición
     const toggleEdit = () => {
       editMode.value = true;
@@ -264,6 +267,45 @@ export default {
     const cancelEdit = () => {
       editMode.value = false;
     };
+
+    const profileActivation = async () =>{
+      try {
+        // Usar la nueva contraseña si fue cambiada, si no mantener la original
+        const updatedPassword = password.value
+          ? password.value
+          : null;
+
+        // Preparar el payload para la solicitud PUT
+        const payload = {
+          username: username.value,
+          firstName: firstName.value,
+          lastName: lastName.value,
+          email: email.value,
+          password: updatedPassword, // Actualizar con la nueva o mantener la original
+          verification: verification.value, // Asegurar que sea booleano
+          activation: true,
+        };
+
+        console.log("VERIFICACION: " + verification.value);
+
+        await AuthService.sendActivation(email.value);
+        // Hacer la solicitud PUT para actualizar el perfil
+        await axios.put(
+          `http://localhost:9999/api/v1/user/${identificador}`,
+          payload
+        );
+
+
+        // Mostrar el SweetAlert cuando se complete el proceso
+        Swal.fire("Éxito", "Proceso de activación completado.", "success").then(() => {
+          // Cierra el modal programáticamente
+          const modalElement = document.getElementById('exampleModal');
+          const modal = Modal.getInstance(modalElement); // Obtener la instancia del modal
+          modal.hide(); // Cerrar el modal
+        });      } catch (error) {
+        console.error("Error al actualizar el perfil:", error);
+      }
+    }
 
     const roleText = computed(() => {
       return role.value === 1
@@ -289,11 +331,13 @@ export default {
       roleText,
       creationDate,
       verification,
-      password, // Agregar la propiedad para la contraseña
+      activation,
+      password, 
       editMode,
       toggleEdit,
       cancelEdit,
       updateProfile,
+      profileActivation,
     };
   },
   data() {

@@ -62,4 +62,33 @@ export const AuthService = {
       console.error("Error al enviar el correo:", error);
     }
   },
+  // Función para enviar el correo de activación de cuenta
+async sendActivation(email) {
+  const url = `http://localhost:9999/api/v1/mail/send/${email}`;
+  const data = {
+    subject: "Activación de Cuenta - Elevate",
+    message: `
+    Estimado/a Cliente,
+
+    Nos complace informarle que su cuenta en Elevate ha sido activada correctamente. A partir de este momento, podrá acceder a su cuenta y disfrutar de todas las funcionalidades de nuestra plataforma.
+
+    Si tiene alguna pregunta o necesita asistencia adicional, no dude en ponerse en contacto con nuestro servicio de atención al cliente.
+
+    Atentamente,
+
+    El equipo de soporte de Elevate
+    Marco Reynolds
+    `,
+  };
+
+  try {
+    await axios.post(url, data);
+
+    console.log("Correo de activación enviado exitosamente.");
+    
+  } catch (error) {
+    console.error("Error al enviar el correo:", error.response?.data || error.message);
+  }
+}
+
 };

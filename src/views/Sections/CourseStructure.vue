@@ -26,6 +26,7 @@ const lessonsData = ref([]);
 
 // Obtener el userId directamente desde el store usando computed
 const userId = computed(() => store.getIdentificador);
+const isDocente = ref(userId.value === 1); 
 
 // Imagen de fondo
 //const bgImage = "https://midu.dev/images/wallpapers/una-taza-de-javascript.png";
@@ -177,7 +178,9 @@ onMounted(() => {
             <p class="lead mb-4">
               {{ courseData.description }}
             </p>
-            <MaterialButton color="white" class="mt-4" @click="openPopup">Inscribirse</MaterialButton>
+            <div v-if="isDocente">
+              <MaterialButton color="white" class="mt-4" @click="openPopup">Inscribirse</MaterialButton>
+            </div>
           </div>
         </div>
       </div>

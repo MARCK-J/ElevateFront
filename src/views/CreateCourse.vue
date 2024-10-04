@@ -113,14 +113,16 @@ import { useAppStore } from "@/stores";
 
 const store = useAppStore();
 // Datos del curso
-const course = ref({
+const initialCourseState = {
   title: "",
   profileImage: "",
   description: "",
   availability: true,
   category: "",
   skills: [""],
-});
+};
+
+const course = ref({ ...initialCourseState }); // Clonamos el estado inicial
 
 // Lista de categorías
 const categories = ref([]);
@@ -132,7 +134,7 @@ const userId = computed(() => store.getIdentificador);
 const fetchCategories = async () => {
   try {
     const response = await axios.get("http://localhost:9999/api/v1/category/all");
-    categories.value = response.data.result; // Asegúrate de acceder al array correcto
+    categories.value = response.data.result; 
   } catch (error) {
     console.error("Error al obtener las categorías:", error);
     Swal.fire({
@@ -168,8 +170,23 @@ const createCourse = async () => {
         'Accept': 'application/json',
       },
     });
+    Swal.fire({
+      title: "Creación de curso ",
+      text: "Creación de curso con exito.",
+      icon: "success",
+      confirmButtonText: "Aceptar",
+    });
+    // Restablecer el formulario a su estado inicial
+    course.value = { ...initialCourseState };
+
     console.log('Curso creado exitosamente:', response.data);
   } catch (error) {
+    Swal.fire({
+      title: "Error",
+      text: "No se pudo crear el curso. Intente nuevamente.",
+      icon: "error",
+      confirmButtonText: "Aceptar",
+    });
     console.error('Error al crear el curso:', error);
   }
 };
