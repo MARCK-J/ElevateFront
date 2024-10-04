@@ -9,6 +9,7 @@ import AuthorView from "../views/AuthorView.vue";
 import ProfileView from "../views/ProfileView.vue";
 import CourseView from "../views/CourseView.vue";
 import DashboardView from "../views/DashboardView.vue";
+import LessonsView from "../views/LessonsView.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -56,6 +57,11 @@ const router = createRouter({
       path: "/pages/course",
       name: "course",
       component: CourseView,
+    },
+    {
+      path: "/page/courses/lesson",
+      name: "lessons",
+      component: LessonsView,
     },
     {
       path: "/dashboard",
