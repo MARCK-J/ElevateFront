@@ -1,85 +1,136 @@
-<template>
-
-  <BaseLayout
-    :title="lesson"
-    :breadcrumb="[ 
-      { label: 'cursos', route: '/' },
-      { label: 'cursoDesignado' },
-      { label: lesson },
-    ]"
-  >
-  <div class="container">
-
-    <main class="main-content">
-      <div class="video-container">
-        <iframe
-          src="https://youtu.be/vHv7n0wJD18?si=qWddZfC-xme7B8Im" 
-          frameborder="0" 
-          allowfullscreen
-        ></iframe>
-      </div>
-
-      <aside class="sidebar">
-        <div class="download-section">
-          <h3>Archivos descargables</h3>
-          <ul>
-            <li>
-              <a href="#" class="btn-download-exercise">Ejercicios de práctica</a>
-            </li>
-            <li>
-              <a href="#" class="btn-download-resource">PDF - Teoría de la lección</a>
-            </li>
-          </ul>
-        </div>
-        <div class="evaluation-section">
-          <h3>Evaluación de la lección</h3>
-          <p>Una vez terminada la lección, realice la evaluación.</p>
-          <button @click="evaluateLesson" class="btn-evaluate">Ingresar aquí</button>
-        </div>
-      </aside>
-    </main>
-
-    <div class="lesson-info">
-      <h2>Lección 1: Introducción y primeros pasos</h2>
-      <p>Duración: 1 hora</p>
-      <h3>Clases breves, entretenidas y super claras.</h3>
-      <p>
-        Nuestro programa está diseñado para que aprendas y practiques, 
-        independientemente de tu nivel, con un enfoque de 18 días de clases.
-      </p>
-      <ul>
-        <li>Desde la creación de tu sitio web hasta la creación de una API.</li>
-        <li>Clases teóricas y prácticas con recursos para llevar de la mano.</li>
-        <li>Acceso a una comunidad para resolver tus dudas y compartir tus experiencias.</li>
-      </ul>
-    </div>
-  </div>
-</BaseLayout>
-
-</template>
-
 <script>
+import { useRoute } from "vue-router";
+import { computed, ref, onMounted } from "vue";
 import BaseLayout from "../layouts/sections/components/BaseLayout.vue";
+import axios from "axios";
 
 export default {
   components: {
-    BaseLayout
-    },
-      methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
-    evaluateLesson() {
-      this.$router.push('/evaluate');
-    }
-  }
-}
+    BaseLayout,
+  },
+  setup() {
+    // Acceder a la ruta actual
+    const route = useRoute();
+
+    // Extraer `courseId` y `courseTitle` de la query
+    const courseId = computed(() => route.query.courseId || 0);
+    const courseTitle = computed(() => route.query.courseTitle || "");
+    const lessonId = computed(() => route.query.lessonId || "");
+
+    const lessonData = ref(null); // Para almacenar los datos de la lección
+
+    // Función para obtener la lección por `lessonId`
+    const fetchLessonById = async (lessonId) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/lessons/${lessonId.value}`, // Usar el lessonId para la consulta
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (response.data.code === "200-OK") {
+          lessonData.value = response.data.result; // Guardar los datos de la lección
+          console.log("leccion"+lessonData);
+        } else {
+          console.error("Error al obtener la lección:", response.data.message);
+        }
+      } catch (error) {
+      }
+    };
+
+    // Llamar a la función en el montaje del componente
+    onMounted(() => {
+      if (lessonId) {
+        fetchLessonById(lessonId); // Llamar a la función para obtener la lección
+      }
+    });
+
+    const goBack = () => {
+      window.history.back(); // Alternativa a this.$router.go(-1)
+    };
+
+    const evaluateLesson = () => {
+      route.push("/evaluate");
+    };
+
+    return {
+      courseId,
+      courseTitle,
+      lessonData, // Devolver los datos de la lección al template
+      goBack,
+      evaluateLesson,
+    };
+  },
+};
 </script>
+
+<template>
+  <BaseLayout
+    :title="lessonData?.title || 'Título de la lección'"
+    :breadcrumb="[
+      { label: 'cursos', route: '/' },
+      { label: courseTitle, route: '/' },
+      { label: lessonData?.title || 'Título de la lección' },
+    ]"
+  >
+    <div class="container">
+      <main class="main-content">
+        <div class="video-container" v-if="lessonData">
+          <iframe
+            :src="lessonData.video"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </div>
+
+        <aside class="sidebar">
+          <div class="download-section">
+            <h3>Archivos descargables</h3>
+            <ul>
+              <li>
+                <a href="#" class="btn-download-exercise"
+                  >Ejercicios de práctica</a
+                >
+              </li>
+              <li>
+                <a href="#" class="btn-download-resource"
+                  >PDF - Teoría de la lección</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="evaluation-section">
+            <h3>Evaluación de la lección</h3>
+            <p>Una vez terminada la lección, realice la evaluación.</p>
+            <button @click="evaluateLesson" class="btn-evaluate">
+              Ingresar aquí
+            </button>
+          </div>
+        </aside>
+      </main>
+
+      <div class="lesson-info" v-if="lessonData">
+        <h2>{{ lessonData.title }}</h2>
+        <p>Duración: {{ lessonData.duration }}</p>
+        <h3>{{ lessonData.description }}</h3>
+        <p>{{ lessonData.content }}</p>
+        <ul>
+          <li>Orden de la lección: {{ lessonData.order }}</li>
+          <li v-if="lessonData.complete">Lección completa</li>
+          <li v-else>Lección no completada</li>
+        </ul>
+      </div>
+    </div>
+  </BaseLayout>
+</template>
 
 <style scoped>
 /* Estilos globales */
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: #f8f8d9;
   margin: 0;
   padding: 0;

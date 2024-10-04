@@ -24,16 +24,19 @@ const router = useRouter();
 const store = useAppStore();
 
 // Obtener el userId directamente desde el store usando computed
-const userId = computed(() => store.getIdentificador);
+const userId = computed(() => store.getTipoPersona);
 // Computed para determinar si el usuario es docente
 const isDocente = computed(() => {
-  if (userId.value === 2) {
+  console.log('rol de usuario para validacion'+ userId.value);
+  if (userId.value == 2) {
     return true;
   } else if (userId.value !== 1 && userId.value !== 2) {
     return false;
   }
   return false;
 });
+
+
 // Estado para controlar la visibilidad del pop-up
 const showPopup = ref(false);
 
@@ -47,7 +50,7 @@ const abilitiesArray = computed(() => courseData.value.abilities.split(";"));
 const courseId = route.query.courseId; // Obtener el courseId de la query
 // Función para confirmar la inscripción
 const confirmInscription = async () => {
-  showPopup.value = false; 
+  showPopup.value = false;
 
   // Verificar el valor de studentUserId
   console.log("studentUserId:", userId.value);
@@ -135,8 +138,12 @@ onMounted(() => {
 });
 
 // Función para iniciar una lección
-const startLesson = (title) => {
-  Swal.fire("Éxito", `Iniciando la leccion : ${title}`, "success");
+const startLesson = (lessonId,courseTitle) => {
+  // Redirigir o recargar la lista de lecciones
+  router.push({
+    path: "/pages/",
+    query: { courseId: courseId, lessonId: lessonId, courseTitle: courseTitle },
+  });
 };
 
 // Estado de la nueva lección
@@ -174,8 +181,6 @@ const createLesson = async () => {
 
     if (response.data.code === "200-OK") {
       Swal.fire("Éxito", "La lección ha sido creada exitosamente.", "success");
-      // Redirigir o recargar la lista de lecciones
-      router.push({ path: "/lessons", query: { courseId: courseId } });
     } else {
       console.error("Error al crear la lección:", response.data.message);
       Swal.fire("Error", "No se pudo crear la lección.", "error");
@@ -185,7 +190,6 @@ const createLesson = async () => {
     Swal.fire("Error", "Hubo un problema al crear la lección.", "error");
   }
 };
-
 </script>
 
 <template>
@@ -336,6 +340,7 @@ const createLesson = async () => {
                       variant="gradient"
                       color="success"
                       class="mb-0"
+                      data-bs-dismiss="modal"
                     >
                       Crear Lección
                     </MaterialButton>
@@ -369,7 +374,7 @@ const createLesson = async () => {
             <p class="lead mb-4">
               {{ courseData.description }}
             </p>
-            <div v-if="userId === 1 || userId === 2">
+            <div v-if="isDocente">
               <MaterialButton color="white" class="mt-4" @click="openPopup"
                 >Inscribirse</MaterialButton
               >
@@ -404,12 +409,16 @@ const createLesson = async () => {
             :key="index"
             class="leccion-card"
           >
-            <img :src="lesson.image" alt="Lección" class="leccion-image" />
+            <img
+              src="https://img.freepik.com/vector-premium/hombre-que-sienta-pila-libros_165488-4983.jpg"
+              alt="Lección"
+              class="leccion-image"
+            />
             <div class="leccion-content p-3">
               <h2>{{ lesson.title }}</h2>
               <p><strong>Duración:</strong> {{ lesson.duration }}</p>
               <p>{{ lesson.description }}</p>
-              <button @click="startLesson(lesson.title)" class="btn-start">
+              <button @click="startLesson(lesson.lessonsId,courseData.title)" class="btn-start">
                 Iniciar
               </button>
             </div>

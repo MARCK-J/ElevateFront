@@ -60,15 +60,9 @@ const router = createRouter({
       component: CourseView,
     },
     {
-      path: "/page/courses/lesson",
+      path: "/pages/",
       name: "lessons",
       component: LessonsView,
-    },
-
-    {
-      path: "/pages/createLesson",
-      name: "createlesson",
-      component: CreateLesson,
     },
     {
       path: "/dashboard",
