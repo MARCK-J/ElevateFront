@@ -1,12 +1,19 @@
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 import DefaultNavbar from "@/examples/navbars/NavbarDefault.vue";
 import CenteredFooter from "@/examples/footers/FooterCentered.vue";
 import Breadcrumbs from "@/examples/Breadcrumbs.vue";
 import PopUp from "../../../components/PopUp.vue";
+import { useAppStore } from "../../../stores";
+// Acceder al store de Pinia
+const appStore = useAppStore();
+const userId = appStore.tipoPersona;
+console.log("Identificador de rol: " + userId);
 
 // Define reactive properties
 const showPopUp = ref(false);
+const isDocente = ref(userId === 2); // Define isDocente como verdadero si userId es 2
+
 
 // Function to toggle the popup visibility
 function togglePopUp() {
@@ -33,12 +40,13 @@ const props = defineProps({
         <div class="mb-4 w-100 w-md-50 w-lg-25">
           <Breadcrumbs :routes="props.breadcrumb" />
           <h3>{{ props.title }}</h3>
-          <button class="btn btn-primary" @click="togglePopUp">Subir Archivos</button>
+          <div v-if="isDocente">
+            <button class="btn btn-primary" @click="togglePopUp">
+              Subir Archivos
+            </button>
+          </div>
           <transition name="fade">
-            <PopUp
-              v-if="showPopUp"
-              @close="togglePopUp"
-            />
+            <PopUp v-if="showPopUp" @close="togglePopUp" />
           </transition>
         </div>
         <slot />
