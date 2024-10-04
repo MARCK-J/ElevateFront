@@ -69,7 +69,7 @@
     data.value = categories.map(category => {
       return {
         heading: category.nameCategory,
-        items: categoryMap[category.id] || [] // Obtener los cursos correspondientes a la categoría
+        items: (categoryMap[category.id] || []).slice(-3) // Obtener los últimos 3 cursos de cada categoría
       };
     });
   };

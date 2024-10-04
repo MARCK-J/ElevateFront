@@ -67,7 +67,7 @@ const router = createRouter({
 
     {
       path: "/pages/createLesson",
-      name: "create-lesson",
+      name: "createlesson",
       component: CreateLesson,
     },
     {
