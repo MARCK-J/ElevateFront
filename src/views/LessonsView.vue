@@ -1,8 +1,14 @@
 <template>
+
+  <BaseLayout
+    :title="lesson"
+    :breadcrumb="[ 
+      { label: 'cursos', route: '/' },
+      { label: 'cursoDesignado' },
+      { label: lesson },
+    ]"
+  >
   <div class="container">
-    <header class="header">
-      <button @click="goBack" class="btn-back">Atrás</button>
-    </header>
 
     <main class="main-content">
       <div class="video-container">
@@ -48,11 +54,18 @@
       </ul>
     </div>
   </div>
+</BaseLayout>
+
 </template>
 
 <script>
+import BaseLayout from "../layouts/sections/components/BaseLayout.vue";
+
 export default {
-  methods: {
+  components: {
+    BaseLayout
+    },
+      methods: {
     goBack() {
       this.$router.go(-1);
     },
