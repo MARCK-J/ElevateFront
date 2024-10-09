@@ -22,19 +22,28 @@ const lessonsData = ref([]);
 const route = useRoute();
 const router = useRouter();
 const store = useAppStore();
+const inscrito = ref(false);
 
 // Obtener el userId directamente desde el store usando computed
-const userId = computed(() => store.getTipoPersona);
+const userId = computed(() => store.getIdentificador);
+const rolId = computed(() => store.getTipoPersona);
 // Computed para determinar si el usuario es docente
 const isDocente = computed(() => {
-  console.log('rol de usuario para validacion'+ userId.value);
-  if (userId.value == 2) {
+  if (rolId.value == 2) {
     return true;
-  } else if (userId.value !== 1 && userId.value !== 2) {
-    return false;
   }
   return false;
 });
+const isEstudiante = computed(() => {
+  if (rolId.value == 1) {
+    return true;
+  }
+  return false;
+});
+
+const isInscrito = computed(() => inscrito.value); // Computed para verificar si está inscrito
+
+
 
 
 // Estado para controlar la visibilidad del pop-up
@@ -74,6 +83,7 @@ const confirmInscription = async () => {
 
     if (response.data.code === "200-OK") {
       Swal.fire("Éxito", "Inscripción Confirmada!!!", "success");
+      // inscrito.value = true; // Cambiar inscrito a true
     } else {
       console.error("Error al crear la inscripción:", response.data.message);
       Swal.fire("Error", "No se pudo confirmar la inscripción.", "error");
@@ -106,6 +116,44 @@ const fetchCourseById = async (id) => {
     console.error("Error en la solicitud del curso:", error);
   }
 };
+// Función para obtener Si el usuario está registrado
+const fetchEnrollmentId = async (userId) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:9999/api/v1/enrollments/user/${userId}`,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (response.data.code === "200-OK") {
+      const courseData = response.data.result;
+      const courseId = route.query.courseId; // Obtener el courseId de la query
+      const userIdFromStore = store.getIdentificador; // Obtener el userId del store
+      
+      // Verificar si el usuario está inscrito en el curso
+      const enrollmentFound = courseData.some(enrollment => 
+        enrollment.studentUserId === userIdFromStore &&
+        enrollment.coursesCourseId == courseId // Comparar courseId como string o número
+      );
+      
+      // Cambiar el valor de inscrito a true si se encuentra la inscripción
+      if (enrollmentFound) {
+        inscrito.value = true;
+      } else {
+        inscrito.value = false;
+        console.log("El estudiante no está inscrito en este curso.");
+      }
+    } else {
+      console.error("Error al obtener el curso:", response.data.message);
+    }
+  } catch (error) {
+    console.error("Error en la solicitud del curso:", error);
+  }
+};
+
 
 // Función para obtener las lecciones por courseId
 const fetchLessonsByCourseId = async (courseId) => {
@@ -132,18 +180,25 @@ const fetchLessonsByCourseId = async (courseId) => {
 // Llamar a la función en el montaje del componente
 onMounted(() => {
   if (courseId) {
+    console.log('adgfdsgvfws'+userId.value);
     fetchCourseById(courseId);
     fetchLessonsByCourseId(courseId); // Llamar a la función para obtener el curso
+    fetchEnrollmentId(userId.value);
   }
 });
 
 // Función para iniciar una lección
 const startLesson = (lessonId,courseTitle) => {
   // Redirigir o recargar la lista de lecciones
-  router.push({
-    path: "/pages/",
-    query: { courseId: courseId, lessonId: lessonId, courseTitle: courseTitle },
-  });
+  if(rolId.value===1 || rolId.value===2){
+    router.push({
+      path: "/pages/",
+      query: { courseId: courseId, lessonId: lessonId, courseTitle: courseTitle },
+    });
+  }else{
+    
+    Swal.fire("Error", "No se encuentra registrado", "error");
+}
 };
 
 // Estado de la nueva lección
@@ -190,6 +245,7 @@ const createLesson = async () => {
     Swal.fire("Error", "Hubo un problema al crear la lección.", "error");
   }
 };
+
 </script>
 
 <template>
@@ -374,10 +430,17 @@ const createLesson = async () => {
             <p class="lead mb-4">
               {{ courseData.description }}
             </p>
-            <div v-if="isDocente">
-              <MaterialButton color="white" class="mt-4" @click="openPopup"
-                >Inscribirse</MaterialButton
-              >
+            <div v-if="isEstudiante">
+              <div v-if="isInscrito">
+                <MaterialButton color="success" class="mt-4">
+                Suscrito
+              </MaterialButton>
+            </div>
+            <div v-else>
+              <MaterialButton color="white" class="mt-4" @click="openPopup">
+                Inscribirse
+              </MaterialButton>
+            </div>
             </div>
           </div>
         </div>
@@ -418,7 +481,7 @@ const createLesson = async () => {
               <h2>{{ lesson.title }}</h2>
               <p><strong>Duración:</strong> {{ lesson.duration }}</p>
               <p>{{ lesson.description }}</p>
-              <button @click="startLesson(lesson.lessonsId,courseData.title)" class="btn-start">
+              <button  @click="startLesson(lesson.lessonsId,courseData.title)" class="btn-start">
                 Iniciar
               </button>
             </div>

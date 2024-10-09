@@ -33,6 +33,7 @@ export default {
 
         if (response.data.code === "200-OK") {
           lessonData.value = response.data.result; // Guardar los datos de la lección
+          console.log(lessonData.value)
           console.log("leccion"+lessonData);
         } else {
           console.error("Error al obtener la lección:", response.data.message);
