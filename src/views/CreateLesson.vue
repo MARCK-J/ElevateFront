@@ -7,22 +7,6 @@
     <form @submit.prevent="createLesson">
       <div class="form-container">
         <div class="first-part">
-          <!-- Selección de Curso -->
-          <div class="field-group">
-            <label for="course-select" class="form-label">Seleccionar Curso</label>
-            <select
-              id="course-select"
-              class="form-control"
-              v-model="lesson.course_id"
-              required
-            >
-              <option value="" disabled selected>Seleccione un curso</option>
-              <option v-for="course in courses" :key="course.id" :value="course.id">
-                {{ course.name }}
-              </option>
-            </select>
-          </div>
-
           <!-- Título de la Lección -->
           <div class="field-group">
             <label for="lesson-title" class="form-label">Título de la Lección</label>
@@ -101,18 +85,6 @@
               required
             />
           </div>
-
-          <!-- Subida de archivos para la lección -->
-          <div class="field-group">
-            <label for="lesson-file-upload" class="form-label">Subir archivos de lección</label>
-            <input
-              id="lesson-file-upload"
-              type="file"
-              class="form-control"
-              @change="handleFileUpload"
-              multiple
-            />
-          </div>
         </div>
       </div>
 
@@ -124,77 +96,6 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
-import axios from "axios";
-import Swal from "sweetalert2";
-
-// Lista de cursos simulada
-const courses = ref([
-  { id: 1, name: "Curso de Matemáticas" },
-  { id: 2, name: "Curso de Física" },
-  { id: 3, name: "Curso de Programación" },
-  { id: 4, name: "Curso de Inteligencia Artificial" },
-]);
-
-// Estado inicial de la lección
-const initialLessonState = {
-  course_id: "",
-  title: "",
-  description: "",
-  duration: "",
-  content: "",
-  video: "",
-  order: 1,
-  files: [],
-};
-
-const lesson = ref({ ...initialLessonState });
-
-const handleFileUpload = (event) => {
-  const files = event.target.files;
-  lesson.value.files = files;
-};
-
-const createLesson = async () => {
-  const formData = new FormData();
-  formData.append("course_id", lesson.value.course_id);
-  formData.append("title", lesson.value.title);
-  formData.append("description", lesson.value.description);
-  formData.append("duration", lesson.value.duration);
-  formData.append("content", lesson.value.content);
-  formData.append("video", lesson.value.video || null);
-  formData.append("order", lesson.value.order);
-
-  // Agregar archivos al FormData
-  for (let i = 0; i < lesson.value.files.length; i++) {
-    formData.append("files", lesson.value.files[i]);
-  }
-
-  try {
-    const response = await axios.post('http://localhost:9999/api/v1/lessons/create', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    Swal.fire({
-      title: "Creación de lección",
-      text: "Lección creada con éxito.",
-      icon: "success",
-      confirmButtonText: "Aceptar",
-    });
-    lesson.value = { ...initialLessonState }; // Resetear formulario
-  } catch (error) {
-    Swal.fire({
-      title: "Error",
-      text: "No se pudo crear la lección. Intente nuevamente.",
-      icon: "error",
-      confirmButtonText: "Aceptar",
-    });
-    console.error('Error al crear la lección:', error);
-  }
-};
-</script>
 
 <style scoped>
 /* Estilos del formulario y diseño general */
