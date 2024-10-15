@@ -1,5 +1,5 @@
 <script>
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { computed, ref, onMounted } from "vue";
 import BaseLayout from "../layouts/sections/components/BaseLayout.vue";
 import axios from "axios";
@@ -11,6 +11,7 @@ export default {
   setup() {
     // Acceder a la ruta actual
     const route = useRoute();
+    const router = useRouter();
 
     // Extraer `courseId` y `courseTitle` de la query
     const courseId = computed(() => route.query.courseId || 0);
@@ -54,8 +55,13 @@ export default {
     };
 
     const evaluateLesson = () => {
-      route.push("/evaluate");
-    };
+  // Redirige a la vista de CuestionarioLeccion
+  router.push({
+    path: `/pages/cuestionario/${lessonId.value}`,
+    query: { courseId: courseId.value, courseTitle: courseTitle.value }
+  });
+};
+
 
     return {
       courseId,
