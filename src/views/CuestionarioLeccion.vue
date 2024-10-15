@@ -20,6 +20,7 @@
         <div class="input-group">
           <label>Pregunta:</label>
           <input type="text" v-model="pregunta.texto" class="text-input" placeholder="Escribe tu pregunta..." required />
+          <span v-if="!pregunta.texto" class="error-message">Este campo es obligatorio.</span>
         </div>
   
         <!-- Mostrar opción de cargar imagen si es texto con imagen -->
@@ -31,6 +32,7 @@
         <!-- Respuestas de opción múltiple -->
         <div v-for="(respuesta, rIndex) in pregunta.respuestas" :key="rIndex" class="respuesta-container">
           <input type="text" v-model="respuesta.texto" class="text-input" placeholder="Escribe una respuesta..." required />
+          <span v-if="!respuesta.texto" class="error-message">Este campo es obligatorio.</span>
           <button @click="eliminarRespuesta(index, rIndex)" class="btn-eliminar-respuesta">Eliminar</button>
         </div>
         <button @click="agregarRespuesta(index)" class="btn-agregar-respuesta">+ Añadir Respuesta</button>
@@ -41,6 +43,11 @@
   
       <!-- Botón para enviar el cuestionario -->
       <button @click="enviarCuestionario" class="btn-enviar">Enviar Cuestionario</button>
+  
+      <!-- Ventana emergente para confirmación -->
+      <div v-if="mensajeExito" class="popup">
+        {{ mensajeExito }}
+      </div>
     </div>
   </template>
   
@@ -50,12 +57,13 @@
       return {
         preguntas: [
           {
-            tipoContenido: 'texto', // "texto" o "texto_imagen"
+            tipoContenido: 'texto',
             texto: '',
             imagen: null,
-            respuestas: [{ texto: '' }, { texto: '' }] // Al menos 2 respuestas iniciales
+            respuestas: [{ texto: '' }, { texto: '' }]
           }
-        ]
+        ],
+        mensajeExito: ''
       };
     },
     methods: {
@@ -90,9 +98,12 @@
           }
         }
         if (!valido) {
-          alert('Por favor, completa todas las preguntas y respuestas.');
+          this.mensajeExito = ''; // Resetea el mensaje de éxito
           return;
         }
+  
+        // Mostrar mensaje de éxito
+        this.mensajeExito = 'Cuestionario creado exitosamente para la lección.';
   
         // Aquí puedes enviar el cuestionario al servidor
         console.log('Cuestionario enviado', this.preguntas);
@@ -102,7 +113,6 @@
   </script>
   
   <style scoped>
- 
   .cuestionario-container {
     width: 100%;
     max-width: 800px;
@@ -158,6 +168,11 @@
     margin-right: 10px;
   }
   
+  .error-message {
+    color: red;
+    font-size: 12px;
+  }
+  
   .btn-agregar-pregunta,
   .btn-agregar-respuesta,
   .btn-enviar,
@@ -206,6 +221,16 @@
   
   .btn-enviar:hover {
     background-color: #1976d2;
+  }
+  
+  .popup {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+    text-align: center;
   }
   </style>
   
