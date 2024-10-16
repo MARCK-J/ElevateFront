@@ -69,6 +69,12 @@ const router = createRouter({
       name: "dashboard",
       component: DashboardView,
     },
+    {
+      path: "/courses",
+      name: "coursesList",
+      component: CourseListView,
+    },
+
   ],
 });
 
