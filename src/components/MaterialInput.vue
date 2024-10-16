@@ -53,6 +53,9 @@ defineProps({
     default: "",
   },
 });
+
+const emit = defineEmits(['update:value']);  // Emite el evento para v-model
+
 function getClasses(size, success, error) {
   let sizeValue, isValidValue;
 
@@ -82,10 +85,11 @@ function getClasses(size, success, error) {
       :type="type"
       class="form-control"
       :class="[getClasses(size, success, error), inputClass]"
-      :value="value"
       :placeholder="placeholder"
       :isRequired="isRequired"
       :disabled="isDisabled"
+      :value="value"
+      @input="$emit('update:value', $event.target.value)"
     />
   </div>
 </template>

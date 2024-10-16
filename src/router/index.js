@@ -12,6 +12,7 @@ import DashboardView from "../views/DashboardView.vue";
 import LessonsView from "../views/LessonsView.vue";
 import CreateLesson from "../views/CreateLesson.vue";
 import CuestionarioLeccion from "../views/CuestionarioLeccion.vue";
+import CourseListView from "../views/CourseListView.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
