@@ -9,7 +9,9 @@
         <div class="first-part">
           <!-- Imagen de perfil (por URL) -->
           <div class="field-group">
-            <label for="profile-image-url" class="form-label">Imagen de Perfil (URL)</label>
+            <label for="profile-image-url" class="form-label"
+              >Imagen de Perfil (URL)</label
+            >
             <input
               id="profile-image-url"
               type="url"
@@ -22,7 +24,9 @@
 
           <!-- Título del curso -->
           <div class="field-group">
-            <label for="course-title" class="form-label">Título del Curso</label>
+            <label for="course-title" class="form-label"
+              >Título del Curso</label
+            >
             <input
               id="course-title"
               type="text"
@@ -35,7 +39,9 @@
 
           <!-- Descripción -->
           <div class="field-group">
-            <label for="course-description" class="form-label">Descripción</label>
+            <label for="course-description" class="form-label"
+              >Descripción</label
+            >
             <textarea
               id="course-description"
               class="form-control"
@@ -45,6 +51,22 @@
               required
             ></textarea>
           </div>
+          <!-- Duración -->
+          <div class="field-group">
+            <label for="course-duration" class="form-label"
+              >Duración (horas)</label
+            >
+            <input
+              id="course-duration"
+              type="number"
+              v-model="course.duration"
+              class="form-control"
+              placeholder="Duración en minutos"
+              required
+              min="1"
+              step="1"
+            />
+          </div>
         </div>
 
         <div class="second-part">
@@ -53,11 +75,21 @@
             <label class="form-label">Disponibilidad</label>
             <div class="availability-options">
               <label class="radio-option">
-                <input type="radio" v-model="course.availability" value="true" required />
+                <input
+                  type="radio"
+                  v-model="course.availability"
+                  value="true"
+                  required
+                />
                 Disponible
               </label>
               <label class="radio-option">
-                <input type="radio" v-model="course.availability" value="false" required />
+                <input
+                  type="radio"
+                  v-model="course.availability"
+                  value="false"
+                  required
+                />
                 No disponible
               </label>
             </div>
@@ -66,10 +98,18 @@
           <!-- Categorías -->
           <div class="field-group">
             <label for="course-category" class="form-label">Categoría</label>
-            <select id="course-category" v-model="course.category" class="form-control" required>
+            <select
+              id="course-category"
+              v-model="course.category"
+              class="form-control"
+              required
+            >
               <option value="" disabled>Selecciona una categoría</option>
-              <!-- Cambiado a 'category' en el bucle -->
-              <option v-for="category in categories" :key="category.id" :value="category.id">
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+              >
                 {{ category.nameCategory }}
               </option>
             </select>
@@ -78,7 +118,11 @@
           <!-- Habilidades -->
           <div class="field-group">
             <label class="form-label">Habilidades</label>
-            <div v-for="(skill, index) in course.skills" :key="index" class="skill-input">
+            <div
+              v-for="(skill, index) in course.skills"
+              :key="index"
+              class="skill-input"
+            >
               <div class="input-with-remove">
                 <input
                   type="text"
@@ -87,12 +131,27 @@
                   placeholder="Habilidad"
                   required
                 />
-                <button type="button" @click="removeSkill(index)" class="btn-remove-skill">X</button>
+                <button
+                  type="button"
+                  @click="removeSkill(index)"
+                  class="btn-remove-skill"
+                >
+                  X
+                </button>
               </div>
             </div>
             <button type="button" @click="addSkill" class="btn-add-skill">
               Agregar Habilidad
             </button>
+          </div>
+
+          <!-- Puntuación (1 estrella por defecto) -->
+          <div class="field-group">
+            <label class="form-label">Puntuación</label>
+            <div class="rating-display">
+              ⭐
+              <span>(1 estrella)</span>
+            </div>
           </div>
         </div>
       </div>
@@ -120,6 +179,8 @@ const initialCourseState = {
   availability: true,
   category: "",
   skills: [""],
+  rating: 1, // Rating por defecto
+  duration: 0, // Duración por defecto
 };
 
 const course = ref({ ...initialCourseState }); // Clonamos el estado inicial
@@ -133,8 +194,10 @@ const userId = computed(() => store.getIdentificador);
 // Función para obtener las categorías de la API
 const fetchCategories = async () => {
   try {
-    const response = await axios.get("http://localhost:9999/api/v1/category/all");
-    categories.value = response.data.result; 
+    const response = await axios.get(
+      "http://localhost:9999/api/v1/category/all"
+    );
+    categories.value = response.data.result;
   } catch (error) {
     console.error("Error al obtener las categorías:", error);
     Swal.fire({
@@ -146,13 +209,12 @@ const fetchCategories = async () => {
   }
 };
 
-
 // Ejecutar fetchCategories cuando el componente se monte
 onMounted(fetchCategories);
 
 // Función para crear el curso
 const createCourse = async () => {
-  const abilities = course.value.skills.join(';');
+  const abilities = course.value.skills.join(";");
   const payload = {
     title: course.value.title,
     image: course.value.profileImage,
@@ -160,26 +222,32 @@ const createCourse = async () => {
     abilities: abilities,
     avaibalable: course.value.availability,
     categoryCourseId: course.value.category, // Asume que tienes el ID de la categoría
-    teacherUserId: userId.value // Asume que tienes el ID del profesor
+    teacherUserId: userId.value, // Asume que tienes el ID del profesor
+    rating: course.value.rating, // Incluimos la puntuación fija de 1
+    duration: course.value.duration, // Incluimos la duración
   };
 
   try {
-    const response = await axios.post('http://localhost:9999/api/v1/courses/create', payload, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    });
+    const response = await axios.post(
+      "http://localhost:9999/api/v1/courses/create",
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
     Swal.fire({
-      title: "Creación de curso ",
-      text: "Creación de curso con exito.",
+      title: "Creación de curso",
+      text: "Curso creado con éxito.",
       icon: "success",
       confirmButtonText: "Aceptar",
     });
     // Restablecer el formulario a su estado inicial
     course.value = { ...initialCourseState };
 
-    console.log('Curso creado exitosamente:', response.data);
+    console.log("Curso creado exitosamente:", response.data);
   } catch (error) {
     Swal.fire({
       title: "Error",
@@ -187,7 +255,7 @@ const createCourse = async () => {
       icon: "error",
       confirmButtonText: "Aceptar",
     });
-    console.error('Error al crear el curso:', error);
+    console.error("Error al crear el curso:", error);
   }
 };
 
@@ -202,12 +270,11 @@ const removeSkill = (index) => {
 };
 </script>
 
-
 <style scoped>
 /* Estilo general del formulario */
 .create-course-container {
   background-color: #fbebd5;
-  padding: 3rem;
+  padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   max-width: 900px;
