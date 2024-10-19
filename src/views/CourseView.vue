@@ -12,7 +12,7 @@ const title = route.query.title || "";
 // Importar componentes
 import BaseLayout from "../layouts/sections/components/BaseLayout.vue";
 import View from "../layouts/sections/components/View.vue";
-import CourseView from "./Sections/CourseStructure.vue";
+import CourseStructure from "./Sections/CourseStructure.vue";
 
 </script>
 
@@ -25,7 +25,7 @@ import CourseView from "./Sections/CourseStructure.vue";
     ]"
   >
     <View :title=title id="header-1">
-      <CourseView />
+      <CourseStructure/>
     </View>
   </BaseLayout>
 </template>

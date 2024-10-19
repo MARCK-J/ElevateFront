@@ -43,9 +43,6 @@ const isEstudiante = computed(() => {
 
 const isInscrito = computed(() => inscrito.value); // Computed para verificar si está inscrito
 
-
-
-
 // Estado para controlar la visibilidad del pop-up
 const showPopup = ref(false);
 
@@ -55,6 +52,13 @@ const closePopup = () => (showPopup.value = false);
 
 // Dividir las habilidades en un array
 const abilitiesArray = computed(() => courseData.value.abilities.split(";"));
+
+const irAQuizzes = () => {
+  router.push({
+    name: "Quizzes",
+    query: { courseId: courseId, courseTitle: courseData.value.title },
+  });
+};
 
 const courseId = route.query.courseId; // Obtener el courseId de la query
 // Función para confirmar la inscripción
@@ -132,13 +136,14 @@ const fetchEnrollmentId = async (userId) => {
       const courseData = response.data.result;
       const courseId = route.query.courseId; // Obtener el courseId de la query
       const userIdFromStore = store.getIdentificador; // Obtener el userId del store
-      
+
       // Verificar si el usuario está inscrito en el curso
-      const enrollmentFound = courseData.some(enrollment => 
-        enrollment.studentUserId === userIdFromStore &&
-        enrollment.coursesCourseId == courseId // Comparar courseId como string o número
+      const enrollmentFound = courseData.some(
+        (enrollment) =>
+          enrollment.studentUserId === userIdFromStore &&
+          enrollment.coursesCourseId == courseId // Comparar courseId como string o número
       );
-      
+
       // Cambiar el valor de inscrito a true si se encuentra la inscripción
       if (enrollmentFound) {
         inscrito.value = true;
@@ -153,7 +158,6 @@ const fetchEnrollmentId = async (userId) => {
     console.error("Error en la solicitud del curso:", error);
   }
 };
-
 
 // Función para obtener las lecciones por courseId
 const fetchLessonsByCourseId = async (courseId) => {
@@ -180,7 +184,6 @@ const fetchLessonsByCourseId = async (courseId) => {
 // Llamar a la función en el montaje del componente
 onMounted(() => {
   if (courseId) {
-    console.log('adgfdsgvfws'+userId.value);
     fetchCourseById(courseId);
     fetchLessonsByCourseId(courseId); // Llamar a la función para obtener el curso
     fetchEnrollmentId(userId.value);
@@ -188,17 +191,20 @@ onMounted(() => {
 });
 
 // Función para iniciar una lección
-const startLesson = (lessonId,courseTitle) => {
+const startLesson = (lessonId, courseTitle) => {
   // Redirigir o recargar la lista de lecciones
-  if(rolId.value===1 || rolId.value===2){
+  if (rolId.value === 1 || rolId.value === 2) {
     router.push({
       path: "/pages/",
-      query: { courseId: courseId, lessonId: lessonId, courseTitle: courseTitle },
+      query: {
+        courseId: courseId,
+        lessonId: lessonId,
+        courseTitle: courseTitle,
+      },
     });
-  }else{
-    
+  } else {
     Swal.fire("Error", "No se encuentra registrado", "error");
-}
+  }
 };
 
 // Estado de la nueva lección
@@ -245,7 +251,6 @@ const createLesson = async () => {
     Swal.fire("Error", "Hubo un problema al crear la lección.", "error");
   }
 };
-
 </script>
 
 <template>
@@ -260,7 +265,9 @@ const createLesson = async () => {
       >
         Crear Nueva Lección
       </MaterialButton>
-
+      <button @click="irAQuizzes" class="btn btn-primary">
+        Mis Cuestionarios
+      </button>
       <!-- Modal -->
       <div
         class="modal fade"
@@ -433,14 +440,14 @@ const createLesson = async () => {
             <div v-if="isEstudiante">
               <div v-if="isInscrito">
                 <MaterialButton color="success" class="mt-4">
-                Suscrito
-              </MaterialButton>
-            </div>
-            <div v-else>
-              <MaterialButton color="white" class="mt-4" @click="openPopup">
-                Inscribirse
-              </MaterialButton>
-            </div>
+                  Suscrito
+                </MaterialButton>
+              </div>
+              <div v-else>
+                <MaterialButton color="white" class="mt-4" @click="openPopup">
+                  Inscribirse
+                </MaterialButton>
+              </div>
             </div>
           </div>
         </div>
@@ -481,7 +488,10 @@ const createLesson = async () => {
               <h2>{{ lesson.title }}</h2>
               <p><strong>Duración:</strong> {{ lesson.duration }}</p>
               <p>{{ lesson.description }}</p>
-              <button  @click="startLesson(lesson.lessonsId,courseData.title)" class="btn-start">
+              <button
+                @click="startLesson(lesson.lessonsId, courseData.title)"
+                class="btn-start"
+              >
                 Iniciar
               </button>
             </div>

@@ -3,12 +3,10 @@ import { useRoute, useRouter } from "vue-router";
 import { computed, ref, onMounted } from "vue";
 import BaseLayout from "../layouts/sections/components/BaseLayout.vue";
 import axios from "axios";
-import CuestionarioLeccion from "./CuestionarioLeccion.vue"; // Importar el componente
 
 export default {
   components: {
     BaseLayout,
-    CuestionarioLeccion, // Registrar el componente
   },
   setup() {
     // Acceder a la ruta actual
@@ -21,7 +19,6 @@ export default {
     const lessonId = computed(() => route.query.lessonId || "");
 
     const lessonData = ref(null); // Para almacenar los datos de la lección
-    const showQuizPopup = ref(false); // Estado para controlar la visibilidad del popup
 
     // Función para obtener la lección por `lessonId`
     const fetchLessonById = async (lessonId) => {
@@ -57,21 +54,11 @@ export default {
       window.history.back(); // Alternativa a this.$router.go(-1)
     };
 
-    const evaluateLesson = () => {
-      // Redirige a la vista de CuestionarioLeccion
-      router.push({
-        path: `/pages/cuestionario/${lessonId.value}`,
-        query: { courseId: courseId.value, courseTitle: courseTitle.value }
-      });
-    };
-
     return {
       courseId,
       courseTitle,
       lessonData, // Devolver los datos de la lección al template
       goBack,
-      evaluateLesson,
-      showQuizPopup, // Devolver el estado del popup al template
     };
   },
 };
@@ -117,9 +104,6 @@ export default {
             <p>Una vez terminada la lección, realice la evaluación.</p>
             <button @click="evaluateLesson" class="btn-evaluate">
               Ingresar aquí
-            </button>
-            <button @click="showQuizPopup = true" class="btn-create-quiz">
-              Crear Cuestionario
             </button>
           </div>
         </aside>
@@ -251,8 +235,7 @@ body {
   background-color: #e0f7e9; /* Color de fondo verde claro */
 }
 
-.btn-evaluate,
-.btn-create-quiz {
+.btn-evaluate {
   background-color: #086b1d;
   color: white;
   border: none;
@@ -266,8 +249,7 @@ body {
   margin-top: 10px; /* Espacio entre botones */
 }
 
-.btn-evaluate:hover,
-.btn-create-quiz:hover {
+.btn-evaluate:hover {
   background-color: #1f1e38;
 }
 
@@ -334,41 +316,4 @@ body {
   margin-bottom: 15px;
 }
 
-/* Estilos del popup */
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.popup-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 800px;
-  position: relative;
-}
-
-.btn-close-popup {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.btn-close-popup:hover {
-  background-color: #c0392b;
-}
 </style>
