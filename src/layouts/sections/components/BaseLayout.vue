@@ -22,7 +22,7 @@ const props = defineProps({
   <div class="container mt-5">
     <div class="row">
       <div class="col-lg-12 mx-auto">
-        <div class="mb-4 w-100 w-md-50 w-lg-25">
+        <div class="mb-4 w-100 w-md-50 ">
           <Breadcrumbs :routes="props.breadcrumb" />
           <h3>{{ props.title }}</h3>
         </div>

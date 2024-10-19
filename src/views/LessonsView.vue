@@ -54,21 +54,11 @@ export default {
       window.history.back(); // Alternativa a this.$router.go(-1)
     };
 
-    const evaluateLesson = () => {
-  // Redirige a la vista de CuestionarioLeccion
-  router.push({
-    path: `/pages/cuestionario/${lessonId.value}`,
-    query: { courseId: courseId.value, courseTitle: courseTitle.value }
-  });
-};
-
-
     return {
       courseId,
       courseTitle,
       lessonData, // Devolver los datos de la lección al template
       goBack,
-      evaluateLesson,
     };
   },
 };
@@ -77,7 +67,7 @@ export default {
 <template>
   <BaseLayout
     :title="lessonData?.title || 'Título de la lección'"
-    :breadcrumb="[
+    :breadcrumb="[ 
       { label: 'cursos', route: '/' },
       { label: courseTitle, route: '/' },
       { label: lessonData?.title || 'Título de la lección' },
@@ -129,6 +119,14 @@ export default {
           <li v-if="lessonData.complete">Lección completa</li>
           <li v-else>Lección no completada</li>
         </ul>
+      </div>
+
+      <!-- Popup para crear cuestionario -->
+      <div v-if="showQuizPopup" class="popup-overlay">
+        <div class="popup-content">
+          <button @click="showQuizPopup = false" class="btn-close-popup">X</button>
+          <CuestionarioLeccion :lessonId="lessonId" />
+        </div>
       </div>
     </div>
   </BaseLayout>
@@ -248,6 +246,7 @@ body {
   display: block;
   width: 100%;
   text-align: center;
+  margin-top: 10px; /* Espacio entre botones */
 }
 
 .btn-evaluate:hover {
@@ -316,4 +315,5 @@ body {
 .sidebar ul li {
   margin-bottom: 15px;
 }
+
 </style>
