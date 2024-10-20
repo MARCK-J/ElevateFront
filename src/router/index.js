@@ -14,6 +14,7 @@ import CreateLesson from "../views/CreateLesson.vue";
 import CuestionarioLeccion from "../views/CuestionarioLeccion.vue";
 import CourseListView from "../views/CourseListView.vue";
 import Quizzes from "../views/Quizzes.vue";
+import QuizDetail from "../views/Sections/QuizDetail.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -87,6 +88,11 @@ const router = createRouter({
       name: 'Quizzes',
       component: Quizzes,
       props: route => ({ courseId: route.query.courseId, courseTitle: route.query.courseTitle }),
+    },
+    {
+      path: '/quiz/:quizId',
+      name: 'QuizDetail',
+      component: QuizDetail,
     },
 
   ],
