@@ -1,23 +1,29 @@
 <template>
   <div>
     <div class="container mt-0">
+      <button class="btn btn-primary mb-3" @click="showModal = true">Crear Cuestionario</button>
       <ul class="list-group">
         <li v-for="quiz in quizzes" :key="quiz.quizId" class="list-group-item">
-          <router-link >
-            <h5>{{ quiz.title }}</h5>
+            <router-link :to="{ name: 'QuizDetail', params: { quizId: quiz.quizId } }">
+                <h5>{{ quiz.title }}</h5>
             <p>{{ quiz.description }}</p>
             <p><strong>Fecha Límite:</strong> {{ formatDate(quiz.dueDate) }}</p>
           </router-link>
         </li>
       </ul>
     </div>
+    <QuizCreationModal :show="showModal" :courseId="courseId" @close="showModal = false" @quizCreated="fetchQuizzes" />
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import QuizCreationModal from './QuizModal.vue';
 
 export default {
+  components: {
+    QuizCreationModal,
+  },
   props: {
     courseId: {
       type: Number,
@@ -31,6 +37,7 @@ export default {
   data() {
     return {
       quizzes: [],
+      showModal: false,
     };
   },
   methods: {
