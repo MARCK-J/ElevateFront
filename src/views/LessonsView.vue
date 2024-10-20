@@ -1,69 +1,3 @@
-<script>
-import { useRoute, useRouter } from "vue-router";
-import { computed, ref, onMounted } from "vue";
-import BaseLayout from "../layouts/sections/components/BaseLayout.vue";
-import axios from "axios";
-
-export default {
-  components: {
-    BaseLayout,
-  },
-  setup() {
-    // Acceder a la ruta actual
-    const route = useRoute();
-    const router = useRouter();
-
-    // Extraer `courseId` y `courseTitle` de la query
-    const courseId = computed(() => route.query.courseId || 0);
-    const courseTitle = computed(() => route.query.courseTitle || "");
-    const lessonId = computed(() => route.query.lessonId || "");
-
-    const lessonData = ref(null); // Para almacenar los datos de la lección
-
-    // Función para obtener la lección por `lessonId`
-    const fetchLessonById = async (lessonId) => {
-      try {
-        const response = await axios.get(
-          `http://localhost:9999/api/v1/lessons/${lessonId.value}`, // Usar el lessonId para la consulta
-          {
-            headers: {
-              Accept: "application/json",
-            },
-          }
-        );
-
-        if (response.data.code === "200-OK") {
-          lessonData.value = response.data.result; // Guardar los datos de la lección
-          console.log(lessonData.value)
-          console.log("leccion"+lessonData);
-        } else {
-          console.error("Error al obtener la lección:", response.data.message);
-        }
-      } catch (error) {
-      }
-    };
-
-    // Llamar a la función en el montaje del componente
-    onMounted(() => {
-      if (lessonId) {
-        fetchLessonById(lessonId); // Llamar a la función para obtener la lección
-      }
-    });
-
-    const goBack = () => {
-      window.history.back(); // Alternativa a this.$router.go(-1)
-    };
-
-    return {
-      courseId,
-      courseTitle,
-      lessonData, // Devolver los datos de la lección al template
-      goBack,
-    };
-  },
-};
-</script>
-
 <template>
   <BaseLayout
     :title="lessonData?.title || 'Título de la lección'"
@@ -75,12 +9,15 @@ export default {
   >
     <div class="container">
       <main class="main-content">
-        <div class="video-container" v-if="lessonData">
+        <div class="video-container" v-if="lessonData && lessonData.video">
           <iframe
-            :src="lessonData.video"
+            :src="getEmbedUrl(lessonData.video)"
             frameborder="0"
             allowfullscreen
           ></iframe>
+        </div>
+        <div v-else>
+          <p>No hay video disponible.</p>
         </div>
 
         <aside class="sidebar">
@@ -131,6 +68,84 @@ export default {
     </div>
   </BaseLayout>
 </template>
+
+<script>
+import { useRoute, useRouter } from "vue-router";
+import { computed, ref, onMounted } from "vue";
+import BaseLayout from "../layouts/sections/components/BaseLayout.vue";
+import axios from "axios";
+
+export default {
+  components: {
+    BaseLayout,
+  },
+  setup() {
+    // Acceder a la ruta actual
+    const route = useRoute();
+    const router = useRouter();
+
+    // Extraer `courseId` y `courseTitle` de la query
+    const courseId = computed(() => route.query.courseId || 0);
+    const courseTitle = computed(() => route.query.courseTitle || "");
+    const lessonId = computed(() => route.query.lessonId || "");
+
+    const lessonData = ref(null); // Para almacenar los datos de la lección
+
+    // Función para obtener la lección por `lessonId`
+    const fetchLessonById = async (lessonId) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/lessons/${lessonId.value}`, // Usar el lessonId para la consulta
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (response.data.code === "200-OK") {
+          lessonData.value = response.data.result; // Guardar los datos de la lección
+          console.log(lessonData.value)
+        } else {
+          console.error("Error al obtener la lección:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lección:", error);
+      }
+    };
+
+    // Llamar a la función en el montaje del componente
+    onMounted(() => {
+      if (lessonId.value) {
+        fetchLessonById(lessonId); // Llamar a la función para obtener la lección
+      }
+    });
+
+    const goBack = () => {
+      window.history.back(); // Alternativa a this.$router.go(-1)
+    };
+
+    // Función para convertir la URL del video a una URL embebida
+    const getEmbedUrl = (url) => {
+      let videoId = null;
+      if (url.includes('youtube.com')) {
+        videoId = url.split('v=')[1]?.split('&')[0];
+      } else if (url.includes('youtu.be')) {
+        videoId = url.split('youtu.be/')[1]?.split('?')[0];
+      }
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+    };
+
+    return {
+      courseId,
+      courseTitle,
+      lessonData, // Devolver los datos de la lección al template
+      goBack,
+      getEmbedUrl,
+    };
+  },
+};
+</script>
 
 <style scoped>
 /* Estilos globales */
@@ -246,7 +261,7 @@ body {
   display: block;
   width: 100%;
   text-align: center;
-  margin-top: 10px; /* Espacio entre botones */
+  margin-top: 10px; /* Espacio adicional en la parte superior */
 }
 
 .btn-evaluate:hover {

@@ -4,8 +4,8 @@
       <button class="btn btn-primary mb-3" @click="showModal = true">Crear Cuestionario</button>
       <ul class="list-group">
         <li v-for="quiz in quizzes" :key="quiz.quizId" class="list-group-item">
-          <router-link>
-            <h5>{{ quiz.title }}</h5>
+            <router-link :to="{ name: 'QuizDetail', params: { quizId: quiz.quizId } }">
+                <h5>{{ quiz.title }}</h5>
             <p>{{ quiz.description }}</p>
             <p><strong>Fecha Límite:</strong> {{ formatDate(quiz.dueDate) }}</p>
           </router-link>
