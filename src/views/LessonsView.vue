@@ -46,16 +46,46 @@
         </aside>
       </main>
 
+      <!-- Información de la lección editable -->
       <div class="lesson-info" v-if="lessonData">
-        <h2>{{ lessonData.title }}</h2>
-        <p>Duración: {{ lessonData.duration }}</p>
-        <h3>{{ lessonData.description }}</h3>
-        <p>{{ lessonData.content }}</p>
-        <ul>
-          <li>Orden de la lección: {{ lessonData.order }}</li>
-          <li v-if="lessonData.complete">Lección completa</li>
-          <li v-else>Lección no completada</li>
-        </ul>
+        <div v-if="!isEditing">
+          <h2>{{ lessonData.title }}</h2>
+          <p>Duración: {{ lessonData.duration }}</p>
+          <h3>{{ lessonData.description }}</h3>
+          <p>{{ lessonData.content }}</p>
+          <ul>
+            <li>Orden de la lección: {{ lessonData.order }}</li>
+            <li v-if="lessonData.complete">Lección completa</li>
+            <li v-else>Lección no completada</li>
+          </ul>
+          <button @click="enableEditing" class="btn-edit-content">
+            Editar contenido
+          </button>
+        </div>
+
+        <!-- Formulario para editar los datos de la lección -->
+        <div v-else class="edit-form">
+          <label for="title">Título de la lección</label>
+          <input id="title" v-model="editableLessonData.title" type="text" class="input-field" />
+
+          <label for="duration">Duración</label>
+          <input id="duration" v-model="editableLessonData.duration" type="text" class="input-field" />
+
+          <label for="description">Descripción</label>
+          <textarea id="description" v-model="editableLessonData.description" class="textarea-field"></textarea>
+
+          <label for="content">Contenido</label>
+          <textarea id="content" v-model="editableLessonData.content" class="textarea-field"></textarea>
+
+          <div class="button-group">
+            <button @click="saveLesson" class="btn-save-content">
+              Guardar cambios
+            </button>
+            <button @click="cancelEditing" class="btn-cancel-edit">
+              Cancelar
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Popup para crear cuestionario -->
@@ -90,6 +120,8 @@ export default {
     const lessonId = computed(() => route.query.lessonId || "");
 
     const lessonData = ref(null); // Para almacenar los datos de la lección
+    const isEditing = ref(false); // Estado de edición
+    const editableLessonData = ref({}); // Datos editables de la lección
 
     // Función para obtener la lección por `lessonId`
     const fetchLessonById = async (lessonId) => {
@@ -105,7 +137,7 @@ export default {
 
         if (response.data.code === "200-OK") {
           lessonData.value = response.data.result; // Guardar los datos de la lección
-          console.log(lessonData.value)
+          editableLessonData.value = { ...lessonData.value }; // Copiar datos para edición
         } else {
           console.error("Error al obtener la lección:", response.data.message);
         }
@@ -136,10 +168,51 @@ export default {
       return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
     };
 
+    // Habilitar edición
+    const enableEditing = () => {
+      isEditing.value = true;
+    };
+
+    // Cancelar edición
+    const cancelEditing = () => {
+      isEditing.value = false;
+      editableLessonData.value = { ...lessonData.value }; // Restaurar datos originales
+    };
+
+    // Guardar los cambios en la lección
+    const saveLesson = async () => {
+      try {
+        const response = await axios.put(
+          `http://localhost:9999/api/v1/lessons/${lessonId.value}`,
+          editableLessonData.value,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.code === "200-OK") {
+          lessonData.value = { ...editableLessonData.value }; // Actualizar datos
+          isEditing.value = false; // Salir del modo de edición
+        } else {
+          console.error("Error al actualizar la lección:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error al actualizar la lección:", error);
+      }
+    };
+
     return {
       courseId,
       courseTitle,
-      lessonData, // Devolver los datos de la lección al template
+      lessonData, // Datos de la lección
+      editableLessonData, // Datos editables
+      isEditing, // Estado de edición
+      enableEditing, // Habilitar edición
+      cancelEditing, // Cancelar edición
+      saveLesson, // Guardar cambios
       goBack,
       getEmbedUrl,
     };
@@ -154,6 +227,15 @@ body {
   background-color: #f8f8d9;
   margin: 0;
   padding: 0;
+}
+
+.container[data-v-3350a6d5] {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: rgb(107, 149, 226);
 }
 
 /* Contenedor principal */
@@ -192,6 +274,7 @@ body {
   background-color: #f44747;
 }
 
+
 /* Estilo del contenido principal */
 .main-content {
   display: flex;
@@ -212,10 +295,111 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+
+
+/* Formulario de edición */
+.edit-form {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos de campos de texto y textarea */
+.input-field, .textarea-field {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-field:focus, .textarea-field:focus {
+  border-color: #1e90ff;
+  box-shadow: 0 2px 8px rgba(30, 144, 255, 0.2);
+  outline: none;
+}
+
+.textarea-field {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Grupo de botones */
+.button-group {
+  display: flex;
+  gap: 15px;
+}
+
+/* Botón de edición con estilo mejorado */
+.btn-edit-content {
+  background-color: #007bff; /* Azul vibrante */
+  color: white;
+  padding: 12px 24px; /* Aumentar el padding para un botón más grande */
+  border: none;
+  border-radius: 50px; /* Bordes redondeados para un look moderno */
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3); /* Sombra ligera */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.btn-edit-content:hover {
+  background-color: #0056b3; /* Azul más oscuro al hacer hover */
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4); /* Sombra más profunda al hacer hover */
+  transform: translateY(-2px); /* Efecto de levantamiento al hacer hover */
+}
+
+.btn-edit-content:active {
+  background-color: #004080; /* Azul más oscuro al hacer clic */
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2); /* Sombra reducida al hacer clic */
+  transform: translateY(0); /* Restaurar el botón al hacer clic */
+}
+
+
+/* Botón de guardar cambios */
+.btn-save-content {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-save-content:hover {
+  background-color: #218838;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* Botón de cancelar */
+.btn-cancel-edit {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-cancel-edit:hover {
+  background-color: #c82333;
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
 /* Sección de descarga y evaluación */
 .download-section,
 .evaluation-section {
-  background-color: #f8f8d9;
+  background-color: #eed481;
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 20px;
@@ -247,7 +431,7 @@ body {
 }
 
 .evaluation-section {
-  background-color: #e0f7e9; /* Color de fondo verde claro */
+  background-color: #9cf0bc; /* Color de fondo verde claro */
 }
 
 .btn-evaluate {
@@ -271,7 +455,7 @@ body {
 /* Información de la lección */
 .lesson-info {
   flex: 1 0 100%; /* Full width */
-  background-color: #f8f8d9;
+  background-color: #eed481;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -310,7 +494,7 @@ body {
 /* Barra lateral */
 .sidebar {
   flex: 1;
-  background-color: #f9f9f9;
+  background-color: #b9baf8;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
