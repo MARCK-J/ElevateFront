@@ -69,7 +69,7 @@
     data.value = categories.map(category => {
       return {
         heading: category.nameCategory,
-        items: categoryMap[category.id] || [] // Obtener los cursos correspondientes a la categoría
+        items: (categoryMap[category.id] || []).slice(-3) // Obtener los últimos 3 cursos de cada categoría
       };
     });
   };
@@ -124,7 +124,7 @@
                   :courseId="id "
                   :style="{ width: '225px', height: '125px' }" 
                 />
-                <p class="text-muted">{{ available ? 'Disponible' : 'No disponible' }}</p>
+                <p class="text-muted">{{ available ? 'No disponible' : 'Disponible' }}</p>
               </div>
             </div>
           </div>

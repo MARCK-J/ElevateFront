@@ -10,9 +10,19 @@ import ProfileView from "../views/ProfileView.vue";
 import CourseView from "../views/CourseView.vue";
 import DashboardView from "../views/DashboardView.vue";
 import LessonsView from "../views/LessonsView.vue";
+import CreateLesson from "../views/CreateLesson.vue";
+import CuestionarioLeccion from "../views/CuestionarioLeccion.vue";
+import CourseListView from "../views/CourseListView.vue";
+import Quizzes from "../views/Quizzes.vue";
+import QuizDetail from "../views/Sections/QuizDetail.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: "/pages/cuestionario/:lessonId", // Ruta dinámica que captura el lessonId
+      name: "cuestionario-leccion",
+      component: CuestionarioLeccion,
+    },
     {
       path: "/profile", // Define la ruta que desees
       name: "profile",
@@ -59,7 +69,7 @@ const router = createRouter({
       component: CourseView,
     },
     {
-      path: "/page/courses/lesson",
+      path: "/pages/",
       name: "lessons",
       component: LessonsView,
     },
@@ -68,6 +78,23 @@ const router = createRouter({
       name: "dashboard",
       component: DashboardView,
     },
+    {
+      path: "/courses",
+      name: "coursesList",
+      component: CourseListView,
+    },
+    {
+      path: '/quizzes',
+      name: 'Quizzes',
+      component: Quizzes,
+      props: route => ({ courseId: route.query.courseId, courseTitle: route.query.courseTitle }),
+    },
+    {
+      path: '/quiz/:quizId',
+      name: 'QuizDetail',
+      component: QuizDetail,
+    },
+
   ],
 });
 
