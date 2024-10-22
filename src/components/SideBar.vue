@@ -14,26 +14,38 @@
               <span v-else>👤 Perfil</span>
             </div>
           </li>
+          
           <!-- Mostrar estas opciones solo si el identificador es 2 (Docente) -->
           <template v-if="identificador == '2'">
-            <!-- Creación de Cursos -->
             <li class="nav-item">
               <div class="nav-link" @click="selectOption('create_courses')">
                 <span v-if="isCollapsed">📚</span>
                 <span v-else>📚 Crear Cursos</span>
               </div>
             </li>
-
-           
           </template>
+
+          <!-- Mostrar esta opción solo si el identificador es 1 (Estudiante) -->
+          <template v-if="identificador == '1'">
+            <li class="nav-item">
+              <div class="nav-link" @click="goToEnrolledCourses">
+                <span v-if="isCollapsed">🎓</span>
+                <span v-else>🎓 Cursos Inscritos</span>
+              </div>
+            </li>
+          </template>
+
         </ul>
       </nav>
     </div>
   </div>
 </template>
 
+
+
 <script>
 import { defineComponent, ref } from "vue";
+import { useRouter } from 'vue-router';  // Necesitamos importar useRouter para la navegación
 import { useAppStore } from "../stores";
 
 export default defineComponent({
@@ -42,7 +54,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const isCollapsed = ref(false);
 
-    // Acceder al store de Pinia
+    // Acceder al store de Pinia para obtener el identificador de tipo de persona
     const appStore = useAppStore();
     const identificador = appStore.tipoPersona;
     console.log("Identificador de rol: " + identificador);
@@ -55,15 +67,24 @@ export default defineComponent({
       emit("optionSelected", option);
     };
 
+    const router = useRouter();  // Inicializamos vue-router
+
+    // Función para redirigir a la página de cursos inscritos
+    const goToEnrolledCourses = () => {
+      router.push({ path: '/presentation-enrolled-courses' });  // Redirigir a la ruta correspondiente
+    };
+
     return {
       isCollapsed,
       toggleCollapse,
       selectOption,
-      identificador, // Exponer el identificador desde el store
+      identificador, // Exponer el identificador del store
+      goToEnrolledCourses,  // Exponer la función de navegación
     };
   },
 });
 </script>
+
 
 <style scoped>
 .sidebar-container {

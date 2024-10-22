@@ -15,6 +15,7 @@ import CuestionarioLeccion from "../views/CuestionarioLeccion.vue";
 import CourseListView from "../views/CourseListView.vue";
 import Quizzes from "../views/Quizzes.vue";
 import QuizDetail from "../views/Sections/QuizDetail.vue";
+import PresentationEnrolledCourses from "../views/PresentationEnrolledCourses.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -94,6 +95,13 @@ const router = createRouter({
       name: 'QuizDetail',
       component: QuizDetail,
     },
+
+    {
+      path: '/presentation-enrolled-courses', 
+      name: 'PresentationEnrolledCourses',
+      component: PresentationEnrolledCourses ,
+    }
+    
 
   ],
 });
