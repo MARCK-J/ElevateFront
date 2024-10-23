@@ -14,23 +14,31 @@
               <span v-else>👤 Perfil</span>
             </div>
           </li>
+          
           <!-- Mostrar estas opciones solo si el identificador es 2 (Docente) -->
           <template v-if="identificador == '2'">
-            <!-- Creación de Cursos -->
             <li class="nav-item">
               <div class="nav-link" @click="selectOption('create_courses')">
                 <span v-if="isCollapsed">📚</span>
                 <span v-else>📚 Crear Cursos</span>
               </div>
             </li>
-
-           
           </template>
+
+          <!-- Mostrar esta opción solo si el identificador es 1 (Estudiante) -->
+            <li class="nav-item">
+              <div class="nav-link" @click="selectOption('my_courses')">
+                <span v-if="isCollapsed">🎓</span>
+                <span v-else>🎓 Mis Cursos</span>
+              </div>
+            </li>
         </ul>
       </nav>
     </div>
   </div>
 </template>
+
+
 
 <script>
 import { defineComponent, ref } from "vue";
@@ -42,7 +50,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const isCollapsed = ref(false);
 
-    // Acceder al store de Pinia
+    // Acceder al store de Pinia para obtener el identificador de tipo de persona
     const appStore = useAppStore();
     const identificador = appStore.tipoPersona;
     console.log("Identificador de rol: " + identificador);
@@ -59,11 +67,12 @@ export default defineComponent({
       isCollapsed,
       toggleCollapse,
       selectOption,
-      identificador, // Exponer el identificador desde el store
+      identificador, // Exponer el identificador del store
     };
   },
 });
 </script>
+
 
 <style scoped>
 .sidebar-container {

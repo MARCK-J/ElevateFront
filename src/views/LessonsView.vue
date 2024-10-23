@@ -1,5 +1,5 @@
 <template>
-  <BaseLayout
+   <BaseLayout
     :title="lessonData?.title || 'Título de la lección'"
     :breadcrumb="[ 
       { label: 'cursos', route: '/' },
@@ -58,9 +58,9 @@
             <li v-if="lessonData.complete">Lección completa</li>
             <li v-else>Lección no completada</li>
           </ul>
-          <button @click="enableEditing" class="btn-edit-content">
+            <button v-if="canEditContent()" @click="enableEditing" class="btn-edit-content">
             Editar contenido
-          </button>
+            </button>
         </div>
 
         <!-- Formulario para editar los datos de la lección -->
@@ -104,6 +104,9 @@ import { useRoute, useRouter } from "vue-router";
 import { computed, ref, onMounted } from "vue";
 import BaseLayout from "../layouts/sections/components/BaseLayout.vue";
 import axios from "axios";
+import { useAppStore } from "@/stores";
+
+
 
 export default {
   components: {
@@ -150,6 +153,7 @@ export default {
     onMounted(() => {
       if (lessonId.value) {
         fetchLessonById(lessonId); // Llamar a la función para obtener la lección
+        canEditContent(); // Verificar si el usuario puede editar el contenido
       }
     });
 
@@ -204,8 +208,20 @@ export default {
       }
     };
 
+    
+    const canEditContent = () => {
+      const store = useAppStore(); // Acceder al store global
+      const role = store.getTipoPersona; // Obtener el rol del usuario
+      if (role == 2) {
+        return true; // Permitir edición si es docente
+      }else{
+        return false; // No permitir edición si es estudiante
+      }
+    };
+
     return {
       courseId,
+      canEditContent,
       courseTitle,
       lessonData, // Datos de la lección
       editableLessonData, // Datos editables

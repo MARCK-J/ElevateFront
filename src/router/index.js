@@ -10,7 +10,6 @@ import ProfileView from "../views/ProfileView.vue";
 import CourseView from "../views/CourseView.vue";
 import DashboardView from "../views/DashboardView.vue";
 import LessonsView from "../views/LessonsView.vue";
-import CreateLesson from "../views/CreateLesson.vue";
 import CuestionarioLeccion from "../views/CuestionarioLeccion.vue";
 import CourseListView from "../views/CourseListView.vue";
 import Quizzes from "../views/Quizzes.vue";

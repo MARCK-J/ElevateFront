@@ -1,11 +1,4 @@
-<script setup>
-defineProps({
-  id: {
-    type: Number,
-    default: 0,
-    required: false,
-  },
-});
+<script>
 // Importaciones
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -13,409 +6,213 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import MaterialButton from "@/components/MaterialButton.vue";
 import { useAppStore } from "@/stores";
+import CourseModal from "./CourseModal.vue";
 
-// Estado para almacenar la información del curso y las lecciones
-const courseData = ref({ abilities: "" });
-const lessonsData = ref([]);
-
-// Obtener route, router y store
-const route = useRoute();
-const router = useRouter();
-const store = useAppStore();
-const inscrito = ref(false);
-
-// Obtener el userId directamente desde el store usando computed
-const userId = computed(() => store.getIdentificador);
-const rolId = computed(() => store.getTipoPersona);
-// Computed para determinar si el usuario es docente
-const isDocente = computed(() => {
-  if (rolId.value == 2) {
-    return true;
-  }
-  return false;
-});
-const isEstudiante = computed(() => {
-  if (rolId.value == 1) {
-    return true;
-  }
-  return false;
-});
-
-const isInscrito = computed(() => inscrito.value); // Computed para verificar si está inscrito
-
-// Estado para controlar la visibilidad del pop-up
-const showPopup = ref(false);
-
-// Función para abrir y cerrar el pop-up
-const openPopup = () => (showPopup.value = true);
-const closePopup = () => (showPopup.value = false);
-
-// Dividir las habilidades en un array
-const abilitiesArray = computed(() => courseData.value.abilities.split(";"));
-
-const irAQuizzes = () => {
-  router.push({
-    name: "Quizzes",
-    query: { courseId: courseId, courseTitle: courseData.value.title },
-  });
-};
-
-const courseId = route.query.courseId; // Obtener el courseId de la query
-// Función para confirmar la inscripción
-const confirmInscription = async () => {
-  showPopup.value = false;
-
-  // Verificar el valor de studentUserId
-  console.log("studentUserId:", userId.value);
-  console.log("courseId:", courseId);
-
-  try {
-    const response = await axios.post(
-      "http://localhost:9999/api/v1/enrollments/create",
-      {
-        studentUserId: userId.value,
-        coursesCourseId: courseId,
-        enrollmentDate: new Date().toISOString().split("T")[0], // Fecha actual en formato YYYY-MM-DD
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
-
-    if (response.data.code === "200-OK") {
-      Swal.fire("Éxito", "Inscripción Confirmada!!!", "success");
-      // inscrito.value = true; // Cambiar inscrito a true
-    } else {
-      console.error("Error al crear la inscripción:", response.data.message);
-      Swal.fire("Error", "No se pudo confirmar la inscripción.", "error");
-    }
-  } catch (error) {
-    console.error("Error en la solicitud de inscripción:", error);
-    Swal.fire("Error", "No se pudo confirmar la inscripción.", "error");
-  }
-};
-
-// Función para obtener el curso por ID
-const fetchCourseById = async (id) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:9999/api/v1/courses/${id}`,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
-
-    if (response.data.code === "200-OK") {
-      courseData.value = response.data.result;
-      await fetchLessonsByCourseId(id); // Guardar el curso
-    } else {
-      console.error("Error al obtener el curso:", response.data.message);
-    }
-  } catch (error) {
-    console.error("Error en la solicitud del curso:", error);
-  }
-};
-// Función para obtener Si el usuario está registrado
-const fetchEnrollmentId = async (userId) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:9999/api/v1/enrollments/user/${userId}`,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
-
-    if (response.data.code === "200-OK") {
-      const courseData = response.data.result;
-      const courseId = route.query.courseId; // Obtener el courseId de la query
-      const userIdFromStore = store.getIdentificador; // Obtener el userId del store
-
-      // Verificar si el usuario está inscrito en el curso
-      const enrollmentFound = courseData.some(
-        (enrollment) =>
-          enrollment.studentUserId === userIdFromStore &&
-          enrollment.coursesCourseId == courseId // Comparar courseId como string o número
-      );
-
-      // Cambiar el valor de inscrito a true si se encuentra la inscripción
-      if (enrollmentFound) {
-        inscrito.value = true;
-      } else {
-        inscrito.value = false;
-        console.log("El estudiante no está inscrito en este curso.");
-      }
-    } else {
-      console.error("Error al obtener el curso:", response.data.message);
-    }
-  } catch (error) {
-    console.error("Error en la solicitud del curso:", error);
-  }
-};
-
-// Función para obtener las lecciones por courseId
-const fetchLessonsByCourseId = async (courseId) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:9999/api/v1/lessons/course/${courseId}`,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
-
-    if (response.data.code === "200-OK") {
-      lessonsData.value = response.data.result; // Guardar las lecciones
-    } else {
-      console.error("Error al obtener las lecciones:", response.data.message);
-    }
-  } catch (error) {
-    console.error("Error en la solicitud de lecciones:", error);
-  }
-};
-
-// Llamar a la función en el montaje del componente
-onMounted(() => {
-  if (courseId) {
-    fetchCourseById(courseId);
-    fetchLessonsByCourseId(courseId); // Llamar a la función para obtener el curso
-    fetchEnrollmentId(userId.value);
-  }
-});
-
-// Función para iniciar una lección
-const startLesson = (lessonId, courseTitle) => {
-  // Redirigir o recargar la lista de lecciones
-  if (rolId.value === 1 || rolId.value === 2) {
-    router.push({
-      path: "/pages/",
-      query: {
-        courseId: courseId,
-        lessonId: lessonId,
-        courseTitle: courseTitle,
-      },
-    });
-  } else {
-    Swal.fire("Error", "No se encuentra registrado", "error");
-  }
-};
-
-// Estado de la nueva lección
-const titleLesson = ref("");
-const descriptionLesson = ref("");
-const durationLesson = ref("");
-const contentLesson = ref("");
-const videoLesson = ref("");
-const orderLesson = ref(0);
-
-// Función para crear una nueva lección
-const createLesson = async () => {
-  try {
-    // Datos de la nueva lección
-    const newLesson = {
-      title: titleLesson.value,
-      description: descriptionLesson.value,
-      duration: durationLesson.value,
-      content: contentLesson.value,
-      video: videoLesson.value || null, // El video es opcional
-      order: orderLesson.value,
-      courseId: courseId, // Vincula la lección con el curso
+export default {
+  props: {
+    id: {
+      type: Number,
+      default: 0,
+      required: false,
+    },
+  },
+  components: {
+    MaterialButton,
+    CourseModal,
+  },
+  data() {
+    return {
+      courseData: { abilities: "" },
+      inscrito: false,
+      showPopup: false,
+      lessons: [],
+      showModal: false, // Asegúrate de que show esté definido aquí
+      courseId: 0,
+      store: useAppStore(), // Inicializamos el store aquí
     };
+  },
+  computed: {
+    // Obtener el userId y rolId desde el store
+    userId() {
+      return this.store.getIdentificador;
+    },
+    rolId() {
+      return this.store.getTipoPersona;
+    },
+    // Computed para determinar si el usuario es docente o estudiante
+    isDocente() {
+      return this.rolId === 2;
+    },
+    isEstudiante() {
+      return this.rolId === 1;
+    },
+    isInscrito() {
+      return this.inscrito;
+    },
+    // Dividir las habilidades en un array
+    abilitiesArray() {
+      return this.courseData.abilities.split(";");
+    },
+  },
+  methods: {
+    // Función para obtener el courseId de la query
+    fetchCourseId() {
+      const route = useRoute();
+      this.courseId = route.query.courseId ? Number(route.query.courseId) : 0;
+    },
+    // Función para obtener las lecciones por courseId
+    async fetchLessonsByCourseId(courseId) {
+      try {
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/lessons/course/${courseId}`,
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
 
-    // Realizar la solicitud POST para crear la lección
-    const response = await axios.post(
-      "http://localhost:9999/api/v1/lessons/create",
-      newLesson,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        if (response.status === 200) {
+          this.lessons = response.data.result; // Guardar las lecciones
+        } else {
+          console.error("Error al obtener las lecciones:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de lecciones:", error);
       }
-    );
+    },
+    // Función para obtener el curso por ID
+    async fetchCourseById() {
+      try {
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/courses/${this.courseId}`,
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
 
-    if (response.data.code === "200-OK") {
-      Swal.fire("Éxito", "La lección ha sido creada exitosamente.", "success");
-    } else {
-      console.error("Error al crear la lección:", response.data.message);
-      Swal.fire("Error", "No se pudo crear la lección.", "error");
-    }
-  } catch (error) {
-    console.error("Error en la solicitud de creación de lección:", error);
-    Swal.fire("Error", "Hubo un problema al crear la lección.", "error");
-  }
+        if (response.status === 200) {
+          this.courseData = response.data.result;
+          await this.fetchLessonsByCourseId(this.courseId); // Guardar el curso
+        } else {
+          console.error("Error al obtener el curso:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud del curso:", error);
+      }
+    },
+    // Función para obtener si el usuario está registrado
+    async fetchEnrollmentId() {
+      try {
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/enrollments/user/${this.userId}`,
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          const courseData = response.data.result;
+          // Verificar si el usuario está inscrito en el curso
+          const enrollmentFound = courseData.some(
+            (enrollment) =>
+              enrollment.studentUserId === this.userId &&
+              enrollment.coursesCourseId == this.courseId
+          );
+          this.inscrito = enrollmentFound;
+        } else {
+          console.error("Error al obtener la inscripción:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de inscripción:", error);
+      }
+    },
+    // Función para confirmar la inscripción
+    async confirmInscription() {
+      this.showPopup = false;
+      try {
+        const response = await axios.post(
+          "http://localhost:9999/api/v1/enrollments/create",
+          {
+            studentUserId: this.userId,
+            coursesCourseId: this.courseId,
+            enrollmentDate: new Date().toISOString().split("T")[0],
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          Swal.fire("Éxito", "Inscripción Confirmada!!!", "success");
+          this.inscrito = true;
+        } else {
+          Swal.fire("Error", "No se pudo confirmar la inscripción.", "error");
+        }
+      } catch (error) {
+        Swal.fire("Error", "No se pudo confirmar la inscripción.", "error");
+      }
+    },
+    // Función para navegar a los quizzes
+    irAQuizzes() {
+      this.$router.push({
+        name: "Quizzes",
+        query: { courseId: this.courseId, courseTitle: this.courseData.title },
+      });
+    },
+    // Función para iniciar una lección
+    startLesson(lessonId, courseTitle) {
+      if (this.isDocente || this.isEstudiante) {
+        this.$router.push({
+          path: "/pages/",
+          query: {
+            courseId: this.courseId,
+            lessonId: lessonId,
+            courseTitle: courseTitle,
+          },
+        });
+      } else {
+        Swal.fire("Error", "No se encuentra registrado", "error");
+      }
+    },
+    // Función para abrir y cerrar el pop-up
+    openPopup() {
+      this.showPopup = true;
+    },
+    closePopup() {
+      this.showPopup = false;
+    },
+  },
+  async mounted() {
+    this.fetchCourseId();
+    this.fetchCourseById();
+    this.fetchEnrollmentId();
+  },
 };
 </script>
 
+
 <template>
+  <div>
   <div v-if="isDocente" class="opcionesDocentes">
     <div class="container py-2">
-      <!-- Button trigger modal -->
-      <MaterialButton
-        variant="gradient"
-        color="success"
-        data-bs-toggle="modal"
-        data-bs-target="#createLessonModal"
-      >
-        Crear Nueva Lección
-      </MaterialButton>
+      <button class="btn btn-secondary mb-3" @click="showModal = true">Crear Nueva Leccion</button>
+      <CourseModal :show="showModal" :courseId="courseId" @close="showModal = false" @lessonCreated="fetchCourseById" />
+
       <button @click="irAQuizzes" class="btn btn-primary">
         Mis Cuestionarios
       </button>
-      <!-- Modal -->
-      <div
-        class="modal fade"
-        id="createLessonModal"
-        tabindex="-1"
-        aria-labelledby="createLessonModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="createLessonModalLabel">
-                Crear Nueva Lección
-              </h5>
-              <MaterialButton
-                color="none"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              >
-              </MaterialButton>
-            </div>
-            <div class="modal-body">
-              <!-- Insertar el formulario aquí -->
-              <div class="create-lesson-container">
-                <form @submit.prevent="createLesson">
-                  <div class="form-container">
-                    <div class="first-part">
-                      <!-- Título de la Lección -->
-                      <div class="field-group">
-                        <label for="lesson-title" class="form-label"
-                          >Título de la Lección</label
-                        >
-                        <input
-                          id="lesson-title"
-                          type="text"
-                          class="form-control"
-                          v-model="titleLesson"
-                          placeholder="Título de la lección"
-                          required
-                        />
-                      </div>
-
-                      <!-- Descripción -->
-                      <div class="field-group">
-                        <label for="lesson-description" class="form-label"
-                          >Descripción</label
-                        >
-                        <textarea
-                          id="lesson-description"
-                          class="form-control"
-                          v-model="descriptionLesson"
-                          placeholder="Descripción de la lección"
-                          rows="4"
-                          required
-                        ></textarea>
-                      </div>
-
-                      <!-- Duración -->
-                      <div class="field-group">
-                        <label for="lesson-duration" class="form-label"
-                          >Duración</label
-                        >
-                        <input
-                          id="lesson-duration"
-                          type="text"
-                          class="form-control"
-                          v-model="durationLesson"
-                          placeholder="Ej. 1h 30m"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div class="second-part">
-                      <!-- Contenido -->
-                      <div class="field-group">
-                        <label for="lesson-content" class="form-label"
-                          >Contenido</label
-                        >
-                        <textarea
-                          id="lesson-content"
-                          class="form-control"
-                          v-model="contentLesson"
-                          placeholder="Contenido de la lección"
-                          rows="4"
-                          required
-                        ></textarea>
-                      </div>
-
-                      <!-- Enlace de Video -->
-                      <div class="field-group">
-                        <label for="lesson-video" class="form-label"
-                          >Enlace del Video</label
-                        >
-                        <input
-                          id="lesson-video"
-                          type="url"
-                          class="form-control"
-                          v-model="videoLesson"
-                          placeholder="URL del video (opcional)"
-                        />
-                      </div>
-
-                      <!-- Orden -->
-                      <div class="field-group">
-                        <label for="lesson-order" class="form-label"
-                          >Orden</label
-                        >
-                        <input
-                          id="lesson-order"
-                          type="number"
-                          class="form-control"
-                          v-model="orderLesson"
-                          placeholder="Orden de la lección"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Botón para crear lección -->
-                  <div class="modal-footer justify-content-between">
-                    <MaterialButton
-                      variant="gradient"
-                      color="dark"
-                      data-bs-dismiss="modal"
-                    >
-                      Cerrar
-                    </MaterialButton>
-                    <MaterialButton
-                      type="submit"
-                      variant="gradient"
-                      color="success"
-                      class="mb-0"
-                      data-bs-dismiss="modal"
-                    >
-                      Crear Lección
-                    </MaterialButton>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
+  
+</div>
   <header>
     <div
       v-if="courseData"
@@ -475,7 +272,7 @@ const createLesson = async () => {
         <div class="lecciones-list d-flex justify-content-center flex-wrap">
           <!-- Itera sobre lessonsData para mostrar las lecciones -->
           <div
-            v-for="(lesson, index) in lessonsData"
+            v-for="(lesson, index) in lessons"
             :key="index"
             class="leccion-card"
           >

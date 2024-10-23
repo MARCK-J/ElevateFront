@@ -166,6 +166,21 @@ const showProfileButton = computed(() => isLoggedIn.value);
         id="navigation"
       >
         <ul class="navbar-nav navbar-nav-hover ms-auto">
+          <li class="nav-item mx-2">
+            <router-link
+              role="button"
+              class="nav-link ps-2 d-flex cursor-pointer align-items-center"
+              :class="getTextColor()"
+              to="/courses"
+            >
+              <i
+                class="material-icons opacity-6 me-2 text-md"
+                :class="getTextColor()"
+                >book</i
+              >
+              Cursos
+            </router-link>
+          </li>
           <li class="nav-item dropdown dropdown-hover mx-2">
             <a
               role="button"

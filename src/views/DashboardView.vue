@@ -34,9 +34,10 @@
 import DefaultNavbar from "../examples/navbars/NavbarDefault.vue";
 import Sidebar from "../components/Sidebar.vue";// Asegúrate de que la ruta sea correcta
 import ProfileView from "./ProfileView.vue";
+import CreateCourse from "./CreateCourse.vue";
 import { useAppStore } from "../stores";
 import { computed } from "vue";
-import CreateCourse from "./CreateCourse.vue";
+import MyCourses from "./MyCourses.vue";
 
 export default {
   components: {
@@ -44,6 +45,7 @@ export default {
     Sidebar,
     ProfileView,
     CreateCourse,
+    MyCourses
   },
   setup() {
     const appStore = useAppStore(); // Instancia del store de la aplicación
@@ -67,6 +69,9 @@ export default {
           break;
         case "create_courses":
           this.currentComponent = "CreateCourse"; // Cambiar componente según la opción seleccionada
+          break;
+        case "my_courses":
+          this.currentComponent = "MyCourses"; // Cambiar componente según la opción seleccionada
           break;  
         default:
           this.currentComponent = null; // Manejar otros casos si es necesario
