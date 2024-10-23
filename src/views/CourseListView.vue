@@ -310,6 +310,7 @@ export default {
 .card {
   height: 300px; /* Altura específica para las tarjetas */
   overflow: hidden; /* Ocultar el contenido que se desborda */
+  background-color: bisque;
 }
 
 .card-body {
