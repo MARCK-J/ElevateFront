@@ -158,6 +158,8 @@ Al hacer clic en "Continuar", se enviará el mensaje de activacion a su correo. 
       </div>
     </div>
   </div>
+ 
+
 </template>
 
 <script>
@@ -428,4 +430,12 @@ export default {
   color: #007bff;
   margin-left: 10px;
 }
+
+
+
+
+
+
+
+
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <BaseLayout
+   <BaseLayout
     :title="lessonData?.title || 'Título de la lección'"
     :breadcrumb="[ 
       { label: 'cursos', route: '/' },
@@ -105,6 +105,7 @@ import { computed, ref, onMounted } from "vue";
 import BaseLayout from "../layouts/sections/components/BaseLayout.vue";
 import axios from "axios";
 import { useAppStore } from "@/stores";
+
 
 
 export default {

@@ -1,4 +1,5 @@
 <script setup>
+
 // Importar `useRoute` de Vue Router para acceder a los parámetros de la query
 import { useRoute } from "vue-router";
 
