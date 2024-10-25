@@ -107,7 +107,7 @@ export default {
     async fetchEnrollmentId() {
       try {
         const response = await axios.get(
-          `http://localhost:9999/api/v1/enrollments/user/${this.userId}`,
+          `http://localhost:9999/api/v1/enrollments/student/${this.userId}`,
           {
             headers: {
               Accept: "application/json",
@@ -192,9 +192,9 @@ export default {
   },
   async mounted() {
     this.fetchCourseId();
-    this.fetchCourseById();
-    if(this.rolId == 1){
-      this.fetchEnrollmentId();
+    await this.fetchCourseById();
+    if (this.isEstudiante) {
+      await this.fetchEnrollmentId();
     }
   },
 };
