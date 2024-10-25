@@ -124,12 +124,11 @@ export default {
               },
             }
           );
-          if (response.status === 200) {
-            Swal.fire("Eliminada", "La lección ha sido eliminada con éxito.", "success");
+          console.log(response.status);
+          if (response.status == 200) {
             await this.fetchLessonsByCourseId(this.courseId);
-            this.lessons = this.lessons.filter(
-  (lesson) => lesson.lessonsId !== this.selectedLesson.lessonsId
-);
+            Swal.fire("Eliminada", "La lección ha sido eliminada con éxito.", "success");
+
           } else {
             Swal.fire("Error", "No se pudo eliminar la lección.", "error");
           }
@@ -144,7 +143,7 @@ export default {
     async fetchEnrollmentId() {
       try {
         const response = await axios.get(
-          `http://localhost:9999/api/v1/enrollments/user/${this.userId}`,
+          `http://localhost:9999/api/v1/enrollments/student/${this.userId}`,
           {
             headers: {
               Accept: "application/json",
@@ -230,7 +229,7 @@ export default {
   async mounted() {
     this.fetchCourseId();
     this.fetchCourseById();
-    if(this.rolId == 1){
+    if(this.rolId === 1){
       this.fetchEnrollmentId();
     }
   },
