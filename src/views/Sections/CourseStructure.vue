@@ -329,12 +329,15 @@ export default {
               >
                 Iniciar
               </button>
-              <button
-                @click="openDeletePopup(lesson)"
-                class="btn btn-danger mt-3 w-100"
-              >
-                Eliminar Lección
-              </button>
+              <div v-if="isDocente">
+  <button
+    @click="openDeletePopup(lesson)"
+    class="btn btn-danger mt-3 w-100"
+  >
+    Eliminar Lección
+  </button>
+</div>
+
             </div>
           </div>
         </div>
