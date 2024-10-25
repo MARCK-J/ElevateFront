@@ -4,12 +4,12 @@
     <div class="courses-container">
       <div class="course" v-for="(course, index) in courses" :key="index">
         <img :src="course.image" alt="Imagen del curso" class="course-image" />
-        <p><strong>Curso:</strong> {{ course.title }}</p>
-        <div class="buttons-container">
+        <h3>Curso: {{ course.title }}</h3>
+        <div class="d-flex justify-content-around">
           <RouterLink :to="{ name: 'course', query: { courseId: course.courseId, title: course.title } }">
             <button class="go-to-course-button">Ingresar</button>
           </RouterLink>
-          <button v-if="tipo" class="unsubscribe-button" @click="confirmUnsubscribe(course.title)">Desinscribirme</button>
+          <button class="unsubscribe-button" @click="confirmUnsubscribe(course.enrollmentId, course.title)">Desinscribirme</button>
         </div>
       </div>
     </div>
@@ -23,7 +23,7 @@
           <button class="close-button" @click="closeModal">×</button>
         </div>
         <div class="modal-body" v-if="!modalMessage">
-          ¿Estás seguro que deseas desinscribirte del curso <strong>{{ selectedCourse }}</strong>?
+          ¿Estás seguro que deseas desinscribirte del curso <strong>{{ selectedCourseTitle }}</strong>?
         </div>
         <div class="modal-footer" v-if="!modalMessage">
           <button class="cancel-button" @click="cancelUnsubscribe">Cancelar</button>
@@ -37,7 +37,7 @@
 <script>
 import axios from "axios";
 import { RouterLink } from "vue-router";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { useAppStore } from "@/stores";
 
 export default {
@@ -47,23 +47,16 @@ export default {
   setup() {
     const store = useAppStore();
     const courses = ref([]);
-    const selectedCourse = ref("");
+    const selectedCourseId = ref(null);
+    const selectedCourseTitle = ref("");
     const isModalVisible = ref(false);
     const modalMessage = ref("");
-    const id = store.getIdentificador;
-    const rol = store.getTipoPersona;
-
-    const tipo = computed(() => {
-      if (rol === 1) {
-        return true;
-      } else {
-        return false;
-      }
-    });
 
     const fetchEnrollments = async () => {
       try {
         let response;
+        const id = store.getIdentificador;
+        const rol = store.getTipoPersona;
 
         if (rol === 1) {
           response = await axios.get(`http://localhost:9999/api/v1/enrollments/student/${id}`, {
@@ -79,10 +72,13 @@ export default {
                 headers: {
                   Accept: "application/json",
                 },
-              })
+              }).then(courseResponse => ({
+                ...courseResponse.data.result,
+                enrollmentId: enrollment.enrollmentId
+              }))
             );
             const courseResponses = await Promise.all(coursePromises);
-            courses.value = courseResponses.map((courseResponse) => courseResponse.data.result);
+            courses.value = courseResponses;
           } else {
             console.error("Error al obtener inscripciones:", response.data.message);
           }
@@ -104,15 +100,31 @@ export default {
       }
     };
 
-    const confirmUnsubscribe = (courseTitle) => {
-      selectedCourse.value = courseTitle;
+    const confirmUnsubscribe = (courseId, courseTitle) => {
+      selectedCourseId.value = courseId;
+      selectedCourseTitle.value = courseTitle;
       isModalVisible.value = true;
       modalMessage.value = "";
     };
 
-    const unsubscribe = () => {
-      modalMessage.value = `Te desinscribiste con éxito del curso "${selectedCourse.value}".`;
-      setTimeout(closeModal, 2000);
+    const unsubscribe = async () => {
+      try {
+        const response = await axios.delete(`http://localhost:9999/api/v1/enrollments/${selectedCourseId.value}`, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (response.data.code === "200-OK") {
+          modalMessage.value = `Te desinscribiste con éxito del curso "${selectedCourseTitle.value}".`;
+          courses.value = courses.value.filter(course => course.enrollmentId !== selectedCourseId.value);
+          setTimeout(closeModal, 2000);
+        } else {
+          console.error("Error al desinscribirse:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de desinscripción:", error);
+      }
     };
 
     const cancelUnsubscribe = () => {
@@ -131,7 +143,8 @@ export default {
 
     return {
       courses,
-      selectedCourse,
+      selectedCourseId,
+      selectedCourseTitle,
       isModalVisible,
       modalMessage,
       confirmUnsubscribe,
@@ -139,13 +152,19 @@ export default {
       cancelUnsubscribe,
       closeModal,
       store,
-      tipo,
+      
     };
   },
 };
 </script>
 
 <style scoped>
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #f0f0f0;
+}
+
 .courses-section {
   margin-top: 30px;
   padding: 20px;

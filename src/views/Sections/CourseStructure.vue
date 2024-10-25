@@ -228,9 +228,9 @@ export default {
   },
   async mounted() {
     this.fetchCourseId();
-    this.fetchCourseById();
-    if(this.rolId === 1){
-      this.fetchEnrollmentId();
+    await this.fetchCourseById();
+    if (this.isEstudiante) {
+      await this.fetchEnrollmentId();
     }
   },
 };

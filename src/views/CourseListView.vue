@@ -11,9 +11,9 @@
           </span>
           <input
             v-model="searchQuery"
-            type="text"
+            :type="inputType"
             class="form-control input-group-dynamic mb-2"
-            placeholder="Buscar por titulo, categoria, puntuación o duración"
+            :placeholder="inputPlaceholder"
             required
           />
         </div>
@@ -165,18 +165,49 @@ export default {
       selectedFilter: "title",
       showDropdown: false,
       courses: [],
+      categories: [],
       itemsPerPage: 10,
       currentPage: 0,
       totalPages: 0,
     };
   },
+  computed: {
+    inputType() {
+      return this.selectedFilter === "rating" ? "number" : "text";
+    },
+    inputPlaceholder() {
+      if (this.selectedFilter === "title") {
+        return "Buscar por título";
+      } else if (this.selectedFilter === "rating") {
+        return "Buscar por puntuación";
+      } else if (this.selectedFilter === "duration") {
+        return "Buscar por duración";
+      }
+      return "Buscar";
+    },
+  },
   methods: {
+    async fetchCategories() {
+      try {
+        const response = await axios.get("http://localhost:9999/api/v1/category/all", {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+        if (response.data.code === "200-OK") {
+          this.categories = response.data.result;
+        } else {
+          console.error("Error al obtener categorías:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de categorías:", error);
+      }
+    },
     async fetchCourses(page = 0) {
       try {
         let response;
         const query = this.searchQuery.toLowerCase();
         const filter = this.selectedFilter;
-
         if (filter === "title") {
           response = await axios.get(`http://localhost:9999/api/v1/courses/title?title=${query}&page=${page}&size=${this.itemsPerPage}&sort=title`, {
             headers: {
@@ -196,9 +227,15 @@ export default {
             },
           });
         }
-
         if (response.data.code === "200-OK") {
-          this.courses = response.data.result.content;
+          const courses = response.data.result.content;
+          this.courses = courses.map(course => {
+            const category = this.categories.find(cat => cat.id === course.categoryCourseId);
+            return {
+              ...course,
+              categoryName: category ? category.nameCategory : "Sin categoría",
+            };
+          });
           this.totalPages = response.data.result.totalPages;
           this.currentPage = response.data.result.currentPage;
         } else {
@@ -228,7 +265,8 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
+    await this.fetchCategories();
     this.fetchCourses();
   },
 };
