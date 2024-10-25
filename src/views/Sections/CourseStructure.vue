@@ -193,7 +193,9 @@ export default {
   async mounted() {
     this.fetchCourseId();
     this.fetchCourseById();
-    this.fetchEnrollmentId();
+    if(this.rolId == 1){
+      this.fetchEnrollmentId();
+    }
   },
 };
 </script>
