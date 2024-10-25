@@ -64,16 +64,6 @@
               <a
                 class="dropdown-item"
                 @click="
-                  selectedFilter = 'category';
-                  closeDropdown();
-                "
-                >Categoría</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item"
-                @click="
                   selectedFilter = 'rating';
                   closeDropdown();
                 "
@@ -98,7 +88,7 @@
     <div class="row">
       <div
         class="col-md-6 mb-4"
-        v-for="course in displayedCourses"
+        v-for="course in courses"
         :key="course.courseId"
       >
         <RouterLink :to="{ name: 'course', query: { courseId: course.courseId, title: course.title } }">
@@ -144,6 +134,13 @@
         </RouterLink>
       </div>
     </div>
+
+    <!-- Paginación -->
+    <div class="pagination-container">
+      <button @click="prevPage" :disabled="currentPage === 0">Anterior</button>
+      <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+      <button @click="nextPage" :disabled="currentPage >= totalPages - 1">Siguiente</button>
+    </div>
   </BaseLayout>
 </template>
 
@@ -168,134 +165,71 @@ export default {
       selectedFilter: "title",
       showDropdown: false,
       courses: [],
-      filteredCourses: [],
       itemsPerPage: 10,
+      currentPage: 0,
+      totalPages: 0,
     };
   },
   methods: {
-    async fetchCategories() {
+    async fetchCourses(page = 0) {
       try {
-        const response = await axios.get("http://localhost:9999/api/v1/category/all");
-        if (response.data.code === "200-OK") {
-          return response.data.result;
-        } else {
-          console.error("Error al obtener las categorías:", response.data.message);
-          return [];
+        let response;
+        const query = this.searchQuery.toLowerCase();
+        const filter = this.selectedFilter;
+
+        if (filter === "title") {
+          response = await axios.get(`http://localhost:9999/api/v1/courses/title?title=${query}&page=${page}&size=${this.itemsPerPage}&sort=title`, {
+            headers: {
+              Accept: "application/json",
+            },
+          });
+        } else if (filter === "rating") {
+          response = await axios.get(`http://localhost:9999/api/v1/courses/rating?rating=${query}&page=${page}&size=${this.itemsPerPage}&sort=rating`, {
+            headers: {
+              Accept: "application/json",
+            },
+          });
+        } else if (filter === "duration") {
+          response = await axios.get(`http://localhost:9999/api/v1/courses/duration?duration=${query}&page=${page}&size=${this.itemsPerPage}&sort=duration`, {
+            headers: {
+              Accept: "application/json",
+            },
+          });
         }
-      } catch (error) {
-        console.error("Error en la solicitud de categorías:", error);
-        return [];
-      }
-    },
-    async fetchCourses() {
-      try {
-        const response = await axios.get("http://localhost:9999/api/v1/courses/all");
+
         if (response.data.code === "200-OK") {
-          return response.data.result;
+          this.courses = response.data.result.content;
+          this.totalPages = response.data.result.totalPages;
+          this.currentPage = response.data.result.currentPage;
         } else {
           console.error("Error al obtener cursos:", response.data.message);
-          return [];
         }
       } catch (error) {
         console.error("Error en la solicitud de cursos:", error);
-        return [];
       }
-    },
-    async generateContent() {
-      const categories = await this.fetchCategories();
-      const courses = await this.fetchCourses();
-
-      // Mapa para organizar las categorías por ID
-      const categoryMap = {};
-      categories.forEach(category => {
-        categoryMap[category.id] = category.nameCategory;
-      });
-
-      // Añadir el nombre de la categoría a cada curso
-      this.courses = courses.map(course => {
-        return {
-          ...course,
-          categoryName: categoryMap[course.categoryCourseId] || "Sin categoría",
-        };
-      });
-
-      // Inicialmente mostrar todos los cursos
-      this.filteredCourses = this.courses;
-    },
-    async fetchCoursesByDuration(duration) {
-      try {
-        const response = await axios.get(`http://localhost:9999/api/v1/courses/duration/${duration}`);
-        this.filteredCourses = response.data.result.map(course => {
-          return {
-            ...course,
-            categoryName: this.categoryMap[course.categoryCourseId] || "Sin categoría",
-          };
-        });
-      } catch (error) {
-        console.error("Error al obtener cursos por duración:", error);
-      }
-    },
-    async fetchCoursesByRating(rating) {
-      try {
-        const response = await axios.get(`http://localhost:9999/api/v1/courses/rating/${rating}`);
-        this.filteredCourses = response.data.result.map(course => {
-          return {
-            ...course,
-            categoryName: this.categoryMap[course.categoryCourseId] || "Sin categoría",
-          };
-        });
-      } catch (error) {
-        console.error("Error al obtener cursos por rating:", error);
-      }
-    },
-    handleSearch() {
-      const query = this.searchQuery.toLowerCase();
-
-      if (!this.courses || !Array.isArray(this.courses)) {
-        return [];
-      }
-
-      return this.courses.filter((course) => {
-        switch (this.selectedFilter) {
-          case "title":
-            return course.title.toLowerCase().includes(query);
-          case "category":
-            return course.categoryName.toLowerCase().includes(query);
-          case "rating":
-            return course.rating === Number(query);
-          case "duration":
-            return course.duration.toLowerCase().includes(query);
-          default:
-            return course.title.toLowerCase().includes(query);
-        }
-      });
-    },
-    updateFilteredCourses() {
-      this.filteredCourses = this.handleSearch();
     },
     async executeSearch() {
-      console.log("Filtro seleccionado:", this.selectedFilter);
-      console.log("Valor de búsqueda:", this.searchQuery);
-
-      if (this.selectedFilter === "duration") {
-        await this.fetchCoursesByDuration(this.searchQuery);
-      } else if (this.selectedFilter === "rating") {
-        await this.fetchCoursesByRating(this.searchQuery);
-      } else {
-        this.updateFilteredCourses();
-      }
+      this.currentPage = 0;
+      await this.fetchCourses(this.currentPage);
     },
     closeDropdown() {
       this.showDropdown = false;
     },
+    nextPage() {
+      if (this.currentPage < this.totalPages - 1) {
+        this.currentPage++;
+        this.fetchCourses(this.currentPage);
+      }
+    },
+    prevPage() {
+      if (this.currentPage > 0) {
+        this.currentPage--;
+        this.fetchCourses(this.currentPage);
+      }
+    },
   },
   mounted() {
-    this.generateContent();
-  },
-  computed: {
-    displayedCourses() {
-      return this.filteredCourses;
-    },
+    this.fetchCourses();
   },
 };
 </script>
@@ -323,5 +257,30 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-container button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination-container button:disabled {
+  cursor: not-allowed;
+  background-color: #cccccc;
+}
+
+.pagination-container span {
+  font-size: 1rem;
 }
 </style>
