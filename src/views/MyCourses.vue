@@ -9,7 +9,9 @@
           <RouterLink :to="{ name: 'course', query: { courseId: course.courseId, title: course.title } }">
             <button class="go-to-course-button">Ingresar</button>
           </RouterLink>
-          <button class="unsubscribe-button" @click="confirmUnsubscribe(course.enrollmentId, course.title)">Desinscribirme</button>
+          <div v-if="isEstudiante()">
+            <button class="unsubscribe-button" @click="confirmUnsubscribe(course.enrollmentId, course.title)">Desinscribirme</button>
+          </div>
         </div>
       </div>
     </div>
@@ -51,6 +53,11 @@ export default {
     const selectedCourseTitle = ref("");
     const isModalVisible = ref(false);
     const modalMessage = ref("");
+
+    const isEstudiante = () => {
+      const persona = store.getTipoPersona;
+      return persona === 1;
+    };
 
     const fetchEnrollments = async () => {
       try {
@@ -147,12 +154,11 @@ export default {
       selectedCourseTitle,
       isModalVisible,
       modalMessage,
+      isEstudiante,
       confirmUnsubscribe,
       unsubscribe,
       cancelUnsubscribe,
       closeModal,
-      store,
-      
     };
   },
 };
