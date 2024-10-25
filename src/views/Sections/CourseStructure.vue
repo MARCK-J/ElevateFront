@@ -25,6 +25,8 @@ export default {
       courseData: { abilities: "" },
       inscrito: false,
       showPopup: false,
+      showDeletePopup: false, // Nueva variable para el pop-up de eliminar
+      selectedLesson: null, // Variable para la lección seleccionada para eliminar
       lessons: [],
       showModal: false, // Asegúrate de que show esté definido aquí
       courseId: 0,
@@ -101,6 +103,40 @@ export default {
         }
       } catch (error) {
         console.error("Error en la solicitud del curso:", error);
+      }
+    },
+    openDeletePopup(lesson) {
+      this.selectedLesson = lesson;
+      this.showDeletePopup = true;
+    },
+    closeDeletePopup() {
+      this.showDeletePopup = false;
+      this.selectedLesson = null;
+    },
+    async deleteLesson() {
+      if (this.selectedLesson) {
+        try {
+          const response = await axios.delete(
+            `http://localhost:9999/api/v1/lessons/${this.selectedLesson.lessonsId}`,
+            {
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+          console.log(response.status);
+          if (response.status == 200) {
+            await this.fetchLessonsByCourseId(this.courseId);
+            Swal.fire("Eliminada", "La lección ha sido eliminada con éxito.", "success");
+
+          } else {
+            Swal.fire("Error", "No se pudo eliminar la lección.", "error");
+          }
+        } catch (error) {
+          Swal.fire("Error", "No se pudo eliminar la lección.", "error");
+        } finally {
+          this.closeDeletePopup();
+        }
       }
     },
     // Función para obtener si el usuario está registrado
@@ -293,11 +329,29 @@ export default {
               >
                 Iniciar
               </button>
+              <button
+                @click="openDeletePopup(lesson)"
+                class="btn btn-danger mt-3 w-100"
+              >
+                Eliminar Lección
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- Popup de confirmación para eliminar lección -->
+<div v-if="showDeletePopup" class="popup-overlay d-flex align-items-center justify-content-center">
+  <div class="popup bg-white p-4 rounded shadow">
+    <h2>Confirmar Eliminación</h2>
+    <p>¿Estás seguro de que deseas eliminar esta lección?</p>
+    <div class="d-flex justify-content-between mt-4">
+      <MaterialButton @click="deleteLesson" color="danger">Confirmar</MaterialButton>
+      <MaterialButton @click="closeDeletePopup" color="secondary">Cancelar</MaterialButton>
+    </div>
+  </div>
+</div>
+
   </header>
 
   <!-- Popup de confirmación -->
@@ -573,5 +627,69 @@ h1.display-3 {
 
 .popup-buttons button:last-child:hover {
   background-color: #e0a800;
+}
+
+/* Estilos del popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+}
+
+.popup h2 {
+  margin-bottom: 20px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+/* Diseño de la lista de lecciones */
+.leccion-card {
+  background-color: #f8f9fa;
+  border: 1px solid #e2e6ea;
+  border-radius: 8px;
+  width: 300px;
+  margin: 15px;
+  text-align: center;
+}
+
+.leccion-image {
+  width: 100%;
+  border-bottom: 1px solid #e2e6ea;
+}
+
+.leccion-content {
+  padding: 15px;
+}
+
+.btn-danger {
+  background-color: #da4733;
+  color: #333;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  margin: 0ch;
+  
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
 }
 </style>
