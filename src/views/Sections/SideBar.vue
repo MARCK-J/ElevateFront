@@ -42,7 +42,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { useAppStore } from "../stores";
+import { useAppStore } from "../../stores";
 
 export default defineComponent({
   name: "Sidebar",
