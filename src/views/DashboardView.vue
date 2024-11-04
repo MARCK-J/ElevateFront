@@ -32,7 +32,7 @@
 
 <script>
 import DefaultNavbar from "../examples/navbars/NavbarDefault.vue";
-import MySideBar from "../components/Sidebar.vue";// Asegúrate de que la ruta sea correcta
+import MySideBar from "./Sections/SideBar.vue";// Asegúrate de que la ruta sea correcta
 import ProfileView from "./ProfileView.vue";
 import CreateCourse from "./CreateCourse.vue";
 import { useAppStore } from "../stores";
