@@ -66,7 +66,7 @@ export default {
     },
     async fetchLessonsByCourseId(courseId) {
       try {
-        const response = await axios.get(`http://localhost:9999/api/v1/lessons/course/${courseId}`, {
+        const response = await axios.get(`http://localhost:9999/api/v1/lessons/course/${courseId}/ordered`, {
           headers: { Accept: "application/json" },
         });
 
