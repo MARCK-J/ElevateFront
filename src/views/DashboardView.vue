@@ -12,7 +12,7 @@
   <template v-if="isLogin">
       <div class="DashboardContainer">
         <div class="barralateral">
-          <Sidebar @optionSelected="optionSelected" />
+          <MySideBar @optionSelected="optionSelected" />
         </div>
         <div class="content">
           <component :is="currentComponent" />
@@ -32,7 +32,7 @@
 
 <script>
 import DefaultNavbar from "../examples/navbars/NavbarDefault.vue";
-import Sidebar from "../components/Sidebar.vue";// Asegúrate de que la ruta sea correcta
+import MySideBar from "./Sections/SideBar.vue";// Asegúrate de que la ruta sea correcta
 import ProfileView from "./ProfileView.vue";
 import CreateCourse from "./CreateCourse.vue";
 import { useAppStore } from "../stores";
@@ -42,7 +42,7 @@ import MyCourses from "./MyCourses.vue";
 export default {
   components: {
     DefaultNavbar,
-    Sidebar,
+    MySideBar,
     ProfileView,
     CreateCourse,
     MyCourses

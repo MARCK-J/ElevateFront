@@ -7,6 +7,8 @@ import Swal from "sweetalert2";
 import MaterialButton from "@/components/MaterialButton.vue";
 import { useAppStore } from "@/stores";
 import CourseModal from "./CourseModal.vue";
+import { AuthService } from "../../services/authService";
+
 
 export default {
   props: {
@@ -34,6 +36,7 @@ export default {
       showEditModal: false,
       fieldToEdit: '',
       editContent: '',
+      userData: {}, // Asegúrate de que userData está definido aquí
     };
   },
   computed: {
@@ -63,7 +66,7 @@ export default {
     },
     async fetchLessonsByCourseId(courseId) {
       try {
-        const response = await axios.get(`http://localhost:9999/api/v1/lessons/course/${courseId}`, {
+        const response = await axios.get(`http://localhost:9999/api/v1/lessons/course/${courseId}/ordered`, {
           headers: { Accept: "application/json" },
         });
 
@@ -120,6 +123,23 @@ export default {
         }
       }
     },
+    async fetchUserData() {
+      try {
+        const response = await axios.get(`http://localhost:9999/api/v1/user/${this.userId}`, {
+          headers: { Accept: "application/json" },
+        });
+
+        if (response.data.code === "200-OK") {
+          this.userData = response.data.result;
+          console.log("User Data:", this.userData);
+          // Puedes almacenar los datos del usuario en una variable o hacer algo con ellos
+        } else {
+          console.error("Error al obtener los datos del usuario:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de datos del usuario:", error);
+      }
+    },
     async fetchEnrollmentId() {
       try {
         const response = await axios.get(`http://localhost:9999/api/v1/enrollments/student/${this.userId}`, {
@@ -153,8 +173,9 @@ export default {
             headers: { "Content-Type": "application/json", Accept: "application/json" },
           }
         );
-
-        if (response.status === 200) {
+        
+        if (response.data.code === "200-OK") {
+          await AuthService.sendConfirmation(this.userData.email, this.courseData.title, new Date().toISOString().split("T")[0], this.courseData.duration);
           Swal.fire("Éxito", "Inscripción Confirmada!!!", "success");
           this.inscrito = true;
         } else {
@@ -213,6 +234,7 @@ export default {
   },
   async mounted() {
   this.fetchCourseId();
+  this.fetchUserData();
   
   const savedData = localStorage.getItem('courseData');
   if (savedData) {

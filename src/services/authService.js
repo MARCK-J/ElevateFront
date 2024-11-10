@@ -89,6 +89,39 @@ async sendActivation(email) {
   } catch (error) {
     console.error("Error al enviar el correo:", error.response?.data || error.message);
   }
+},
+// Función para enviar el correo de confirmación de inscripción de curso
+async sendConfirmation(email, course, fecha,duracion) {
+  const url = `http://localhost:9999/api/v1/mail/send/${email}`;
+  const data = {
+    subject: `Confirmación de Inscripción de Curso - Elevate`,
+    message: `
+    Estimado/a Cliente,
+
+    Nos complace informarle que su inscripción al curso "${course}" en Elevate ha sido confirmada correctamente. A partir de este momento, podrá acceder a su cuenta y disfrutar de todas las funcionalidades de nuestra plataforma, así como del contenido y recursos del curso.
+
+    Detalles del Curso:
+    - Nombre del Curso: ${course}
+    - Fecha de Inicio: ${fecha}
+    - Duración: ${duracion} horas
+
+    Si tiene alguna pregunta o necesita asistencia adicional, no dude en ponerse en contacto con nuestro servicio de atención al cliente.
+
+    Atentamente,
+
+    El equipo de soporte de Elevate
+    Marco Reynolds
+    `,
+  };
+
+  try {
+    await axios.post(url, data);
+
+    console.log("Correo de confirmación de inscripción enviado exitosamente.");
+    
+  } catch (error) {
+    console.error("Error al enviar el correo:", error.response?.data || error.message);
+  }
 }
 
 };
