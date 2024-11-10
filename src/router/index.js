@@ -14,9 +14,23 @@ import CuestionarioLeccion from "../views/CuestionarioLeccion.vue";
 import CourseListView from "../views/CourseListView.vue";
 import Quizzes from "../views/Quizzes.vue";
 import QuizDetail from "../views/Sections/QuizDetail.vue";
+import PasswordRecovery from "../components/PasswordRecovery.vue";
+import VerifyRecoveryCode from "../components/VerifyRecoveryCode.vue"; // Importa el componente
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: "/verify-recovery-code",
+      name: "verify-recovery-code",
+      component: VerifyRecoveryCode,
+    },
+    {
+      path: "/password-recovery",
+      name: "password-recovery",
+      component: PasswordRecovery,
+    },
+    
     {
       path: "/pages/cuestionario/:lessonId", // Ruta dinámica que captura el lessonId
       name: "cuestionario-leccion",

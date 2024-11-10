@@ -7,10 +7,14 @@ export const useAppStore = defineStore("storeId", {
     identificador: '', // Almacena el id del usuario
     tipoPersona: '',   // Almacena el tipo de persona
     login: false,
-    verificationCode: ''
+    verificationCode: '',
+    recoveryCode: null,
   }),
 
   actions: {
+    setRecoveryCode(code) {
+      this.recoveryCode = code;
+    },
     setIdentificador(id) {
       this.identificador = id;
     },
