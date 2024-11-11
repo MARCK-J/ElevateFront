@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useAppStore } from "@/stores"; 
 
+
 export const AuthService = {
   // Función de inicio de sesión
   async login(email, password) {
@@ -122,6 +123,41 @@ async sendConfirmation(email, course, fecha,duracion) {
   } catch (error) {
     console.error("Error al enviar el correo:", error.response?.data || error.message);
   }
-}
+},
+
+// Función para enviar el correo con el código de recuperación de contraseña
+async sendPasswordRecoveryCode(email) {
+  const recoveryCode = this.generateCode(); // Genera un solo código
+  const authStore = useAppStore(); // Inicializa la tienda solo una vez
+
+  const url = `http://localhost:9999/api/v1/mail/send/${email}`;
+  const data = {
+    subject: "Código de Recuperación de Contraseña - Elevate",
+    message: `
+    Estimado/a Cliente,
+
+    Hemos recibido una solicitud para restablecer su contraseña en Elevate. Su código de recuperación es:
+
+    ${recoveryCode}
+
+    Por favor, utilice este código en la página de recuperación de contraseña para completar el proceso.
+
+    Si no solicitó este código, ignore este mensaje o comuníquese con nuestro equipo de soporte.
+
+    Atentamente,
+    El equipo de soporte de Elevate
+    `,
+  };
+
+  try {
+    await axios.post(url, data);
+    
+    // Guarda el código en Pinia
+    authStore.setRecoveryCode(recoveryCode);
+    
+  } catch (error) {
+    console.error("Error al enviar el correo de recuperación:", error);
+  }
+},
 
 };

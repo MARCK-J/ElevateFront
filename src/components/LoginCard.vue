@@ -12,7 +12,7 @@
         <p>Contraseña:</p>
         <input v-model="password" placeholder="Ingrese su contraseña" type="password" required/>
       </div>
-      <router-link to="" class="enlace">¿Olvidaste tu contraseña?</router-link>
+      <router-link to="/password-recovery" class="enlace">¿Olvidaste tu contraseña?</router-link>
       <button type="submit">CONTINUAR</button>
     </form>
     <div class="registro-enlace-container">
