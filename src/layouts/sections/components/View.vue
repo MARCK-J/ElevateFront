@@ -95,11 +95,7 @@ const goToLecciones = () => {
         <div class="col-lg-3">
           <div class="nav-wrapper position-relative end-0">
             <ul class="nav nav-pills nav-fill flex-row p-1" role="tablist">
-              <li class="nav-item">
-                <a>
-                  <i class="fas fa-desktop text-sm me-2"></i> Avance
-                </a>
-              </li>
+            
             </ul>
           </div>
         </div>
