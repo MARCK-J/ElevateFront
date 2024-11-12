@@ -8,6 +8,7 @@ import MaterialButton from "@/components/MaterialButton.vue";
 import { useAppStore } from "@/stores";
 import CourseModal from "./CourseModal.vue";
 import { AuthService } from "../../services/authService";
+import ProgressBar from "@/components/ProgressBar.vue";
 
 
 export default {
@@ -21,6 +22,7 @@ export default {
   components: {
     MaterialButton,
     CourseModal,
+    ProgressBar,
   },
   data() {
     return {
@@ -57,6 +59,13 @@ export default {
     },
     abilitiesArray() {
       return this.courseData.abilities.split(";");
+    },
+    completedLessons() {
+      return this.lessons.filter(lesson => lesson.completed).length;
+    },
+    progress() {
+      if (this.lessons.length === 0) return 0;
+      return (this.completedLessons / this.lessons.length) * 100;
     },
   },
   methods: {
@@ -322,6 +331,12 @@ export default {
           </ul>
         </div>
       </section>
+
+      <!-- Progress bar at the top right of the lessons part -->
+      <div class="progress-bar-wrapper">
+        <span class="progress-text">Progress</span>
+        <ProgressBar :progress="progress" />
+      </div>
 
       <div class="info-curso py-5">
         <div class="container">
@@ -707,5 +722,20 @@ h1.display-3 {
 
 .btn-danger:hover {
   background-color: #c82333;
+}
+
+.progress-bar-wrapper {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  width: 250px;
+}
+
+.progress-text {
+  margin-right: 10px;
+  font-size: 16px;
+  color: #333;
 }
 </style>
