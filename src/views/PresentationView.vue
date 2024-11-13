@@ -50,7 +50,7 @@ onUnmounted(() => {
         <div class="row">
           <div class="col-lg-7 text-center mx-auto position-relative">
             <h1 class="custom-title">
-              ELEVATE
+              ELEVATE 2 SPRINT 4
             </h1>
             <p class="custom-subtitle">
               Donde tu aprendizaje se eleva
