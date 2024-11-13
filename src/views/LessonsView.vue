@@ -37,11 +37,18 @@
             </ul>
           </div>
           <div class="evaluation-section">
-            <h3>Evaluación de la lección</h3>
-            <p>Una vez terminada la lección, realice la evaluación.</p>
-            <button @click="evaluateLesson" class="btn-evaluate">
-              Ingresar aquí
-            </button>
+            <h3>Evaluaciones de la lección</h3>
+      <!-- Espacio para los quizzes -->
+      <div class="quizzes-section">
+        <div v-if="quizzes.length > 0">
+          <div v-for="quiz in quizzes" :key="quiz.quizId" class="quiz-button">
+            <button @click="goToQuiz(quiz.quizId)" class="btn btn-evaluate">{{ quiz.title }}</button>
+          </div>
+        </div>
+        <div v-else>
+          <p>Aun no hay un quizz en esta leccion</p>
+        </div>
+      </div>
           </div>
         </aside>
       </main>
@@ -123,6 +130,7 @@ export default {
     const lessonData = ref(null); // Para almacenar los datos de la lección
     const isEditing = ref(false); // Estado de edición
     const editableLessonData = ref({}); // Datos editables de la lección
+    const quizzes = ref([]); // Para almacenar los quizzes de la lección
 
     // Función para obtener la lección por `lessonId`
     const fetchLessonById = async (lessonId) => {
@@ -147,11 +155,24 @@ export default {
       }
     };
 
+    // Función para obtener los quizzes por `lessonId`
+    const fetchQuizzesByLessonId = async (lessonId) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/quizzes/lesson/${lessonId.value}`
+        );
+        quizzes.value = response.data.result;
+      } catch (error) {
+        console.error("Error al obtener los quizzes:", error);
+      }
+    };
+
     // Llamar a la función en el montaje del componente
     onMounted(() => {
       if (lessonId.value) {
         fetchLessonById(lessonId); // Llamar a la función para obtener la lección
         canEditContent(); // Verificar si el usuario puede editar el contenido
+        fetchQuizzesByLessonId(lessonId); // Llamar a la función para obtener los quizzes
       }
     });
 
@@ -225,6 +246,11 @@ export default {
   });
 };
 
+    // Función para redirigir a la pantalla de resolución del quiz
+    const goToQuiz = (quizId) => {
+      router.push({ path: `/resolve-quiz`, query: { quizId } });
+    };
+
     return {
       courseId,
       canEditContent,
@@ -238,6 +264,8 @@ export default {
       goBack,
       getEmbedUrl,
       evaluateLesson, // Nueva función para ir a la vista de quizzes
+      quizzes, // Datos de los quizzes
+      goToQuiz, // Función para ir a la pantalla de resolución del quiz
     };
   },
 };
@@ -537,6 +565,15 @@ body {
 
 .sidebar ul li {
   margin-bottom: 15px;
+}
+
+/* Sección de quizzes */
+.quizzes-section {
+  margin-top: 20px;
+}
+
+.quiz-button {
+  margin-bottom: 10px;
 }
 
 </style>

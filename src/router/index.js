@@ -17,6 +17,7 @@ import QuizDetail from "../views/Sections/QuizDetail.vue";
 import PasswordRecovery from "../components/PasswordRecovery.vue";
 import ResetPassword from '../views/ResetPassword.vue';
 import VerifyRecoveryCode from "../components/VerifyRecoveryCode.vue"; // Importa el componente
+import ResolveQuiz from "../views/ResolveQuiz.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -113,6 +114,12 @@ const router = createRouter({
       name: 'ResetPassword',
       component: ResetPassword,
     },
+    {
+      path: '/resolve-quiz',
+      name: 'ResolveQuiz',
+      component: ResolveQuiz,
+    },
+
 
   ],
 });
