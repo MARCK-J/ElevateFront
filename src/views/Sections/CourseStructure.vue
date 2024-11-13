@@ -11,7 +11,6 @@ import { AuthService } from "../../services/authService";
 import ProgressBar from "@/components/ProgressBar.vue";
 import EditCourseModal from "./EditCourseModal.vue";
 
-
 export default {
   props: {
     id: {
@@ -38,8 +37,8 @@ export default {
       courseId: 0,
       courseData: { abilities: "" },
       store: useAppStore(),
-      fieldToEdit: '',
-      editContent: '',
+      fieldToEdit: "",
+      editContent: "",
       userData: {}, // Asegúrate de que userData está definido aquí
     };
   },
@@ -63,7 +62,7 @@ export default {
       return this.courseData.abilities.split(";");
     },
     completedLessons() {
-      return this.lessons.filter(lesson => lesson.completed).length;
+      return this.lessons.filter((lesson) => lesson.completed).length;
     },
     progress() {
       if (this.lessons.length === 0) return 0;
@@ -77,25 +76,34 @@ export default {
     },
     async fetchLessonsByCourseId(courseId) {
       try {
-        const response = await axios.get(`http://localhost:9999/api/v1/lessons/course/${courseId}/ordered`, {
-          headers: { Accept: "application/json" },
-        });
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/lessons/course/${courseId}/ordered`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
 
         if (response.status === 200) {
           this.lessons = response.data.result;
         } else {
-          console.error("Error al obtener las lecciones:", response.data.message);
+          console.error(
+            "Error al obtener las lecciones:",
+            response.data.message
+          );
         }
       } catch (error) {
         console.error("Error en la solicitud de lecciones:", error);
       }
     },
-    
+
     async fetchCourseById() {
       try {
-        const response = await axios.get(`http://localhost:9999/api/v1/courses/${this.courseId}`, {
-          headers: { Accept: "application/json" },
-        });
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/courses/${this.courseId}`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
 
         if (response.status === 200) {
           this.courseData = response.data.result;
@@ -118,12 +126,19 @@ export default {
     async deleteLesson() {
       if (this.selectedLesson) {
         try {
-          const response = await axios.delete(`http://localhost:9999/api/v1/lessons/${this.selectedLesson.lessonsId}`, {
-            headers: { Accept: "application/json" },
-          });
+          const response = await axios.delete(
+            `http://localhost:9999/api/v1/lessons/${this.selectedLesson.lessonsId}`,
+            {
+              headers: { Accept: "application/json" },
+            }
+          );
           if (response.status == 200) {
             await this.fetchLessonsByCourseId(this.courseId);
-            Swal.fire("Eliminada", "La lección ha sido eliminada con éxito.", "success");
+            Swal.fire(
+              "Eliminada",
+              "La lección ha sido eliminada con éxito.",
+              "success"
+            );
           } else {
             Swal.fire("Error", "No se pudo eliminar la lección.", "error");
           }
@@ -136,16 +151,22 @@ export default {
     },
     async fetchUserData() {
       try {
-        const response = await axios.get(`http://localhost:9999/api/v1/user/${this.userId}`, {
-          headers: { Accept: "application/json" },
-        });
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/user/${this.userId}`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
 
         if (response.data.code === "200-OK") {
           this.userData = response.data.result;
           console.log("User Data:", this.userData);
           // Puedes almacenar los datos del usuario en una variable o hacer algo con ellos
         } else {
-          console.error("Error al obtener los datos del usuario:", response.data.message);
+          console.error(
+            "Error al obtener los datos del usuario:",
+            response.data.message
+          );
         }
       } catch (error) {
         console.error("Error en la solicitud de datos del usuario:", error);
@@ -153,18 +174,26 @@ export default {
     },
     async fetchEnrollmentId() {
       try {
-        const response = await axios.get(`http://localhost:9999/api/v1/enrollments/student/${this.userId}`, {
-          headers: { Accept: "application/json" },
-        });
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/enrollments/student/${this.userId}`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
 
         if (response.status === 200) {
           const courseData = response.data.result;
           const enrollmentFound = courseData.some(
-            (enrollment) => enrollment.studentUserId === this.userId && enrollment.coursesCourseId == this.courseId
+            (enrollment) =>
+              enrollment.studentUserId === this.userId &&
+              enrollment.coursesCourseId == this.courseId
           );
           this.inscrito = enrollmentFound;
         } else {
-          console.error("Error al obtener la inscripción:", response.data.message);
+          console.error(
+            "Error al obtener la inscripción:",
+            response.data.message
+          );
         }
       } catch (error) {
         console.error("Error en la solicitud de inscripción:", error);
@@ -181,12 +210,20 @@ export default {
             enrollmentDate: new Date().toISOString().split("T")[0],
           },
           {
-            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
           }
         );
-        
+
         if (response.data.code === "200-OK") {
-          await AuthService.sendConfirmation(this.userData.email, this.courseData.title, new Date().toISOString().split("T")[0], this.courseData.duration);
+          await AuthService.sendConfirmation(
+            this.userData.email,
+            this.courseData.title,
+            new Date().toISOString().split("T")[0],
+            this.courseData.duration
+          );
           Swal.fire("Éxito", "Inscripción Confirmada!!!", "success");
           this.inscrito = true;
         } else {
@@ -206,7 +243,11 @@ export default {
       if (this.isDocente || this.isEstudiante) {
         this.$router.push({
           path: "/pages/",
-          query: { courseId: this.courseId, lessonId: lessonId, courseTitle: courseTitle },
+          query: {
+            courseId: this.courseId,
+            lessonId: lessonId,
+            courseTitle: courseTitle,
+          },
         });
       } else {
         Swal.fire("Error", "No se encuentra registrado", "error");
@@ -219,50 +260,66 @@ export default {
       this.showPopup = false;
     },
     async saveEdit() {
-      if (this.fieldToEdit === 'title') {
+      if (this.fieldToEdit === "title") {
         this.courseData.title = this.editContent;
-      } else if (this.fieldToEdit === 'description') {
+      } else if (this.fieldToEdit === "description") {
         this.courseData.description = this.editContent;
-      } else if (this.fieldToEdit === 'abilities') {
+      } else if (this.fieldToEdit === "abilities") {
         this.courseData.abilities = this.editContent;
       }
-      const response = await axios.put(`http://localhost:9999/api/v1/courses/${this.courseId}`, { [this.fieldToEdit]: this.editContent });
-  console.log(response.data); // Verificar respuesta
-  localStorage.setItem('courseData', JSON.stringify(this.courseData));
-  Swal.fire("Éxito", "Cambios guardados con éxito.", "success");
-  this.closeEditModal();
+      const response = await axios.put(
+        `http://localhost:9999/api/v1/courses/${this.courseId}`,
+        { [this.fieldToEdit]: this.editContent }
+      );
+      console.log(response.data); // Verificar respuesta
+      localStorage.setItem("courseData", JSON.stringify(this.courseData));
+      Swal.fire("Éxito", "Cambios guardados con éxito.", "success");
+      this.closeEditModal();
     },
     closeEditModal() {
       this.showEditModal = false;
     },
   },
   async mounted() {
-  this.fetchCourseId();
-  this.fetchUserData();
-  await this.fetchCourseById();
+    this.fetchCourseId();
+    this.fetchUserData();
+    await this.fetchCourseById();
 
-  if (this.isEstudiante) {
-    await this.fetchEnrollmentId();
-  }
-},
-
-
+    if (this.isEstudiante) {
+      await this.fetchEnrollmentId();
+    }
+  },
 };
 </script>
-
-
 
 <template>
   <div>
     <div v-if="isDocente" class="opcionesDocentes">
       <div class="container py-2">
-        <button class="btn btn-secondary mb-3" @click="showModal = true">Crear Nueva Lección</button>
-        <CourseModal :show="showModal" :courseId="courseId" @close="showModal = false" @lessonCreated="fetchCourseById" />
-        
-        <button @click="irAQuizzes" class="btn btn-primary">Mis Cuestionarios</button>
-        
-        <button @click="showEditModal = true" class="btn btn-warning">Editar Curso</button>
-        <EditCourseModal :show="showEditModal" :course="courseData" :courseId="courseId" @close="showEditModal = false" @courseUpdated="fetchCourseById" />
+        <button class="btn btn-secondary mb-3" @click="showModal = true">
+          Crear Nueva Lección
+        </button>
+        <CourseModal
+          :show="showModal"
+          :courseId="courseId"
+          @close="showModal = false"
+          @lessonCreated="fetchCourseById"
+        />
+
+        <button @click="irAQuizzes" class="btn btn-primary">
+          Mis Cuestionarios
+        </button>
+
+        <button @click="showEditModal = true" class="btn btn-warning">
+          Editar Curso
+        </button>
+        <EditCourseModal
+          :show="showEditModal"
+          :course="courseData"
+          :courseId="courseId"
+          @close="showEditModal = false"
+          @courseUpdated="fetchCourseById"
+        />
       </div>
     </div>
 
@@ -289,10 +346,14 @@ export default {
               </p>
               <div v-if="isEstudiante">
                 <div v-if="isInscrito">
-                  <MaterialButton color="success" class="mt-4">Suscrito</MaterialButton>
+                  <MaterialButton color="success" class="mt-4"
+                    >Suscrito</MaterialButton
+                  >
                 </div>
                 <div v-else>
-                  <MaterialButton color="white" class="mt-4" @click="openPopup">Inscribirse</MaterialButton>
+                  <MaterialButton color="white" class="mt-4" @click="openPopup"
+                    >Inscribirse</MaterialButton
+                  >
                 </div>
               </div>
             </div>
@@ -304,7 +365,11 @@ export default {
         <div class="container">
           <h2 class="text-center mb-5">Habilidades que Obtendrás</h2>
           <ul class="list-unstyled d-flex justify-content-center flex-wrap">
-            <li v-for="(ability, index) in abilitiesArray" :key="index" class="mb-4 px-4">
+            <li
+              v-for="(ability, index) in abilitiesArray"
+              :key="index"
+              class="mb-4 px-4"
+            >
               <i class="fas fa-check-circle mr-2"></i> {{ ability }}
             </li>
           </ul>
@@ -321,7 +386,11 @@ export default {
         <div class="container">
           <h1 class="text-center mb-5">Listado de Lecciones</h1>
           <div class="lecciones-list d-flex justify-content-center flex-wrap">
-            <div v-for="(lesson, index) in lessons" :key="index" class="leccion-card">
+            <div
+              v-for="(lesson, index) in lessons"
+              :key="index"
+              class="leccion-card"
+            >
               <img
                 src="https://img.freepik.com/vector-premium/hombre-que-sienta-pila-libros_165488-4983.jpg"
                 alt="Lección"
@@ -331,14 +400,32 @@ export default {
                 <h2>{{ lesson.title }}</h2>
                 <p><strong>Duración:</strong> {{ lesson.duration }}</p>
                 <p>{{ lesson.description }}</p>
-                
+
                 <div v-if="isEstudiante">
                   <div v-if="isInscrito">
-                  <button @click="startLesson(lesson.lessonsId, courseData.title)" class="btn-start">Iniciar</button>
+                    <button
+                      @click="startLesson(lesson.lessonsId, courseData.title)"
+                      class="btn-start"
+                    >
+                      Iniciar
+                    </button>
+                  </div>
                 </div>
+                <div v-if="isDocente">
+                  <button
+                    @click="startLesson(lesson.lessonsId, courseData.title)"
+                    class="btn-start"
+                  >
+                    Iniciar
+                  </button>
                 </div>
-                  <div v-if="isDocente">
-                  <button @click="openDeletePopup(lesson)" class="btn btn-danger mt-3 w-100">Eliminar Lección</button>
+                <div v-if="isDocente">
+                  <button
+                    @click="openDeletePopup(lesson)"
+                    class="btn btn-danger mt-3 w-100"
+                  >
+                    Eliminar Lección
+                  </button>
                 </div>
               </div>
             </div>
@@ -347,13 +434,20 @@ export default {
       </div>
 
       <!-- Popup de confirmación para eliminar lección -->
-      <div v-if="showDeletePopup" class="popup-overlay d-flex align-items-center justify-content-center">
+      <div
+        v-if="showDeletePopup"
+        class="popup-overlay d-flex align-items-center justify-content-center"
+      >
         <div class="popup bg-white p-4 rounded shadow">
           <h2>Confirmar Eliminación</h2>
           <p>¿Estás seguro de que deseas eliminar esta lección?</p>
           <div class="d-flex justify-content-between mt-4">
-            <MaterialButton @click="deleteLesson" color="danger">Confirmar</MaterialButton>
-            <MaterialButton @click="closeDeletePopup" color="secondary">Cancelar</MaterialButton>
+            <MaterialButton @click="deleteLesson" color="danger"
+              >Confirmar</MaterialButton
+            >
+            <MaterialButton @click="closeDeletePopup" color="secondary"
+              >Cancelar</MaterialButton
+            >
           </div>
         </div>
       </div>
@@ -365,15 +459,17 @@ export default {
         <h2>Confirmar Inscripción</h2>
         <p>¿Estás seguro de que deseas inscribirte en este curso?</p>
         <div class="popup-buttons">
-          <MaterialButton color="white" @click="confirmInscription">Confirmar</MaterialButton>
-          <MaterialButton color="none" @click="closePopup">Cancelar</MaterialButton>
+          <MaterialButton color="white" @click="confirmInscription"
+            >Confirmar</MaterialButton
+          >
+          <MaterialButton color="none" @click="closePopup"
+            >Cancelar</MaterialButton
+          >
         </div>
       </div>
     </div>
-
   </div>
 </template>
-
 
 <style scoped>
 /* Estilos del formulario y modal */
@@ -690,7 +786,6 @@ h1.display-3 {
   border-radius: 8px;
   transition: background-color 0.3s ease;
   margin: 0ch;
-  
 }
 
 .btn-danger:hover {
