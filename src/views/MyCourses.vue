@@ -1,22 +1,42 @@
 <template>
   <div class="courses-section">
-    <h2>Mis Cursos</h2>
+    <div class="header-section">
+      <h2>Mis Cursos</h2>
+      <div v-if="isDocente()" class="edit-mode-switch">
+        <label for="editModeToggle">Modo Edición</label>
+        <label class="switch">
+          <input id="editModeToggle" type="checkbox" v-model="isEditMode" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+
     <div class="courses-container">
       <div class="course" v-for="(course, index) in courses" :key="index">
         <img :src="course.image" alt="Imagen del curso" class="course-image" />
-        <h3>Curso: {{ course.title }}</h3>
-        <div class="d-flex justify-content-around">
-          <RouterLink :to="{ name: 'course', query: { courseId: course.courseId, title: course.title } }">
-            <button class="go-to-course-button">Ingresar</button>
-          </RouterLink>
-          <div v-if="isEstudiante()">
-            <button class="unsubscribe-button" @click="confirmUnsubscribe(course.enrollmentId, course.title)">Desinscribirme</button>
+        
+        <div v-if="isEditMode">
+          <input v-model="course.title" placeholder="Editar título" class="edit-input" />
+          <textarea v-model="course.description" placeholder="Editar descripción" class="edit-input"></textarea>
+          <button class="save-button" @click="updateCourse(course)">Guardar Cambios</button>
+          <button class="delete-button" @click="deleteCourse(course.courseId)">Eliminar Curso</button>
+        </div>
+        
+        <div v-else>
+          <h3>Curso: {{ course.title }}</h3>
+          <p>{{ course.description }}</p>
+          <div class="d-flex justify-content-around">
+            <RouterLink :to="{ name: 'course', query: { courseId: course.courseId, title: course.title } }">
+              <button class="go-to-course-button">Ingresar</button>
+            </RouterLink>
+            <div v-if="isEstudiante()">
+              <button class="unsubscribe-button" @click="confirmUnsubscribe(course.enrollmentId, course.title)">Desinscribirme</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Custom Modal for Unsubscribe Confirmation -->
     <div v-if="isModalVisible" class="custom-modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -53,10 +73,14 @@ export default {
     const selectedCourseTitle = ref("");
     const isModalVisible = ref(false);
     const modalMessage = ref("");
+    const isEditMode = ref(false);
 
     const isEstudiante = () => {
-      const persona = store.getTipoPersona;
-      return persona === 1;
+      return store.getTipoPersona === 1;
+    };
+
+    const isDocente = () => {
+      return store.getTipoPersona === 2;
     };
 
     const fetchEnrollments = async () => {
@@ -67,22 +91,19 @@ export default {
 
         if (rol === 1) {
           response = await axios.get(`http://localhost:9999/api/v1/enrollments/student/${id}`, {
-            headers: {
-              Accept: "application/json",
-            },
+            headers: { Accept: "application/json" },
           });
-
           if (response.data.code === "200-OK") {
             const enrollments = response.data.result;
             const coursePromises = enrollments.map((enrollment) =>
-              axios.get(`http://localhost:9999/api/v1/courses/${enrollment.coursesCourseId}`, {
-                headers: {
-                  Accept: "application/json",
-                },
-              }).then(courseResponse => ({
-                ...courseResponse.data.result,
-                enrollmentId: enrollment.enrollmentId
-              }))
+              axios
+                .get(`http://localhost:9999/api/v1/courses/${enrollment.coursesCourseId}`, {
+                  headers: { Accept: "application/json" },
+                })
+                .then((courseResponse) => ({
+                  ...courseResponse.data.result,
+                  enrollmentId: enrollment.enrollmentId,
+                }))
             );
             const courseResponses = await Promise.all(coursePromises);
             courses.value = courseResponses;
@@ -91,11 +112,8 @@ export default {
           }
         } else if (rol === 2) {
           response = await axios.get(`http://localhost:9999/api/v1/courses/teacher/${id}`, {
-            headers: {
-              Accept: "application/json",
-            },
+            headers: { Accept: "application/json" },
           });
-
           if (response.data.code === "200-OK") {
             courses.value = response.data.result;
           } else {
@@ -117,14 +135,11 @@ export default {
     const unsubscribe = async () => {
       try {
         const response = await axios.delete(`http://localhost:9999/api/v1/enrollments/${selectedCourseId.value}`, {
-          headers: {
-            Accept: "application/json",
-          },
+          headers: { Accept: "application/json" },
         });
-
         if (response.data.code === "200-OK") {
           modalMessage.value = `Te desinscribiste con éxito del curso "${selectedCourseTitle.value}".`;
-          courses.value = courses.value.filter(course => course.enrollmentId !== selectedCourseId.value);
+          courses.value = courses.value.filter((course) => course.enrollmentId !== selectedCourseId.value);
           setTimeout(closeModal, 2000);
         } else {
           console.error("Error al desinscribirse:", response.data.message);
@@ -144,6 +159,40 @@ export default {
       modalMessage.value = "";
     };
 
+    const updateCourse = async (course) => {
+      try {
+        const response = await axios.put(`http://localhost:9999/api/v1/courses/${course.courseId}`, {
+          title: course.title,
+          description: course.description,
+        }, {
+          headers: { Accept: "application/json" },
+        });
+        if (response.data.code === "200-OK") {
+          console.log("Curso actualizado con éxito");
+        } else {
+          console.error("Error al actualizar el curso:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de actualización de curso:", error);
+      }
+    };
+
+    const deleteCourse = async (courseId) => {
+      try {
+        const response = await axios.delete(`http://localhost:9999/api/v1/courses/${courseId}`, {
+          headers: { Accept: "application/json" },
+        });
+        if (response.data.code === "200-OK") {
+          courses.value = courses.value.filter((course) => course.courseId !== courseId);
+          console.log("Curso eliminado con éxito");
+        } else {
+          console.error("Error al eliminar el curso:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de eliminación de curso:", error);
+      }
+    };
+
     onMounted(() => {
       fetchEnrollments();
     });
@@ -154,164 +203,134 @@ export default {
       selectedCourseTitle,
       isModalVisible,
       modalMessage,
+      isEditMode,
       isEstudiante,
+      isDocente,
       confirmUnsubscribe,
       unsubscribe,
       cancelUnsubscribe,
       closeModal,
+      updateCourse,
+      deleteCourse,
     };
   },
 };
 </script>
 
 <style scoped>
-html, body {
-  height: 100%;
-  margin: 0;
-  background-color: #f0f0f0;
-}
-
-.courses-section {
-  margin-top: 30px;
-  padding: 20px;
-}
-
-.courses-section h2 {
-  font-family: 'Arial', sans-serif;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .courses-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  gap: 20px;
 }
 
 .course {
-  background-color: #fff;
-  width: 30%;
-  margin-bottom: 20px;
-  padding: 15px;
-  border-radius: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 300px;
   text-align: center;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-  border: 1px solid #4a4a4a;
-}
-
-.course:hover {
-  transform: scale(1.05);
 }
 
 .course-image {
-  width: 100%;
-  height: 150px; /* Altura fija para la imagen */
+  max-width: 100%;
+  max-height: 200px;
+  width: auto;
+  height: auto;
   object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 10px;
+  border-radius: 8px;
 }
 
-.buttons-container {
+.edit-mode-switch {
   display: flex;
-  justify-content: space-around;
-  margin-top: 10px;
+  align-items: center;
 }
 
-.unsubscribe-button, .go-to-course-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  margin-left: 10px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
   cursor: pointer;
-  transition: background-color 0.3s;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.edit-input {
+  width: 100%;
+  margin-top: 5px;
+  padding: 8px;
+  font-size: 1rem;
+}
+
+.save-button, .delete-button {
+  padding: 10px 20px;
+  margin-top: 10px;
   font-size: 1rem;
 }
 
 .unsubscribe-button {
-  background-color: #FF6347;
-  color: white;
-}
-
-.unsubscribe-button:hover {
-  background-color: #c0392b;
-}
-
-.go-to-course-button {
-  background-color: #3e8e41;
-  color: white;
-}
-
-.go-to-course-button:hover {
-  background-color: #09640c;
+  background-color: #ffcccc;
+  color: #333;
 }
 
 .custom-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  width: 400px;
-  text-align: center;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: center;
-}
-
-.cancel-button, .confirm-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-size: 1rem;
-}
-
-.cancel-button {
-  background-color: #cccccc;
-  color: white;
-  margin-right: 10px;
+  /* estilo del modal */
 }
 
 .confirm-button {
-  background-color: #FF6347;
+  background-color: #ff3333;
   color: white;
 }
 
-.cancel-button:hover {
-  background-color: #999999;
+.cancel-button {
+  background-color: #ccc;
 }
 
-.confirm-button:hover {
-  background-color: #c0392b;
+.close-button {
+  background-color: transparent;
+  font-size: 1.5rem;
 }
 </style>

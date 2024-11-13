@@ -1,137 +1,158 @@
 <template>
-    <div class="password-recovery-container">
-      <div class="password-recovery-box">
-        <h3>Recuperación de Contraseña</h3>
-        <form @submit.prevent="enviarCodigo" class="recovery-form">
-          <div class="custom-input">
-            <label for="email">Correo electrónico:</label>
-            <input 
-              v-model="email" 
-              type="email" 
-              id="email" 
-              placeholder="Ingrese su correo electrónico" 
-              required 
-            />
-          </div>
-          <button type="submit" class="submit-btn">Enviar Código de Recuperación</button>
-        </form>
-      </div>
+  <div class="password-recovery-container">
+    <div class="password-recovery-box">
+      <h3>Recuperación de Contraseña</h3>
+      <form @submit.prevent="enviarCodigo" class="recovery-form">
+        <div class="custom-input">
+          <label for="email">Correo electrónico:</label>
+          <input 
+            v-model="email" 
+            type="email" 
+            id="email" 
+            placeholder="Ingrese su correo electrónico" 
+            required 
+          />
+          <i class="icon-email"></i>
+        </div>
+        <button type="submit" class="submit-btn">
+          <i class="icon-send"></i> Enviar Código de Recuperación
+        </button>
+      </form>
     </div>
-  </template>
-  
-  <script>
-  import { AuthService } from "@/services/authService";
-  import Swal from "sweetalert2";
-  
-  export default {
-    data() {
-      return {
-        email: "",
-      };
+  </div>
+</template>
+
+<script>
+import { AuthService } from "@/services/authService";
+import Swal from "sweetalert2";
+
+export default {
+  data() {
+    return {
+      email: "",
+    };
+  },
+  methods: {
+    async enviarCodigo() {
+      try {
+        await AuthService.sendPasswordRecoveryCode(this.email);
+        Swal.fire({
+          title: "Código enviado",
+          text: "Revisa tu correo electrónico para el código de recuperación",
+          icon: "info",
+        });
+        this.$router.push("/verify-recovery-code");
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo enviar el código. Intenta nuevamente",
+          icon: "error",
+        });
+      }
     },
-    methods: {
-      async enviarCodigo() {
-        try {
-          await AuthService.sendPasswordRecoveryCode(this.email);
-          Swal.fire({
-            title: "Código enviado",
-            text: "Revisa tu correo electrónico para el código de recuperación",
-            icon: "info",
-          });
-          this.$router.push("/verify-recovery-code");
-        } catch (error) {
-          Swal.fire({
-            title: "Error",
-            text: "No se pudo enviar el código. Intenta nuevamente",
-            icon: "error",
-          });
-        }
-      },
-    },
-  };
-  </script>
-  
-  <style scoped>
-  
-  .password-recovery-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #8be697;
-  }
-  
+  },
+};
+</script>
+
+<style scoped>
+.password-recovery-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #83a4d4, #b6fbff);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.password-recovery-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+h3 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.recovery-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.custom-input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.custom-input label {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.custom-input input {
+  padding: 12px 15px;
+  padding-left: 35px;
+  font-size: 16px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  transition: border-color 0.3s;
+}
+
+.custom-input input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.icon-email {
+  position: absolute;
+  left: 10px;
+  top: 35px;
+  font-size: 18px;
+  color: #999;
+}
+
+.submit-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.submit-btn i {
+  font-size: 18px;
+}
+
+.submit-btn:hover {
+  background-color: #218838;
+}
+
+.submit-btn:focus {
+  outline: none;
+}
+
+@media (max-width: 500px) {
   .password-recovery-box {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
+    width: 90%;
   }
-  
-  h3 {
-    color: #333;
-    margin-bottom: 20px;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  .recovery-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .custom-input {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .custom-input label {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 5px;
-  }
-  
-  .custom-input input {
-    padding: 10px 15px;
-    font-size: 16px;
-    width: 100%;
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    transition: border-color 0.3s;
-  }
-  
-  .custom-input input:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-  
-  .submit-btn {
-    background-color: #007bff;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 25px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .submit-btn:hover {
-    background-color: #0056b3;
-  }
-  
-  .submit-btn:focus {
-    outline: none;
-  }
-  
-  @media (max-width: 500px) {
-    .password-recovery-box {
-      width: 90%;
-    }
-  }
-  </style>
-  
+}
+</style>
