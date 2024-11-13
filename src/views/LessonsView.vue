@@ -22,7 +22,7 @@
 
         <aside class="sidebar">
           <div class="download-section">
-            <h3>Archivos descargables</h3>
+            <h3>Archivos Descargables</h3>
             <ul>
               <li>
                 <a href="#" class="btn-download-exercise"
@@ -105,8 +105,6 @@ import { computed, ref, onMounted } from "vue";
 import BaseLayout from "../layouts/sections/components/BaseLayout.vue";
 import axios from "axios";
 import { useAppStore } from "@/stores";
-
-
 
 export default {
   components: {
@@ -208,16 +206,24 @@ export default {
       }
     };
 
-    
+    // Función para verificar si el usuario puede editar el contenido
     const canEditContent = () => {
       const store = useAppStore(); // Acceder al store global
       const role = store.getTipoPersona; // Obtener el rol del usuario
-      if (role == 2) {
-        return true; // Permitir edición si es docente
-      }else{
-        return false; // No permitir edición si es estudiante
-      }
+      return role == 2; // Permitir edición si es docente
     };
+
+    // Función para navegar a la vista de quizzes
+    const evaluateLesson = () => {
+  router.push({
+    name: 'Quizzes',  // Asegúrate de que esta ruta esté registrada en tu archivo de rutas (e.g., 'Quizzes')
+    query: {
+      courseId: courseId.value,
+      courseTitle: courseTitle.value,
+      lessonId: lessonId.value,
+    },
+  });
+};
 
     return {
       courseId,
@@ -231,10 +237,12 @@ export default {
       saveLesson, // Guardar cambios
       goBack,
       getEmbedUrl,
+      evaluateLesson, // Nueva función para ir a la vista de quizzes
     };
   },
 };
 </script>
+
 
 <style scoped>
 /* Estilos globales */
