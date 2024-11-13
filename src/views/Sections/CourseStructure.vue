@@ -331,8 +331,13 @@ export default {
                 <h2>{{ lesson.title }}</h2>
                 <p><strong>Duración:</strong> {{ lesson.duration }}</p>
                 <p>{{ lesson.description }}</p>
-                <button @click="startLesson(lesson.lessonsId, courseData.title)" class="btn-start">Iniciar</button>
-                <div v-if="isDocente">
+                
+                <div v-if="isEstudiante">
+                  <div v-if="isInscrito">
+                  <button @click="startLesson(lesson.lessonsId, courseData.title)" class="btn-start">Iniciar</button>
+                </div>
+                </div>
+                  <div v-if="isDocente">
                   <button @click="openDeletePopup(lesson)" class="btn btn-danger mt-3 w-100">Eliminar Lección</button>
                 </div>
               </div>
