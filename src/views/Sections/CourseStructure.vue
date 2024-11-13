@@ -10,7 +10,6 @@ import CourseModal from "./CourseModal.vue";
 import { AuthService } from "../../services/authService";
 import ProgressBar from "@/components/ProgressBar.vue";
 
-
 export default {
   props: {
     id: {
@@ -32,13 +31,15 @@ export default {
       showDeletePopup: false,
       selectedLesson: null,
       lessons: [],
+      totalLessons: 0,
       showModal: false,
       courseId: 0,
       store: useAppStore(),
       showEditModal: false,
       fieldToEdit: '',
       editContent: '',
-      userData: {}, // Asegúrate de que userData está definido aquí
+      userData: {},
+      draggingLesson: null, // Nueva propiedad para arrastrar lecciones
     };
   },
   computed: {
@@ -88,7 +89,6 @@ export default {
         console.error("Error en la solicitud de lecciones:", error);
       }
     },
-    
     async fetchCourseById() {
       try {
         const response = await axios.get(`http://localhost:9999/api/v1/courses/${this.courseId}`, {
@@ -132,6 +132,24 @@ export default {
         }
       }
     },
+    async updateLessonOrder(lesson) {
+      try {
+        const response = await axios.put(`http://localhost:9999/api/v1/lessons/${lesson.lessonsId}`, {
+          order: lesson.order,
+        });
+        if (response.status === 200) {
+          Swal.fire("Éxito", "Orden de la lección actualizado.", "success");
+        } else {
+          Swal.fire("Error", "No se pudo actualizar el orden de la lección.", "error");
+        }
+      } catch (error) {
+        console.error("Error al actualizar el orden de la lección:", error);
+      }
+    },
+    toggleCompleted(lesson) {
+      lesson.completed = !lesson.completed;
+      // Aquí podrías hacer una llamada para actualizar el estado de "completed" en la base de datos si es necesario
+    },
     async fetchUserData() {
       try {
         const response = await axios.get(`http://localhost:9999/api/v1/user/${this.userId}`, {
@@ -140,8 +158,6 @@ export default {
 
         if (response.data.code === "200-OK") {
           this.userData = response.data.result;
-          console.log("User Data:", this.userData);
-          // Puedes almacenar los datos del usuario en una variable o hacer algo con ellos
         } else {
           console.error("Error al obtener los datos del usuario:", response.data.message);
         }
@@ -230,44 +246,33 @@ export default {
         this.courseData.abilities = this.editContent;
       }
       const response = await axios.put(`http://localhost:9999/api/v1/courses/${this.courseId}`, { [this.fieldToEdit]: this.editContent });
-  console.log(response.data); // Verificar respuesta
-  localStorage.setItem('courseData', JSON.stringify(this.courseData));
-  Swal.fire("Éxito", "Cambios guardados con éxito.", "success");
-  this.closeEditModal();
+      localStorage.setItem('courseData', JSON.stringify(this.courseData));
+      Swal.fire("Éxito", "Cambios guardados con éxito.", "success");
+      this.closeEditModal();
     },
     closeEditModal() {
       this.showEditModal = false;
-      this.editContent = '';
-      this.fieldToEdit = '';
+    },
+    formatDate(date) {
+      const d = new Date(date);
+      const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+      return d.toLocaleDateString("es-ES", options);
+    },
+  },
+  watch: {
+    lessons: {
+      handler() {
+        this.totalLessons = this.lessons.length;
+      },
+      immediate: true,
     },
   },
   async mounted() {
-  this.fetchCourseId();
-  this.fetchUserData();
-  
-  const savedData = localStorage.getItem('courseData');
-  if (savedData) {
-    this.courseData = JSON.parse(savedData);
-  } else {
+    await this.fetchCourseId();
     await this.fetchCourseById();
-  }
-
-  if (this.isEstudiante) {
+    await this.fetchUserData();
     await this.fetchEnrollmentId();
-  }
-},
-
-  watch: {
-  courseData: {
-    handler(newValue) {
-      // Realiza cualquier acción si courseData cambia
-      console.log("courseData ha cambiado:", newValue);
-    },
-    deep: true // Para observar objetos y arreglos de forma profunda
-  }
-},
-
-
+  },
 };
 </script>
 
@@ -349,14 +354,26 @@ export default {
                 class="leccion-image"
               />
               <div class="leccion-content p-3">
-                <h2>{{ lesson.title }}</h2>
-                <p><strong>Duración:</strong> {{ lesson.duration }}</p>
-                <p>{{ lesson.description }}</p>
-                <button @click="startLesson(lesson.lessonsId, courseData.title)" class="btn-start">Iniciar</button>
-                <div v-if="isDocente">
-                  <button @click="openDeletePopup(lesson)" class="btn btn-danger mt-3 w-100">Eliminar Lección</button>
-                </div>
-              </div>
+  <h2>{{ lesson.title }}</h2>
+  <p><strong>Duración:</strong> {{ lesson.duration }}</p>
+  <p>{{ lesson.description }}</p>
+  <button @click="startLesson(lesson.lessonsId, courseData.title)" class="btn-start">Iniciar</button>
+
+  <!-- For teachers: reorder option and current order display -->
+  <div v-if="isDocente">
+    <p><strong>Orden actual:</strong> {{ lesson.order }}</p>
+    <label for="lesson-order-{{ index }}">Cambiar orden:</label>
+    <select :id="'lesson-order-' + index" v-model="lesson.order" @change="updateLessonOrder(lesson)">
+      <option v-for="n in lessons.length" :key="n" :value="n">{{ n }}</option>
+    </select>
+    <button @click="openDeletePopup(lesson)" class="btn btn-danger mt-3 w-100">Eliminar Lección</button>
+  </div>
+
+  <!-- For students: mark as completed -->
+  <div v-if="isEstudiante">
+    <input type="checkbox" :checked="lesson.completed" @change="toggleCompleted(lesson)" /> Marcar como completada
+  </div>
+</div>
             </div>
           </div>
         </div>
@@ -737,5 +754,13 @@ h1.display-3 {
   margin-right: 10px;
   font-size: 16px;
   color: #333;
+}
+
+.drag-handle {
+  cursor: grab;
+  background-color: #ddd;
+  border: none;
+  padding: 5px;
+  border-radius: 5px;
 }
 </style>
