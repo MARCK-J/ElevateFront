@@ -15,6 +15,7 @@ import CourseListView from "../views/CourseListView.vue";
 import Quizzes from "../views/Quizzes.vue";
 import QuizDetail from "../views/Sections/QuizDetail.vue";
 import PasswordRecovery from "../components/PasswordRecovery.vue";
+import ResetPassword from '../views/ResetPassword.vue';
 import VerifyRecoveryCode from "../components/VerifyRecoveryCode.vue"; // Importa el componente
 
 const router = createRouter({
@@ -106,6 +107,11 @@ const router = createRouter({
       path: '/quiz/:quizId',
       name: 'QuizDetail',
       component: QuizDetail,
+    },
+    {
+      path: '/reset-password',
+      name: 'ResetPassword',
+      component: ResetPassword,
     },
 
   ],
