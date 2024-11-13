@@ -9,6 +9,7 @@ export const useAppStore = defineStore("storeId", {
     login: false,
     verificationCode: '',
     recoveryCode: null,
+    email: '',
   }),
 
   actions: {
@@ -27,6 +28,9 @@ export const useAppStore = defineStore("storeId", {
     setVerificationCode(verificationCode) {
       this.verificationCode = verificationCode; 
     },
+    setEmail(email) {
+      this.email = email;
+    },
     clearSession() {
       this.identificador = null;
       this.tipoPersona = null;
@@ -38,5 +42,6 @@ export const useAppStore = defineStore("storeId", {
     getTipoPersona: (state) => state.tipoPersona,
     isLoggedIn: (state) => state.login,
     getVerificationCode: (state) => state.verificationCode,
+    getEmail: (state) => state.email,
   },
 });

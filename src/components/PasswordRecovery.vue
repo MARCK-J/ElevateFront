@@ -23,8 +23,9 @@
 </template>
 
 <script>
-import { AuthService } from "@/services/authService";
+import {AuthService} from "@/services/AuthService";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 export default {
   data() {
@@ -33,7 +34,30 @@ export default {
     };
   },
   methods: {
+    async validarEmail() {
+      try {
+        const response = await axios.get(`http://localhost:9999/api/v1/user/email-exists?email=${this.email}`);
+        return response.data.result;
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo validar el correo electrónico. Intenta nuevamente",
+          icon: "error",
+        });
+        return false;
+      }
+    },
     async enviarCodigo() {
+      const emailValido = await this.validarEmail();
+      if (!emailValido) {
+        Swal.fire({
+          title: "Correo no encontrado",
+          text: "El correo electrónico ingresado no está registrado",
+          icon: "error",
+        });
+        return;
+      }
+
       try {
         await AuthService.sendPasswordRecoveryCode(this.email);
         Swal.fire({
@@ -48,6 +72,7 @@ export default {
           text: "No se pudo enviar el código. Intenta nuevamente",
           icon: "error",
         });
+        console.log(error);
       }
     },
   },

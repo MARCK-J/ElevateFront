@@ -154,6 +154,7 @@ async sendPasswordRecoveryCode(email) {
     
     // Guarda el código en Pinia
     authStore.setRecoveryCode(recoveryCode);
+    authStore.setEmail(email);
     
   } catch (error) {
     console.error("Error al enviar el correo de recuperación:", error);

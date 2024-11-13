@@ -43,8 +43,9 @@
 </template>
 
 <script>
-import { useAppStore } from "@/stores";
+import axios from "axios";
 import Swal from "sweetalert2";
+import { useAppStore } from "@/stores";
 
 export default {
   data() {
@@ -75,25 +76,46 @@ export default {
       this.passwordLowerCaseValid = /[a-z]/.test(password);
       this.passwordNumberValid = /\d/.test(password);
     },
-    resetPassword() {
-      if (this.newPassword === this.confirmPassword) {
-        // Aquí se puede llamar a un servicio para actualizar la contraseña en la base de datos
-        const authStore = useAppStore();
-        authStore.updatePassword(this.newPassword); // Actualiza la contraseña en el estado global
-
-        Swal.fire({
-          title: "Contraseña Restablecida",
-          text: "Su contraseña ha sido actualizada exitosamente",
-          icon: "success",
-        });
-
-        this.$router.push("/login"); // Redirige al login tras el cambio
-      } else {
+    async resetPassword() {
+      if (this.newPassword !== this.confirmPassword) {
         Swal.fire({
           title: "Contraseñas no coinciden",
           text: "Las contraseñas ingresadas no coinciden. Intente nuevamente.",
           icon: "error",
         });
+        return;
+      }
+
+      const authStore = useAppStore();
+      const email = authStore.email;
+
+      try {
+        const response = await axios.post("http://localhost:9999/api/v1/user/change-password", {
+          email: email,
+          newPassword: this.newPassword,
+        });
+
+        if (response.data.code === "200-OK") {
+          Swal.fire({
+            title: "Contraseña Restablecida",
+            text: "Su contraseña ha sido actualizada exitosamente",
+            icon: "success",
+          });
+          this.$router.push("/pages/login"); // Redirige al login tras el cambio
+        } else {
+          Swal.fire({
+            title: "Error",
+            text: "No se pudo actualizar la contraseña. Intenta nuevamente",
+            icon: "error",
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo actualizar la contraseña. Intenta nuevamente",
+          icon: "error",
+        });
+        console.log(error);
       }
     },
   },
