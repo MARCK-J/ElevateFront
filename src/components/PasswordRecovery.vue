@@ -23,9 +23,9 @@
 </template>
 
 <script>
-import {AuthService} from "@/services/AuthService";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { AuthService } from "../services/authService";
 
 export default {
   data() {
