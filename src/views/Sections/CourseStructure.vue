@@ -9,6 +9,7 @@ import { useAppStore } from "@/stores";
 import CourseModal from "./CourseModal.vue";
 import { AuthService } from "../../services/authService";
 import ProgressBar from "@/components/ProgressBar.vue";
+import EditCourseModal from "./EditCourseModal.vue";
 
 
 export default {
@@ -23,19 +24,20 @@ export default {
     MaterialButton,
     CourseModal,
     ProgressBar,
+    EditCourseModal,
   },
   data() {
     return {
-      courseData: { abilities: "" },
       inscrito: false,
       showPopup: false,
       showDeletePopup: false,
       selectedLesson: null,
       lessons: [],
       showModal: false,
-      courseId: 0,
-      store: useAppStore(),
       showEditModal: false,
+      courseId: 0,
+      courseData: { abilities: "" },
+      store: useAppStore(),
       fieldToEdit: '',
       editContent: '',
       userData: {}, // Asegúrate de que userData está definido aquí
@@ -216,11 +218,6 @@ export default {
     closePopup() {
       this.showPopup = false;
     },
-    editField(field) {
-      this.fieldToEdit = field;
-      this.editContent = field === 'abilities' ? this.courseData.abilities : this.courseData[field];
-      this.showEditModal = true;
-    },
     async saveEdit() {
       if (this.fieldToEdit === 'title') {
         this.courseData.title = this.editContent;
@@ -237,33 +234,15 @@ export default {
     },
     closeEditModal() {
       this.showEditModal = false;
-      this.editContent = '';
-      this.fieldToEdit = '';
     },
   },
   async mounted() {
   this.fetchCourseId();
   this.fetchUserData();
-  
-  const savedData = localStorage.getItem('courseData');
-  if (savedData) {
-    this.courseData = JSON.parse(savedData);
-  } else {
-    await this.fetchCourseById();
-  }
+  await this.fetchCourseById();
 
   if (this.isEstudiante) {
     await this.fetchEnrollmentId();
-  }
-},
-
-  watch: {
-  courseData: {
-    handler(newValue) {
-      // Realiza cualquier acción si courseData cambia
-      console.log("courseData ha cambiado:", newValue);
-    },
-    deep: true // Para observar objetos y arreglos de forma profunda
   }
 },
 
@@ -281,6 +260,9 @@ export default {
         <CourseModal :show="showModal" :courseId="courseId" @close="showModal = false" @lessonCreated="fetchCourseById" />
         
         <button @click="irAQuizzes" class="btn btn-primary">Mis Cuestionarios</button>
+        
+        <button @click="showEditModal = true" class="btn btn-warning">Editar Curso</button>
+        <EditCourseModal :show="showEditModal" :course="courseData" :courseId="courseId" @close="showEditModal = false" @courseUpdated="fetchCourseById" />
       </div>
     </div>
 
@@ -301,11 +283,9 @@ export default {
             <div class="col-lg-8 mx-auto">
               <h1 class="display-3 mb-4 font-weight-bold">
                 {{ courseData.title }}
-                <button @click="editField('title')" class="btn btn-link">Editar</button>
               </h1>
               <p class="lead mb-4">
                 {{ courseData.description }}
-                <button @click="editField('description')" class="btn btn-link">Editar</button>
               </p>
               <div v-if="isEstudiante">
                 <div v-if="isInscrito">
@@ -326,7 +306,6 @@ export default {
           <ul class="list-unstyled d-flex justify-content-center flex-wrap">
             <li v-for="(ability, index) in abilitiesArray" :key="index" class="mb-4 px-4">
               <i class="fas fa-check-circle mr-2"></i> {{ ability }}
-              <button @click="editField('abilities')" class="btn btn-link">Editar</button>
             </li>
           </ul>
         </div>
@@ -387,17 +366,6 @@ export default {
       </div>
     </div>
 
-    <!-- Popup de edición -->
-    <div v-if="showEditModal" class="popup-overlay">
-      <div class="popup">
-        <h2>Editar {{ fieldToEdit.charAt(0).toUpperCase() + fieldToEdit.slice(1) }}</h2>
-        <textarea v-model="editContent" class="form-control mb-3" rows="4"></textarea>
-        <div class="popup-buttons">
-          <MaterialButton color="success" @click="saveEdit">Guardar</MaterialButton>
-          <MaterialButton color="secondary" @click="closeEditModal">Cancelar</MaterialButton>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
