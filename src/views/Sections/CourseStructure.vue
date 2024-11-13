@@ -311,9 +311,8 @@ export default {
   },
   async mounted() {
     this.fetchCourseId();
+    this.fetchCourseById();
     this.fetchUserData();
-    await this.fetchCourseById();
-
     if (this.isEstudiante) {
       await this.fetchEnrollmentId();
     }
@@ -406,7 +405,7 @@ export default {
       </section>
 
       <!-- Progress bar at the top right of the lessons part -->
-      <div class="progress-bar-wrapper">
+      <div v-if="isEstudiante" class="progress-bar-wrapper">
         <span class="progress-text">Progress</span>
         <ProgressBar :progress="progress" />
       </div>
@@ -438,6 +437,8 @@ export default {
                     >
                       Iniciar
                     </button>
+                    <br>
+                    <input type="checkbox" :checked="lesson.completed" @change="toggleCompleted(lesson)" /> Marcar como completada
                   </div>
                 </div>
                 <div v-if="isDocente">
@@ -447,8 +448,11 @@ export default {
                   >
                     Iniciar
                   </button>
-                </div>
-                <div v-if="isDocente">
+                  <p><strong>Orden actual:</strong> {{ lesson.order }}</p>
+    <label for="lesson-order-{{ index }}">Cambiar orden:</label>
+    <select :id="'lesson-order-' + index" v-model="lesson.order" @change="updateLessonOrder(lesson)">
+      <option v-for="n in lessons.length" :key="n" :value="n">{{ n }}</option>
+    </select>
                   <button
                     @click="openDeletePopup(lesson)"
                     class="btn btn-danger mt-3 w-100"
