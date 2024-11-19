@@ -98,7 +98,11 @@ const goToLecciones = () => {
             
             </ul>
           </div>
+         
         </div>
+        <div>
+            <button class="favorite-button" @click="guardarEnFavoritos">⭐ Guardar en favoritos</button>
+          </div>
       </div>
     </div>
     <div class="tab-content tab-space">
@@ -125,5 +129,23 @@ const goToLecciones = () => {
 /* optional class for removing the outline */
 .prism-editor__textarea:focus {
   outline: none;
+}
+.favorite-button {
+  background-color: #4aa4d8;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.favorite-button:hover {
+  background-color: #ff9900;
 }
 </style>

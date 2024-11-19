@@ -32,6 +32,13 @@
                 <span v-else>🎓 Mis Cursos</span>
               </div>
             </li>
+             <!-- Favoritos -->
+          <li class="nav-item">
+            <div class="nav-link" @click="selectOption('favorites')">
+              <span v-if="isCollapsed">⭐</span>
+              <span v-else>⭐ Favoritos</span>
+            </div>
+          </li>
         </ul>
       </nav>
     </div>
