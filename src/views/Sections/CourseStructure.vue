@@ -73,6 +73,9 @@ export default {
     },
   },
   methods: {
+    verCertificado() {
+      this.$router.push({ name: 'Certificado' });
+    },
     fetchCourseId() {
       const route = useRoute();
       this.courseId = route.query.courseId ? Number(route.query.courseId) : 0;
@@ -401,6 +404,11 @@ export default {
               <i class="fas fa-check-circle mr-2"></i> {{ ability }}
             </li>
           </ul>
+          <div v-if="isEstudiante" class="certificado">
+            <h2>Certificado de finalización de curso:</h2><br>
+            <h3>Usted concluyó el curso satisfactoriamente, puede descargar su certificado aquí:</h3>
+            <button class="btn-ver-certificado" @click="verCertificado">Ver Certificado</button>
+          </div>
         </div>
       </section>
 
@@ -846,5 +854,20 @@ h1.display-3 {
   border: none;
   padding: 5px;
   border-radius: 5px;
+}
+
+.btn-ver-certificado {
+  background-color: #4990d3; /* Verde */
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-ver-certificado:hover {
+  background-color: #45a049; /* Verde más oscuro */
+  transform: translateY(-2px);
 }
 </style>
