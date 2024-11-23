@@ -14,7 +14,7 @@
               <span v-else>👤 Perfil</span>
             </div>
           </li>
-          
+
           <!-- Mostrar estas opciones solo si el identificador es 2 (Docente) -->
           <template v-if="identificador == '2'">
             <li class="nav-item">
@@ -25,27 +25,26 @@
             </li>
           </template>
 
-          <!-- Mostrar esta opción solo si el identificador es 1 (Estudiante) -->
-            <li class="nav-item">
-              <div class="nav-link" @click="selectOption('my_courses')">
-                <span v-if="isCollapsed">🎓</span>
-                <span v-else>🎓 Mis Cursos</span>
-              </div>
-            </li>
-             <!-- Favoritos -->
           <li class="nav-item">
-            <div class="nav-link" @click="selectOption('favorites')">
-              <span v-if="isCollapsed">⭐</span>
-              <span v-else>⭐ Favoritos</span>
+            <div class="nav-link" @click="selectOption('my_courses')">
+              <span v-if="isCollapsed">🎓</span>
+              <span v-else>🎓 Mis Cursos</span>
             </div>
           </li>
+          <!-- Favoritos -->
+          <template v-if="identificador == '1'">
+            <li class="nav-item">
+              <div class="nav-link" @click="selectOption('favorites')">
+                <span v-if="isCollapsed">⭐</span>
+                <span v-else>⭐ Favoritos</span>
+              </div>
+            </li>
+          </template>
         </ul>
       </nav>
     </div>
   </div>
 </template>
-
-
 
 <script>
 import { defineComponent, ref } from "vue";
@@ -79,7 +78,6 @@ export default defineComponent({
   },
 });
 </script>
-
 
 <style scoped>
 .sidebar-container {
