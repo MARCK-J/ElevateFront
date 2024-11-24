@@ -320,6 +320,10 @@ export default {
       await this.fetchEnrollmentId();
     }
   },
+   AuthService.sendUnsubscriptionEmail(
+      this.userData.email,
+      this.courseData.title,
+         );
 };
 </script>
 
