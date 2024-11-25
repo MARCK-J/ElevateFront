@@ -359,6 +359,10 @@ export default {
     }
     this.selectedCourseId = this.courseData.id; // Asigna el ID del curso actual
   },
+   AuthService.sendUnsubscriptionEmail(
+      this.userData.email,
+      this.courseData.title,
+         );
 };
 </script>
 
