@@ -43,6 +43,9 @@ export default {
       editContent: '',
       userData: {},
       draggingLesson: null, // Nueva propiedad para arrastrar lecciones
+      isModalVisible: false,
+      selectedCourseId: null,
+      enrollmentID: 0,
     };
   },
   computed: {
@@ -205,17 +208,26 @@ export default {
 
         if (response.status === 200) {
           const courseData = response.data.result;
-          const enrollmentFound = courseData.some(
-            (enrollment) =>
-              enrollment.studentUserId === this.userId &&
-              enrollment.coursesCourseId == this.courseId
-          );
-          this.inscrito = enrollmentFound;
+          if (courseData && Array.isArray(courseData)) {
+            let enrollmentID = null;
+            const enrollmentFound = courseData.some((enrollment) => {
+              if (
+                enrollment.studentUserId === this.userId &&
+                enrollment.coursesCourseId == this.courseId
+              ) {
+                enrollmentID = enrollment.enrollmentId;
+                return true;
+              }
+              return false;
+            });
+            this.inscrito = enrollmentFound;
+            this.enrollmentID = enrollmentID;
+            console.log("enrollmentID:", this.enrollmentID);
+          } else {
+            console.error("Datos de inscripción no válidos:", courseData);
+          }
         } else {
-          console.error(
-            "Error al obtener la inscripción:",
-            response.data.message
-          );
+          console.error("Error al obtener la inscripción:", response.data.message);
         }
       } catch (error) {
         console.error("Error en la solicitud de inscripción:", error);
@@ -240,12 +252,14 @@ export default {
         );
 
         if (response.data.code === "200-OK") {
-          await AuthService.sendConfirmation(
+          AuthService.sendConfirmation(
             this.userData.email,
             this.courseData.title,
             new Date().toISOString().split("T")[0],
             this.courseData.duration
           );
+          console.log("al inscribirse "+ response.data.result.enrollmentId);
+          this.enrollmentID = response.data.result.enrollmentId;
           Swal.fire("Éxito", "Inscripción Confirmada!!!", "success");
           this.inscrito = true;
         } else {
@@ -303,6 +317,30 @@ export default {
       const options = { day: "2-digit", month: "2-digit", year: "numeric" };
       return d.toLocaleDateString("es-ES", options);
     },
+    confirmUnsubscribe() {
+      this.isModalVisible = true;
+    },
+    async unsubscribe() {
+      try {
+        console.log("id del enrollment" + this.enrollmentID);
+        const response = await axios.delete(`http://localhost:9999/api/v1/enrollments/${this.enrollmentID}`, {
+          headers: { Accept: "application/json" },
+        });
+        console.log("respuesta al desinscribirse"+response.data.code)
+        if (response.data.code == "200-OK") {
+          new Swal("Éxito", "Te desinscribiste con éxito del curso.", "success");
+          this.inscrito = false;
+          this.closeModal();
+        } else {
+          console.error("Error al desinscribirse:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de desinscripción:", error);
+      }
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
   },
   watch: {
     lessons: {
@@ -319,6 +357,7 @@ export default {
     if (this.isEstudiante) {
       await this.fetchEnrollmentId();
     }
+    this.selectedCourseId = this.courseData.id; // Asigna el ID del curso actual
   },
 };
 </script>
@@ -376,18 +415,31 @@ export default {
                 {{ courseData.description }}
               </p>
               <div v-if="isEstudiante">
-                <div v-if="isInscrito">
-                  <MaterialButton color="success" class="mt-4"
-                    >Suscrito</MaterialButton
-                  >
+                <div v-if="isInscrito" class="d-flex align-items-center justify-content-around">
+                  <MaterialButton color="success" class="mt-4">Suscrito</MaterialButton>
+                  <MaterialButton color="primary" class="mt-4" @click="confirmUnsubscribe">Desinscribirse</MaterialButton>
                 </div>
                 <div v-else>
-                  <MaterialButton color="white" class="mt-4" @click="openPopup"
-                    >Inscribirse</MaterialButton
-                  >
+                  <MaterialButton color="white" class="mt-4" @click="openPopup">Inscribirse</MaterialButton>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="isModalVisible" class="custom-modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5>Confirmar Desinscripción</h5>
+            <button class="close-button" @click="closeModal">×</button>
+          </div>
+          <div class="modal-body">
+            ¿Estás seguro que deseas desinscribirte del curso <strong>{{ courseData.title }}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button class="cancel-button" @click="closeModal">Cancelar</button>
+            <button class="confirm-button" @click="unsubscribe">Desinscribirme</button>
           </div>
         </div>
       </div>
@@ -869,5 +921,97 @@ h1.display-3 {
 .btn-ver-certificado:hover {
   background-color: #45a049; /* Verde más oscuro */
   transform: translateY(-2px);
+}
+
+.custom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e6ea;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h5 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 1rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+.modal-footer {
+  padding: 1rem;
+  border-top: 1px solid #e2e6ea;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cancel-button,
+.confirm-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268;
+}
+
+.confirm-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.confirm-button:hover {
+  background-color: #c82333;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>
