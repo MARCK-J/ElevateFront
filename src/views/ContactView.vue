@@ -1,47 +1,38 @@
 <script setup>
+import { ref } from "vue";
 import { onMounted } from "vue";
-
-//example components
 import DefaultNavbar from "@/examples/navbars/NavbarDefault.vue";
-//import DefaultFooter from "@/examples/footers/FooterDefault.vue";
-
-//image
-import image from "@/assets/img/illustrations/illustration-signin.jpg";
-
-//material components
-import MaterialInput from "@/components/MaterialInput.vue";
-import MaterialTextArea from "@/components/MaterialTextArea.vue";
-import MaterialButton from "@/components/MaterialButton.vue";
-
-// material-input
-import setMaterialInput from "@/assets/js/material-input";
 import { AuthService } from "../services/authService";
-onMounted(() => {
-  setMaterialInput();
-});
+import image from "@/assets/img/illustrations/illustration-signin.jpg";
+import Swal from "sweetalert2";
 
+const name = ref('');
+const email = ref('');
+const comment = ref('');
 
-const data = () => ({
-  name: '',
-  email: '',
-  comment: '',
-});
-
-const methods = {
-  async submitForm() {
-    console.log('cambios' + this.name + " ahora el email" + this.email + 'Ahora el comentario ' + this.comment);
-    try {
-      // await AuthService.sendFeedbackEmail(this.name, this.email, this.comment);
-      alert('Comentario/Queja enviado exitosamente.');
-      // Limpiar el formulario después de enviar
-      this.name = '';
-      this.email = '';
-      this.comment = '';
-    } catch (error) {
-      console.error('Error al enviar el comentario/queja:', error);
-      alert('Hubo un error al enviar su comentario/queja. Por favor, inténtelo de nuevo.');
-    }
-  },
+const submitForm = async () => {
+  console.log('cambios' + name.value + " ahora el email" + email.value + 'Ahora el comentario ' + comment.value);
+  try {
+    AuthService.sendFeedbackEmail(name.value, email.value, comment.value);
+    AuthService.sendFeedbackReportEmail(name.value, email.value, comment.value, 'marco.reynolds@ucb.edu.bo');
+    Swal.fire({
+      icon: 'success',
+      title: 'Comentario/Queja enviado exitosamente.',
+      showConfirmButton: false,
+      timer: 1500
+    });
+    // Limpiar el formulario después de enviar
+    name.value = '';
+    email.value = '';
+    comment.value = '';
+  } catch (error) {
+    console.error('Error al enviar el comentario/queja:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Hubo un error al enviar su comentario/queja.',
+      text: 'Por favor, inténtelo de nuevo.',
+    });
+  }
 };
 </script>
 
@@ -93,44 +84,49 @@ const methods = {
                   <div class="card-body p-0 my-3">
                     <div class="row">
                       <div class="col-md-6">
-                        <MaterialInput
-                          class="input-group-static mb-4"
-                          type="text"
-                          label="Nombre Completo"
-                          placeholder="Nombre Completo"
-                          v-model="name"
-                          required
-                        />
+                        <div class="mb-4">
+                          <label for="name" class="form-label">Nombre Completo</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="name"
+                            v-model="name"
+                            placeholder="Nombre Completo"
+                            required
+                          />
+                        </div>
                       </div>
                       <div class="col-md-6 ps-md-2">
-                        <MaterialInput
-                          class="input-group-static mb-4"
-                          type="email"
-                          label="Correo electrónico"
-                          placeholder="NombreUsuario@gmail.com"
-                          v-model="email"
-                          required
-                        />
+                        <div class="mb-4">
+                          <label for="email" class="form-label">Correo electrónico</label>
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="email"
+                            v-model="email"
+                            placeholder="NombreUsuario@gmail.com"
+                            required
+                          />
+                        </div>
                       </div>
                     </div>
                     <div class="form-group mb-0 mt-md-0 mt-4">
-                      <MaterialTextArea
-                        id="message"
-                        class="input-group-static mb-4"
-                        :rows="6"
-                        placeholder="Describe tu problema o duda"
+                      <label for="comment" class="form-label">Describe tu problema o duda</label>
+                      <textarea
+                        id="comment"
+                        class="form-control"
+                        rows="6"
                         v-model="comment"
+                        placeholder="Describe tu problema o duda"
                         required
-                      >¿En qué podemos ayudarte?</MaterialTextArea>
+                      ></textarea>
                     </div>
                     <div class="row">
                       <div class="col-md-12 text-center">
-                        <MaterialButton
-                          variant="gradient"
-                          color="success"
-                          class="mt-3 mb-0 custom-button"
+                        <button
+                          class="btn btn-success mt-3 mb-0 custom-button"
                           type="submit"
-                        >Enviar mensaje</MaterialButton>
+                        >Enviar mensaje</button>
                       </div>
                     </div>
                   </div>
