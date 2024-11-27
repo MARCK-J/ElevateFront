@@ -33,7 +33,6 @@ const props = defineProps({
 // variables
 const { toClipboard } = useClipboard();
 const editorCode = ref(props.code);
-const isFavorito = ref(false); // Estado del botón Favorito
 
 // functions
 const copy = async (event) => {
@@ -76,29 +75,6 @@ const copy = async (event) => {
   }
 };
 
-const toggleFavorito = async () => {
-  if (!isFavorito.value) {
-    // Marcar como favorito
-    isFavorito.value = true;
-  } else {
-    // Mostrar SweetAlert de confirmación
-    const result = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "¿Quieres quitarlo de favoritos?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, quitarlo",
-      cancelButtonText: "No, cancelar",
-    });
-
-    if (result.isConfirmed) {
-      isFavorito.value = false; // Quitar de favoritos
-      Swal.fire("Eliminado", "Se ha quitado de tus favoritos.", "success");
-    }
-  }
-};
 
 const highlighter = (code) => {
   return prism.highlight(code, prism.languages.html);
@@ -124,10 +100,6 @@ const goToLecciones = () => {
           </div>
         </div>
         <div>
-          <!-- Botón Favorito -->
-          <button class="favorite-button" @click="toggleFavorito">
-            {{ isFavorito ? "Favorito ⭐" : "Guardar en favoritos" }}
-          </button>
         </div>
 
         <div class="rating">

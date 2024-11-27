@@ -38,6 +38,7 @@ import CreateCourse from "./CreateCourse.vue";
 import { useAppStore } from "../stores";
 import { computed } from "vue";
 import MyCourses from "./MyCourses.vue";
+import MyCoursesFavorites from "./MyCoursesFavorites.vue";
 
 export default {
   components: {
@@ -45,7 +46,8 @@ export default {
     MySideBar,
     ProfileView,
     CreateCourse,
-    MyCourses
+    MyCourses,
+    MyCoursesFavorites,
   },
   setup() {
     const appStore = useAppStore(); // Instancia del store de la aplicación
@@ -72,6 +74,9 @@ export default {
           break;
         case "my_courses":
           this.currentComponent = "MyCourses"; // Cambiar componente según la opción seleccionada
+          break;
+        case "my_courses_favorites":
+          this.currentComponent = "MyCoursesFavorites"; // Cambiar componente según la opción seleccionada
           break;  
         default:
           this.currentComponent = null; // Manejar otros casos si es necesario
