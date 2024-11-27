@@ -72,7 +72,7 @@ export default {
       return this.courseData.abilities.split(";");
     },
     completedLessons() {
-      return this.lessons.filter((lesson) => lesson.completed).length;
+      return this.lessons.filter((lesson) => lesson.complete).length;
     },
     progress() {
       if (this.lessons.length === 0) {
@@ -81,7 +81,7 @@ export default {
       }
       const progressPercentage = (this.completedLessons / this.lessons.length) * 100;
       this.getCertificate = progressPercentage === 100;
-      return progressPercentage;
+      return Math.floor(progressPercentage); // Redondea hacia abajo para obtener un valor entero
     }
   },
   methods: {
@@ -195,9 +195,22 @@ export default {
         console.error("Error al actualizar el orden de la lección:", error);
       }
     },
-    toggleCompleted(lesson) {
-      lesson.completed = !lesson.completed;
-      // Aquí podrías hacer una llamada para actualizar el estado de "completed" en la base de datos si es necesario
+    async toggleCompleted(lesson) {
+      console.log('Al marcar como completado: '+lesson.lessonsId);
+      try {
+        const response = await axios.put(
+          `http://localhost:9999/api/v1/lessons/${lesson.lessonsId}/complete`,
+          );
+
+        if (response.data.code === "200-OK") {
+          lesson.completed = true; // Marca la lección como completada
+          console.log(`Lección ${lesson.lessonsId} marcada como completada.`);
+        } else {
+          console.error("Error al marcar la lección como completada:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud para marcar la lección como completada:", error);
+      }
     },
     
     async fetchUserData() {
@@ -623,7 +636,7 @@ export default {
 
       <!-- Progress bar at the top right of the lessons part -->
       <div v-if="isEstudiante" class="progress-bar-wrapper">
-        <span class="progress-text">Progress</span>
+        <span class="progress-text">Progress {{progress}} %</span>
         <ProgressBar :progress="progress" />
 
         
@@ -659,7 +672,7 @@ export default {
                     <br />
                     <input
                       type="checkbox"
-                      :checked="lesson.completed"
+                      :checked="lesson.complete"
                       @change="toggleCompleted(lesson)"
                     />
                     Marcar como completada
