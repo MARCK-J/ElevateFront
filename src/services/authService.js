@@ -161,4 +161,29 @@ async sendPasswordRecoveryCode(email) {
   }
 },
 
+// Nueva función para enviar el correo de desuscripción de curso
+async sendUnsubscriptionEmail(email, courseTitle) {
+  const url = `http://localhost:9999/api/v1/mail/send/${email}`;
+  const data = {
+    subject: "Desuscripción de Curso - Elevate",
+    message: `
+    Estimado/a Cliente,
+
+    Le informamos que ha sido desuscrito del curso "${courseTitle}" en Elevate.
+
+    Si tiene alguna pregunta o necesita asistencia adicional, no dude en ponerse en contacto con nuestro servicio de atención al cliente.
+
+    Atentamente,
+    El equipo de soporte de Elevate
+    `,
+  };
+
+  try {
+    await axios.post(url, data);
+    console.log("Correo de desuscripción enviado exitosamente.");
+  } catch (error) {
+    console.error("Error al enviar el correo de desuscripción:", error);
+  }
+},
+
 };

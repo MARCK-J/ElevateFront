@@ -34,7 +34,7 @@
           <!-- Favoritos -->
           <template v-if="identificador == '1'">
             <li class="nav-item">
-              <div class="nav-link" @click="selectOption('favorites')">
+              <div class="nav-link" @click="selectOption('my_courses_favorites')">
                 <span v-if="isCollapsed">⭐</span>
                 <span v-else>⭐ Favoritos</span>
               </div>
