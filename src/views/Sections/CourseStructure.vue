@@ -48,6 +48,7 @@ export default {
       enrollmentID: 0,
       isFavorito: false,
       favoriteCourseId: 0,
+
     };
   },
   computed: {
@@ -118,6 +119,7 @@ export default {
 
         if (response.status === 200) {
           this.courseData = response.data.result;
+
           await this.fetchLessonsByCourseId(this.courseId);
         } else {
           console.error("Error al obtener el curso:", response.data.message);
@@ -475,13 +477,25 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="row">
+    <div class="rating">
+      <p>Calificación del curso:</p>
+      <span
+        v-for="star in 5"
+        :key="star"
+        class="star"
+        :class="{ filled: star <= this.courseData.rating }"
+      >
+        ★
+      </span>
+    </div>
     <div v-if="isEstudiante">
-
       <button class="favorite-button" @click="toggleFavorito">
         {{ isFavorito ? "Favorito ⭐" : "Guardar en favoritos" }}
       </button>
+      
     </div>
+
     <div v-if="isDocente" class="opcionesDocentes">
       <div class="container py-2">
         <button class="btn btn-secondary mb-3" @click="showModal = true">
@@ -609,6 +623,8 @@ export default {
       <div v-if="isEstudiante" class="progress-bar-wrapper">
         <span class="progress-text">Progress</span>
         <ProgressBar :progress="progress" />
+
+        
       </div>
 
       <div class="info-curso py-5">
@@ -717,6 +733,47 @@ export default {
 </template>
 
 <style scoped>
+.rating {
+  display: flex;
+  align-items: center;
+}
+.rating p{
+  margin: 0;
+  font-size: larger;
+  padding-right: 15px;
+}
+
+.star {
+  font-size: 24px;
+  color: gray;
+  margin: 0;
+  padding: 0;
+}
+
+.star.filled {
+  color: orange;
+}
+
+
+.favorite-button {
+  background-color: #4aa4d8;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.favorite-button:hover {
+  background-color: #ff9900;
+}
+
 /* Estilos del formulario y modal */
 .create-lesson-container {
   background-color: #fbebd5;
