@@ -39,13 +39,15 @@ export default {
       courseData: { abilities: "" },
       store: useAppStore(),
       showEditModal: false,
-      fieldToEdit: '',
-      editContent: '',
+      fieldToEdit: "",
+      editContent: "",
       userData: {},
       draggingLesson: null, // Nueva propiedad para arrastrar lecciones
       isModalVisible: false,
       selectedCourseId: null,
       enrollmentID: 0,
+      isFavorito: false,
+      favoriteCourseId: 0,
     };
   },
   computed: {
@@ -77,7 +79,7 @@ export default {
   },
   methods: {
     verCertificado() {
-      this.$router.push({ name: 'Certificado' });
+      this.$router.push({ name: "Certificado" });
     },
     fetchCourseId() {
       const route = useRoute();
@@ -160,13 +162,20 @@ export default {
     },
     async updateLessonOrder(lesson) {
       try {
-        const response = await axios.put(`http://localhost:9999/api/v1/lessons/${lesson.lessonsId}`, {
-          order: lesson.order,
-        });
+        const response = await axios.put(
+          `http://localhost:9999/api/v1/lessons/${lesson.lessonsId}`,
+          {
+            order: lesson.order,
+          }
+        );
         if (response.status === 200) {
           Swal.fire("Éxito", "Orden de la lección actualizado.", "success");
         } else {
-          Swal.fire("Error", "No se pudo actualizar el orden de la lección.", "error");
+          Swal.fire(
+            "Error",
+            "No se pudo actualizar el orden de la lección.",
+            "error"
+          );
         }
       } catch (error) {
         console.error("Error al actualizar el orden de la lección:", error);
@@ -227,7 +236,10 @@ export default {
             console.error("Datos de inscripción no válidos:", courseData);
           }
         } else {
-          console.error("Error al obtener la inscripción:", response.data.message);
+          console.error(
+            "Error al obtener la inscripción:",
+            response.data.message
+          );
         }
       } catch (error) {
         console.error("Error en la solicitud de inscripción:", error);
@@ -258,7 +270,7 @@ export default {
             new Date().toISOString().split("T")[0],
             this.courseData.duration
           );
-          console.log("al inscribirse "+ response.data.result.enrollmentId);
+          console.log("al inscribirse " + response.data.result.enrollmentId);
           this.enrollmentID = response.data.result.enrollmentId;
           Swal.fire("Éxito", "Inscripción Confirmada!!!", "success");
           this.inscrito = true;
@@ -303,11 +315,14 @@ export default {
       } else if (this.fieldToEdit === "abilities") {
         this.courseData.abilities = this.editContent;
       }
-      const response = await axios.put(`http://localhost:9999/api/v1/courses/${this.courseId}`, { [this.fieldToEdit]: this.editContent });
-  console.log(response.data); // Verificar respuesta
-  localStorage.setItem('courseData', JSON.stringify(this.courseData));
-  Swal.fire("Éxito", "Cambios guardados con éxito.", "success");
-  this.closeEditModal();
+      const response = await axios.put(
+        `http://localhost:9999/api/v1/courses/${this.courseId}`,
+        { [this.fieldToEdit]: this.editContent }
+      );
+      console.log(response.data); // Verificar respuesta
+      localStorage.setItem("courseData", JSON.stringify(this.courseData));
+      Swal.fire("Éxito", "Cambios guardados con éxito.", "success");
+      this.closeEditModal();
     },
     closeEditModal() {
       this.showEditModal = false;
@@ -323,12 +338,23 @@ export default {
     async unsubscribe() {
       try {
         console.log("id del enrollment" + this.enrollmentID);
-        const response = await axios.delete(`http://localhost:9999/api/v1/enrollments/${this.enrollmentID}`, {
-          headers: { Accept: "application/json" },
-        });
-        console.log("respuesta al desinscribirse"+response.data.code)
+        const response = await axios.delete(
+          `http://localhost:9999/api/v1/enrollments/${this.enrollmentID}`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
+        console.log("respuesta al desinscribirse" + response.data.code);
         if (response.data.code == "200-OK") {
-          new Swal("Éxito", "Te desinscribiste con éxito del curso.", "success");
+          new Swal(
+            "Éxito",
+            "Te desinscribiste con éxito del curso.",
+            "success"
+          );
+          AuthService.sendUnsubscriptionEmail(
+            this.userData.email,
+            this.courseData.title
+          );
           this.inscrito = false;
           this.closeModal();
         } else {
@@ -338,6 +364,91 @@ export default {
         console.error("Error en la solicitud de desinscripción:", error);
       }
     },
+
+    async fetchFavoriteCourse() {
+      try {
+        const response = await axios.get(
+          `http://localhost:9999/api/v1/favorites/student/${this.userId}`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
+        if (response.status === 200) {
+          const favoriteData = response.data.result;
+          if (favoriteData && Array.isArray(favoriteData)) {
+            let favoriteID = null;
+            const favoriteFound = favoriteData.some((favorite) => {
+              if (
+                favorite.studentUserId === this.userId &&
+                favorite.courseId == this.courseId
+              ) {
+                favoriteID = favorite.favoriteId;
+                return true;
+              }
+              return false;
+            });
+            this.isFavorito = favoriteFound;
+            this.favoriteID = favoriteID;
+            console.log("favoriteID:", this.favoriteID);
+          } else {
+            console.error("Datos de inscripción no válidos:", favoriteData);
+          }
+        } else {
+          console.error(
+            "Error al obtener la inscripción:",
+            response.data.message
+          );
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de inscripción:", error);
+      }
+    },
+    async toggleFavorito() {
+      if (!this.isFavorito) {
+        try {
+        const response = await axios.post(
+          "http://localhost:9999/api/v1/favorites/add",
+          {
+            courseId: this.courseId,
+            studentUserId: this.userId,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (response.data.code === "200-OK") {
+          Swal.fire("Éxito", "Añadio con exito a la lista de favoritos!!!", "success");
+          this.isFavorito = true;
+        } else {
+          Swal.fire("Error", "No se pudo agregar a favoritos", "error");
+        }
+      } catch (error) {
+        Swal.fire("Error", "Se presento el siguiente error." + error, "error" );
+      }
+      } else {
+        // Mostrar SweetAlert de confirmación
+        const result = await Swal.fire({
+          title: "¿Estás seguro?",
+          text: "¿Quieres quitarlo de favoritos?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Sí, quitarlo",
+          cancelButtonText: "No, cancelar",
+        });
+
+        if (result.isConfirmed) {
+          this.isFavorito = false; // Quitar de favoritos
+          Swal.fire("Eliminado", "Se ha quitado de tus favoritos.", "success");
+        }
+      }
+    },
+
     closeModal() {
       this.isModalVisible = false;
     },
@@ -356,18 +467,21 @@ export default {
     this.fetchUserData();
     if (this.isEstudiante) {
       await this.fetchEnrollmentId();
+      await this.fetchFavoriteCourse();
     }
     this.selectedCourseId = this.courseData.id; // Asigna el ID del curso actual
   },
-   AuthService.sendUnsubscriptionEmail(
-      this.userData.email,
-      this.courseData.title,
-         );
 };
 </script>
 
 <template>
   <div>
+    <div v-if="isEstudiante">
+
+      <button class="favorite-button" @click="toggleFavorito">
+        {{ isFavorito ? "Favorito ⭐" : "Guardar en favoritos" }}
+      </button>
+    </div>
     <div v-if="isDocente" class="opcionesDocentes">
       <div class="container py-2">
         <button class="btn btn-secondary mb-3" @click="showModal = true">
@@ -387,6 +501,7 @@ export default {
         <button @click="showEditModal = true" class="btn btn-warning">
           Editar Curso
         </button>
+
         <EditCourseModal
           :show="showEditModal"
           :course="courseData"
@@ -419,12 +534,24 @@ export default {
                 {{ courseData.description }}
               </p>
               <div v-if="isEstudiante">
-                <div v-if="isInscrito" class="d-flex align-items-center justify-content-around">
-                  <MaterialButton color="success" class="mt-4">Suscrito</MaterialButton>
-                  <MaterialButton color="primary" class="mt-4" @click="confirmUnsubscribe">Desinscribirse</MaterialButton>
+                <div
+                  v-if="isInscrito"
+                  class="d-flex align-items-center justify-content-around"
+                >
+                  <MaterialButton color="success" class="mt-4"
+                    >Suscrito</MaterialButton
+                  >
+                  <MaterialButton
+                    color="primary"
+                    class="mt-4"
+                    @click="confirmUnsubscribe"
+                    >Desinscribirse</MaterialButton
+                  >
                 </div>
                 <div v-else>
-                  <MaterialButton color="white" class="mt-4" @click="openPopup">Inscribirse</MaterialButton>
+                  <MaterialButton color="white" class="mt-4" @click="openPopup"
+                    >Inscribirse</MaterialButton
+                  >
                 </div>
               </div>
             </div>
@@ -439,11 +566,15 @@ export default {
             <button class="close-button" @click="closeModal">×</button>
           </div>
           <div class="modal-body">
-            ¿Estás seguro que deseas desinscribirte del curso <strong>{{ courseData.title }}</strong>?
+            ¿Estás seguro que deseas desinscribirte del curso
+            <strong>{{ courseData.title }}</strong
+            >?
           </div>
           <div class="modal-footer">
             <button class="cancel-button" @click="closeModal">Cancelar</button>
-            <button class="confirm-button" @click="unsubscribe">Desinscribirme</button>
+            <button class="confirm-button" @click="unsubscribe">
+              Desinscribirme
+            </button>
           </div>
         </div>
       </div>
@@ -461,9 +592,15 @@ export default {
             </li>
           </ul>
           <div v-if="isEstudiante" class="certificado">
-            <h2>Certificado de finalización de curso:</h2><br>
-            <h3>Usted concluyó el curso satisfactoriamente, puede descargar su certificado aquí:</h3>
-            <button class="btn-ver-certificado" @click="verCertificado">Ver Certificado</button>
+            <h2>Certificado de finalización de curso:</h2>
+            <br />
+            <h3>
+              Usted concluyó el curso satisfactoriamente, puede descargar su
+              certificado aquí:
+            </h3>
+            <button class="btn-ver-certificado" @click="verCertificado">
+              Ver Certificado
+            </button>
           </div>
         </div>
       </section>
@@ -501,8 +638,13 @@ export default {
                     >
                       Iniciar
                     </button>
-                    <br>
-                    <input type="checkbox" :checked="lesson.completed" @change="toggleCompleted(lesson)" /> Marcar como completada
+                    <br />
+                    <input
+                      type="checkbox"
+                      :checked="lesson.completed"
+                      @change="toggleCompleted(lesson)"
+                    />
+                    Marcar como completada
                   </div>
                 </div>
                 <div v-if="isDocente">
@@ -513,10 +655,16 @@ export default {
                     Iniciar
                   </button>
                   <p><strong>Orden actual:</strong> {{ lesson.order }}</p>
-    <label for="lesson-order-{{ index }}">Cambiar orden:</label>
-    <select :id="'lesson-order-' + index" v-model="lesson.order" @change="updateLessonOrder(lesson)">
-      <option v-for="n in lessons.length" :key="n" :value="n">{{ n }}</option>
-    </select>
+                  <label for="lesson-order-{{ index }}">Cambiar orden:</label>
+                  <select
+                    :id="'lesson-order-' + index"
+                    v-model="lesson.order"
+                    @change="updateLessonOrder(lesson)"
+                  >
+                    <option v-for="n in lessons.length" :key="n" :value="n">
+                      {{ n }}
+                    </option>
+                  </select>
                   <button
                     @click="openDeletePopup(lesson)"
                     class="btn btn-danger mt-3 w-100"
