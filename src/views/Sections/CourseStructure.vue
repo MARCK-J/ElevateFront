@@ -48,6 +48,8 @@ export default {
       enrollmentID: 0,
       isFavorito: false,
       favoriteCourseId: 0,
+      getCertificate:false,
+
     };
   },
   computed: {
@@ -73,13 +75,24 @@ export default {
       return this.lessons.filter((lesson) => lesson.completed).length;
     },
     progress() {
-      if (this.lessons.length === 0) return 0;
-      return (this.completedLessons / this.lessons.length) * 100;
-    },
+      if (this.lessons.length === 0) {
+        this.getCertificate = false;
+        return 0;
+      }
+      const progressPercentage = (this.completedLessons / this.lessons.length) * 100;
+      this.getCertificate = progressPercentage === 100;
+      return progressPercentage;
+    }
   },
   methods: {
     verCertificado() {
-      this.$router.push({ name: "Certificado" });
+      const fullname = this.userData.firstName + " " + this.userData.lastName;
+      console.log('nombre completo ' + fullname);
+      console.log('Curso ' + this.courseData.title);
+      this.$router.push({
+        name: "Certificado",
+        query: { courseTitle: this.courseData.title, name: fullname },
+      });      
     },
     fetchCourseId() {
       const route = useRoute();
@@ -118,6 +131,7 @@ export default {
 
         if (response.status === 200) {
           this.courseData = response.data.result;
+
           await this.fetchLessonsByCourseId(this.courseId);
         } else {
           console.error("Error al obtener el curso:", response.data.message);
@@ -185,6 +199,7 @@ export default {
       lesson.completed = !lesson.completed;
       // Aquí podrías hacer una llamada para actualizar el estado de "completed" en la base de datos si es necesario
     },
+    
     async fetchUserData() {
       try {
         const response = await axios.get(
@@ -475,13 +490,25 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="row">
+    <div class="rating">
+      <p>Calificación del curso:</p>
+      <span
+        v-for="star in 5"
+        :key="star"
+        class="star"
+        :class="{ filled: star <= this.courseData.rating }"
+      >
+        ★
+      </span>
+    </div>
     <div v-if="isEstudiante">
-
       <button class="favorite-button" @click="toggleFavorito">
         {{ isFavorito ? "Favorito ⭐" : "Guardar en favoritos" }}
       </button>
+      
     </div>
+
     <div v-if="isDocente" class="opcionesDocentes">
       <div class="container py-2">
         <button class="btn btn-secondary mb-3" @click="showModal = true">
@@ -591,17 +618,6 @@ export default {
               <i class="fas fa-check-circle mr-2"></i> {{ ability }}
             </li>
           </ul>
-          <div v-if="isEstudiante" class="certificado">
-            <h2>Certificado de finalización de curso:</h2>
-            <br />
-            <h3>
-              Usted concluyó el curso satisfactoriamente, puede descargar su
-              certificado aquí:
-            </h3>
-            <button class="btn-ver-certificado" @click="verCertificado">
-              Ver Certificado
-            </button>
-          </div>
         </div>
       </section>
 
@@ -609,6 +625,8 @@ export default {
       <div v-if="isEstudiante" class="progress-bar-wrapper">
         <span class="progress-text">Progress</span>
         <ProgressBar :progress="progress" />
+
+        
       </div>
 
       <div class="info-curso py-5">
@@ -675,9 +693,19 @@ export default {
               </div>
             </div>
           </div>
+          <div v-if="isEstudiante && this.getCertificate == true" class="certificado">
+            <h2>Certificado de finalización de curso:</h2>
+            <br />
+            <h3>
+              Usted concluyó el curso satisfactoriamente, puede descargar su
+              certificado aquí:
+            </h3>
+            <button class="btn-ver-certificado" @click="verCertificado">
+              Ver Certificado
+            </button>
+          </div>
         </div>
       </div>
-
       <!-- Popup de confirmación para eliminar lección -->
       <div
         v-if="showDeletePopup"
@@ -717,6 +745,47 @@ export default {
 </template>
 
 <style scoped>
+.rating {
+  display: flex;
+  align-items: center;
+}
+.rating p{
+  margin: 0;
+  font-size: larger;
+  padding-right: 15px;
+}
+
+.star {
+  font-size: 24px;
+  color: gray;
+  margin: 0;
+  padding: 0;
+}
+
+.star.filled {
+  color: orange;
+}
+
+
+.favorite-button {
+  background-color: #4aa4d8;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.favorite-button:hover {
+  background-color: #ff9900;
+}
+
 /* Estilos del formulario y modal */
 .create-lesson-container {
   background-color: #fbebd5;
