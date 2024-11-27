@@ -186,4 +186,58 @@ async sendUnsubscriptionEmail(email, courseTitle) {
   }
 },
 
+// Función para enviar el correo de recepción de comentarios/quejas del usuario
+async sendFeedbackEmail(name, email, feedback) {
+  const url = `http://localhost:9999/api/v1/mail/send/${email}`;
+  const data = {
+    subject: "Recepción de Comentarios/Quejas - Elevate",
+    message: `
+    Estimado/a ${name},
+
+    Hemos recibido su comentario/queja:
+
+    "${feedback}"
+
+    Agradecemos su retroalimentación y trabajaremos para mejorar nuestros servicios.
+
+    Atentamente,
+    El equipo de soporte de Elevate
+    `,
+  };
+
+  try {
+    await axios.post(url, data);
+    console.log("Correo de recepción de comentarios/quejas enviado exitosamente.");
+  } catch (error) {
+    console.error("Error al enviar el correo de recepción de comentarios/quejas:", error);
+  }
+},
+
+// Función para enviar el correo de reporte de comentarios/quejas del usuario al técnico
+async sendFeedbackReportEmail(name, userEmail, feedback, technicianEmail) {
+  const url = `http://localhost:9999/api/v1/mail/send/${technicianEmail}`;
+  const data = {
+    subject: "Reporte de Comentarios/Quejas del Usuario - Elevate",
+    message: `
+    Estimado/a Técnico,
+
+    El usuario ${name} con el correo ${userEmail} ha enviado el siguiente comentario/queja:
+
+    "${feedback}"
+
+    Por favor, tome las medidas necesarias para abordar esta situación.
+
+    Atentamente,
+    El equipo de soporte de Elevate
+    `,
+  };
+
+  try {
+    await axios.post(url, data);
+    console.log("Correo de reporte de comentarios/quejas enviado exitosamente.");
+  } catch (error) {
+    console.error("Error al enviar el correo de reporte de comentarios/quejas:", error);
+  }
+}
+
 };

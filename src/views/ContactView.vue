@@ -15,9 +15,34 @@ import MaterialButton from "@/components/MaterialButton.vue";
 
 // material-input
 import setMaterialInput from "@/assets/js/material-input";
+import { AuthService } from "../services/authService";
 onMounted(() => {
   setMaterialInput();
 });
+
+
+const data = () => ({
+  name: '',
+  email: '',
+  comment: '',
+});
+
+const methods = {
+  async submitForm() {
+    console.log('cambios' + this.name + " ahora el email" + this.email + 'Ahora el comentario ' + this.comment);
+    try {
+      // await AuthService.sendFeedbackEmail(this.name, this.email, this.comment);
+      alert('Comentario/Queja enviado exitosamente.');
+      // Limpiar el formulario después de enviar
+      this.name = '';
+      this.email = '';
+      this.comment = '';
+    } catch (error) {
+      console.error('Error al enviar el comentario/queja:', error);
+      alert('Hubo un error al enviar su comentario/queja. Por favor, inténtelo de nuevo.');
+    }
+  },
+};
 </script>
 
 <template>
@@ -64,7 +89,7 @@ onMounted(() => {
                 <p class="pb-3">
                   Si tienes algún problema o duda respecto a nuestro sistema, no dudes en contactarnos.
                 </p>
-                <form id="contact-form" method="post" autocomplete="off">
+                <form id="contact-form" method="post" autocomplete="off" @submit.prevent="submitForm">
                   <div class="card-body p-0 my-3">
                     <div class="row">
                       <div class="col-md-6">
@@ -73,6 +98,8 @@ onMounted(() => {
                           type="text"
                           label="Nombre Completo"
                           placeholder="Nombre Completo"
+                          v-model="name"
+                          required
                         />
                       </div>
                       <div class="col-md-6 ps-md-2">
@@ -81,6 +108,8 @@ onMounted(() => {
                           type="email"
                           label="Correo electrónico"
                           placeholder="NombreUsuario@gmail.com"
+                          v-model="email"
+                          required
                         />
                       </div>
                     </div>
@@ -90,6 +119,8 @@ onMounted(() => {
                         class="input-group-static mb-4"
                         :rows="6"
                         placeholder="Describe tu problema o duda"
+                        v-model="comment"
+                        required
                       >¿En qué podemos ayudarte?</MaterialTextArea>
                     </div>
                     <div class="row">
@@ -98,6 +129,7 @@ onMounted(() => {
                           variant="gradient"
                           color="success"
                           class="mt-3 mb-0 custom-button"
+                          type="submit"
                         >Enviar mensaje</MaterialButton>
                       </div>
                     </div>
