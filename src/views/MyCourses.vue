@@ -220,14 +220,24 @@ export default {
 <style scoped>
 .header-section {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  margin-top: 25px;
+  margin-left: 25px;
+}
+
+.edit-mode-switch {
+  display: flex;
+  align-items: center;
+  margin-left: 20px; /* Add some space between the title and the switch */
+  margin-top: 5px; 
 }
 
 .courses-container {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+  margin-left: 25px;
+  margin-right: 25px;
 }
 
 .course {
@@ -245,11 +255,6 @@ export default {
   height: auto;
   object-fit: cover;
   border-radius: 8px;
-}
-
-.edit-mode-switch {
-  display: flex;
-  align-items: center;
 }
 
 .switch {
