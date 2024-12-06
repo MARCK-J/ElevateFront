@@ -1,119 +1,3 @@
-<script setup>
-import { RouterLink } from "vue-router";
-import { computed, ref, watch } from "vue";
-import { useWindowsWidth } from "../../assets/js/useWindowsWidth";
-import { useAppStore } from "@/stores"; // Pinia store
-import Swal from "sweetalert2";
-
-
-import ArrDark from "@/assets/img/down-arrow-dark.svg";
-import DownArrWhite from "@/assets/img/down-arrow-white.svg";
-
-// Variables relacionadas con el props
-const props = defineProps({
-  action: {
-    type: Object,
-    route: String,
-    color: String,
-    label: String,
-  },
-  transparent: {
-    type: Boolean,
-    default: false,
-  },
-  light: {
-    type: Boolean,
-    default: false,
-  },
-  dark: {
-    type: Boolean,
-    default: false,
-  },
-  sticky: {
-    type: Boolean,
-    default: false,
-  },
-  darkText: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-// Acceso al store de la aplicación
-const appStore = useAppStore();
-const isLoggedIn = ref(appStore.login); // Estado reactivo para el login
-const identidad = ref(appStore.identificador);
-const rol = ref(appStore.tipoPersona);
-
-// Escuchar cambios en el estado de 'login'
-watch(
-  () => appStore.login,
-  (newValue) => {
-    console.log("Login state changed:", newValue); // Depuración
-    isLoggedIn.value = newValue;
-  }
-);
-
-// Logs iniciales para verificar el estado de login al cargar
-console.log("Is Logged In:", isLoggedIn.value);
-console.log("Identificador del usuario:", identidad.value);
-console.log("Rol del usuario:", rol.value);
-
-// set arrow  color
-function getArrowColor() {
-  if (props.transparent && textDark.value) {
-    return ArrDark;
-  } else if (props.transparent) {
-    return DownArrWhite;
-  } else {
-    return ArrDark;
-  }
-}
-function cerrarSesion() {
-  Swal.fire('Éxito', 'Cierre de sesión exitoso', 'success').then(() => {
-    window.location.href = '/'; // Asegúrate de ajustar la ruta a la correcta
-  });
-}
-
-
-// set text color
-const getTextColor = () => {
-  let color;
-  if (props.transparent && textDark.value) {
-    color = "text-dark";
-  } else if (props.transparent) {
-    color = "text-white";
-  } else {
-    color = "text-dark";
-  }
-
-  return color;
-};
-
-// set nav color on mobile && desktop
-let textDark = ref(props.darkText);
-const { type } = useWindowsWidth();
-
-if (type.value === "mobile") {
-  textDark.value = true;
-} else if (type.value === "desktop" && textDark.value == false) {
-  textDark.value = false;
-}
-
-watch(
-  () => type.value,
-  (newValue) => {
-    if (newValue === "mobile") {
-      textDark.value = true;
-    } else {
-      textDark.value = false;
-    }
-  }
-);
-
-const showProfileButton = computed(() => isLoggedIn.value);
-</script>
-
 <template>
   <nav
     class="navbar navbar-expand-lg top-0"
@@ -123,7 +7,7 @@ const showProfileButton = computed(() => isLoggedIn.value);
       'my-3 blur border-radius-lg z-index-3 py-2 shadow py-2 start-0 end-0 mx-4 position-absolute mt-4':
         props.sticky,
       'navbar-light bg-white py-3': props.light,
-      ' navbar-dark bg-gradient-dark z-index-3 py-3': props.dark,
+      'navbar-dark bg-gradient-dark z-index-3 py-3': props.dark,
     }"
   >
     <div
@@ -161,11 +45,20 @@ const showProfileButton = computed(() => isLoggedIn.value);
       >
         ELEVATE
       </RouterLink>
-      <div
-        class="collapse navbar-collapse w-100 pt-3 pb-2 py-lg-0"
-        id="navigation"
+      <button
+        class="navbar-toggler"
+        type="button"
+        @click="toggleMenu"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
       >
-        <ul class="navbar-nav navbar-nav-hover ms-auto">
+        <span class="navbar-toggler-icon">
+          <i class="material-icons">menu</i>
+        </span>
+      </button>
+      <div class="collapse navbar-collapse" :class="{ show: isMenuOpen }" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
           <li class="nav-item mx-2">
             <router-link
               role="button"
@@ -232,9 +125,7 @@ const showProfileButton = computed(() => isLoggedIn.value);
                       >
                         <span>Contactanos</span>
                       </RouterLink>
-
                       <div v-if="isLoggedIn"></div>
-
                       <div class="RegisterLogin" v-else>
                         <div
                           class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0 mt-3"
@@ -258,7 +149,6 @@ const showProfileButton = computed(() => isLoggedIn.value);
                   </div>
                 </div>
               </div>
-              <!-- fin de paginas de pc -->              
             </div>
           </li>
           <li v-if="isLoggedIn" class="nav-item mx-2">
@@ -286,3 +176,109 @@ const showProfileButton = computed(() => isLoggedIn.value);
     </div>
   </nav>
 </template>
+
+<script setup>
+import { RouterLink } from "vue-router";
+import { computed, ref, watch } from "vue";
+import { useWindowsWidth } from "../../assets/js/useWindowsWidth";
+import { useAppStore } from "@/stores"; // Pinia store
+import Swal from "sweetalert2";
+
+import ArrDark from "@/assets/img/down-arrow-dark.svg";
+import DownArrWhite from "@/assets/img/down-arrow-white.svg";
+
+// Variables relacionadas con el props
+const props = defineProps({
+  action: {
+    type: Object,
+    route: String,
+    color: String,
+    label: String,
+  },
+  transparent: {
+    type: Boolean,
+    default: false,
+  },
+  light: {
+    type: Boolean,
+    default: false,
+  },
+  dark: {
+    type: Boolean,
+    default: false,
+  },
+  sticky: {
+    type: Boolean,
+    default: false,
+  },
+  darkText: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const appStore = useAppStore();
+const isLoggedIn = computed(() => appStore.isLoggedIn);
+
+const cerrarSesion = () => {
+  appStore.logout();
+  Swal.fire('Éxito', 'Cierre de sesión exitoso', 'success').then(() => {
+    window.location.href = '/'; // Asegúrate de ajustar la ruta a la correcta
+  });
+};
+
+// set text color
+const getTextColor = () => {
+  let color;
+  if (props.transparent && textDark.value) {
+    color = "text-dark";
+  } else if (props.transparent) {
+    color = "text-white";
+  } else {
+    color = "text-dark";
+  }
+
+  return color;
+};
+
+// set nav color on mobile && desktop
+let textDark = ref(props.darkText);
+const { type } = useWindowsWidth();
+
+if (type.value === "mobile") {
+  textDark.value = true;
+} else if (type.value === "desktop" && textDark.value == false) {
+  textDark.value = false;
+}
+
+watch(
+  () => type.value,
+  (newValue) => {
+    if (newValue === "mobile") {
+      textDark.value = true;
+    } else {
+      textDark.value = false;
+    }
+  }
+);
+
+const getArrowColor = () => {
+  return props.transparent || props.dark ? DownArrWhite : ArrDark;
+};
+
+// Reactive state for menu toggle
+const isMenuOpen = ref(false);
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+</script>
+
+<style scoped>
+.navbar-toggler {
+  border: none;
+  &:focus {
+    box-shadow: none;
+  }
+}
+</style>
