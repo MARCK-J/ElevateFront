@@ -126,9 +126,8 @@ export default {
   background-color: rgb(172, 242, 242);
 }
 
-
 .barralateral {
-  height: 100vh; /* Mantiene la altura de la barra lateral */
+  height: 145vh; /* Mantiene la altura de la barra lateral */
   background-color: rgb(172, 242, 242);
   display: flex;
   flex-direction: column;
@@ -139,4 +138,5 @@ export default {
 .content {
   width: 100%;
 }
+
 </style>

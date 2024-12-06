@@ -74,13 +74,12 @@
               Cursos
             </router-link>
           </li>
-          <li class="nav-item dropdown dropdown-hover mx-2">
+          <li class="nav-item dropdown mx-2" @click="toggleDropdown">
             <a
               role="button"
               class="nav-link ps-2 d-flex cursor-pointer align-items-center"
               :class="getTextColor()"
               id="dropdownMenuPages"
-              data-bs-toggle="dropdown"
               aria-expanded="false"
             >
               <i
@@ -102,9 +101,10 @@
             </a>
             <div
               class="dropdown-menu dropdown-menu-animation ms-n3 dropdown-md p-3 border-radius-xl mt-0 mt-lg-3"
+              :class="{ show: isDropdownOpen }"
               aria-labelledby="dropdownMenuPages"
             >
-              <div class="row d-none d-lg-block">
+              <div class="row">
                 <div class="col-12 px-4 py-2">
                   <div class="row">
                     <div class="position-relative">
@@ -268,9 +268,14 @@ const getArrowColor = () => {
 
 // Reactive state for menu toggle
 const isMenuOpen = ref(false);
+const isDropdownOpen = ref(false);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
+};
+
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
 };
 </script>
 
@@ -280,5 +285,9 @@ const toggleMenu = () => {
   &:focus {
     box-shadow: none;
   }
+}
+
+.dropdown-menu.show {
+  display: block;
 }
 </style>

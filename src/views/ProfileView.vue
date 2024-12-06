@@ -356,10 +356,11 @@ export default {
 .profile-container {
   display: flex;
   justify-content: center;
-  height: 100vh;
+  height: 145vh;
   background-size: cover;
   background-position: center;
   background-color: #ccc;
+  padding: 15px;
 }
 
 .profile-card {
@@ -368,14 +369,15 @@ export default {
   margin-top: 50px;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  width: 70%;
+  width: 90%;
   height: fit-content;
 }
 
 .profile-info {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .profile-header {
@@ -388,6 +390,11 @@ export default {
   border-radius: 50%;
   object-fit: cover;
   background-color: #f0f0f0;
+}
+
+.field-group {
+  width: 100%;
+  margin-bottom: 1rem;
 }
 
 .field-group input {
@@ -430,12 +437,5 @@ export default {
   color: #007bff;
   margin-left: 10px;
 }
-
-
-
-
-
-
-
 
 </style>
