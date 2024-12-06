@@ -369,7 +369,8 @@ export default {
   margin-top: 50px;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  width: 90%;
+  width: 80%;
+  max-width: 750px;
   height: fit-content;
 }
 
@@ -436,6 +437,22 @@ export default {
   cursor: pointer;
   color: #007bff;
   margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+  .profile-info {
+    flex-direction: column;
+  }
+
+  .first-part,
+  .second-part {
+    width: 100%;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 
 </style>

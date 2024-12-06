@@ -937,6 +937,12 @@ h1.display-3 {
 .leccion-content {
   padding: 1.5rem;
   background-color: #ffedda;
+  flex-grow: 1; /* Make the content take the remaining space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ensure the content is spaced evenly */
+  border-radius: 0 0 8px 8px;
+  height: 63%;
 }
 
 .leccion-content h2 {

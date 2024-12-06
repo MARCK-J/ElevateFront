@@ -54,7 +54,7 @@ export default defineComponent({
   name: "Sidebar",
   emits: ["optionSelected"],
   setup(props, { emit }) {
-    const isCollapsed = ref(false);
+    const isCollapsed = ref(true);
 
     // Acceder al store de Pinia para obtener el identificador de tipo de persona
     const appStore = useAppStore();
