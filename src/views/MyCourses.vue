@@ -23,8 +23,8 @@
         </div>
         
         <div v-else>
-          <h3>Curso: {{ course.title }}</h3>
-          <p>{{ course.description }}</p>
+          <h3 class="course-title">Curso: {{ course.title }}</h3>
+          <p class="course-description">{{ course.description }}</p>
           <div class="d-flex justify-content-around">
             <RouterLink :to="{ name: 'course', query: { courseId: course.courseId, title: course.title } }">
               <button class="go-to-course-button">Ingresar</button>
@@ -245,7 +245,12 @@ export default {
   border-radius: 8px;
   padding: 20px;
   max-width: 300px;
+  max-height: 500px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
 }
 
 .course-image {
@@ -255,6 +260,26 @@ export default {
   height: auto;
   object-fit: cover;
   border-radius: 8px;
+}
+
+.course-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 10px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.course-description {
+  flex-grow: 1;
+  margin: 10px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Number of lines to show */
+  line-clamp: 3; /* Number of lines to show */
+  -webkit-box-orient: vertical;
 }
 
 .switch {
