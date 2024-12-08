@@ -138,7 +138,6 @@ const submitForm = async () => {
       </div>
     </div>
   </section>
-  <DefaultFooter />
 </template>
 
 <style scoped>
