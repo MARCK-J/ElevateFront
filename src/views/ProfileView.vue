@@ -8,29 +8,29 @@
         <div class="first-part">
           <div class="field-group">
             <label>Username</label>
-            <input :disabled="!editMode" v-model="username" />
+            <input disabled v-model="this.username" />
           </div>
           <div class="field-group">
             <label>Nombre</label>
-            <input :disabled="!editMode" v-model="firstName" />
+            <input :disabled="!this.editMode" v-model="this.firstName" />
           </div>
           <div class="field-group">
             <label>Apellido</label>
-            <input :disabled="!editMode" v-model="lastName" />
+            <input :disabled="!this.editMode" v-model="this.lastName" />
           </div>
           <div class="field-group">
             <label>Email</label>
-            <input :disabled="!editMode" v-model="email" />
+            <input :disabled="!this.editMode" v-model="this.email" />
           </div>
         </div>
         <div class="second-part">
           <div class="field-group">
             <label>Contraseña</label>
-            <input type="password" :disabled="!editMode" v-model="password" />
+            <input type="password" :disabled="!this.editMode" v-model="this.password" />
           </div>
           <div class="field-group">
             <label>Rol</label>
-            <input v-model="roleText" disabled />
+            <input v-model="this.roleName" disabled />
           </div>
           <div class="field-group">
             <label>Verificación</label>
@@ -38,18 +38,18 @@
               <label
                 ><input
                   type="radio"
-                  v-model="verification"
+                  v-model="this.verification"
                   value="true"
-                  :disabled="!editMode"
+                  :disabled="!this.editMode"
                 />
                 Sí</label
               >
               <label
                 ><input
                   type="radio"
-                  v-model="verification"
+                  v-model="this.verification"
                   value="false"
-                  :disabled="!editMode"
+                  :disabled="!this.editMode"
                 />
                 No</label
               >
@@ -57,12 +57,12 @@
           </div>
           <div class="field-group">
             <label>Fecha de Creación</label>
-            <input v-model="creationDate" disabled />
+            <input v-model="this.creationDate" disabled />
           </div>
-          <i v-if="!editMode" class="fas fa-pencil-alt" @click="toggleEdit"></i>
-          <div v-if="editMode" class="action-buttons">
-            <button @click="cancelEdit" class="btn-cancel">Cancelar</button>
-            <button @click="updateProfile" class="btn-submit">
+          <i v-if="!this.editMode" class="fas fa-pencil-alt" @click="toggleEdit()"></i>
+          <div v-if="this.editMode" class="action-buttons">
+            <button @click="cancelEdit()" class="btn-cancel">Cancelar</button>
+            <button @click="updateProfile()" class="btn-submit">
               Actualizar
             </button>
           </div>
@@ -72,7 +72,7 @@
       <div>
         <div
           class="d-flex justify-content-between align-items-center"
-          v-if="!activation"
+          v-if="!this.activation"
         >
           <div class="d-flex align-items-center">
             <Icon
@@ -133,7 +133,7 @@ Al hacer clic en "Continuar", se enviará el mensaje de activacion a su correo. 
                     variant="gradient"
                     color="success"
                     class="mb-0"
-                    @click="profileActivation"
+                    @click="profileActivation()"
                     data-bs-dismiss="modal"
 
                   >
@@ -166,7 +166,6 @@ Al hacer clic en "Continuar", se enviará el mensaje de activacion a su correo. 
 import NavbarDefault from "../examples/navbars/NavbarDefault.vue";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { ref, onMounted, computed } from "vue";
 import { useAppStore } from "@/stores"; // Pinia store
 import { Icon } from "@iconify/vue";
 import MaterialButton from "@/components/MaterialButton.vue";
@@ -180,39 +179,48 @@ export default {
     Icon,
     MaterialButton,
   },
-  setup() {
-    const appStore = useAppStore();
-    const identificador = appStore.getIdentificador;
-
-    // Definir las propiedades reactivas
-    const username = ref("");
-    const firstName = ref("");
-    const lastName = ref("");
-    const email = ref("");
-    const role = ref("");
-    const creationDate = ref("");
-    const verification = ref(false);
-    const activation = ref(false);
-    const editMode = ref(false); // Usar ref para el modo de edición
-    const password = ref(""); // Nueva propiedad para la contraseña
-
-    // Función para obtener los datos del usuario
-    const getUserData = async () => {
+  data(){
+    return {
+      username: "",
+      firstName: "",
+      lastName: "",
+      email: '',
+      role: '',
+      creationDate: '',
+      verification: false,
+      activation: false,
+      editMode:false, // Usar ref para el modo de edición
+      password:'',
+      profileImage:
+        "https://img.freepik.com/vector-premium/icono-circulo-usuario-anonimo-ilustracion-vector-estilo-plano-sombra_520826-1931.jpg",
+      userImage: new URL("@/assets/img/dg1.jpg", import.meta.url).href,
+      appStore: useAppStore(),
+      identificador:'',
+      userData:[],
+      roleName:''
+    };
+  },
+  methods:{
+    getidentificador() {
+      this.identificador = this.appStore.getIdentificador;
+    },
+    async getUserData(){
       try {
         const response = await axios.get(
-          `http://localhost:9999/api/v1/user/${identificador}`
+          `http://localhost:9999/api/v1/user/${this.identificador}`
         );
-        const userData = response.data.result;
+        this.userData = response.data.result;
 
-        username.value = userData.username;
-        firstName.value = userData.firstName;
-        lastName.value = userData.lastName;
-        email.value = userData.email;
-        role.value = userData.role;
-        creationDate.value = userData.dateJoin;
-        verification.value = userData.verification;
-        activation.value = userData.activation;
-        password.value = "";
+        this.username = this.userData.username;
+        this.firstName = this.userData.firstName;
+        this.lastName = this.userData.lastName;
+        this.email = this.userData.email;
+        this.role = this.userData.role;
+        this.creationDate = this.userData.dateJoin;
+        this.verification = this.userData.verification;
+        this.activation = this.userData.activation;
+        this.password= "";
+        this.roleName = this.roleText();
 
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
@@ -222,133 +230,94 @@ export default {
           "error"
         );
       }
-    };
-
-    // Función para actualizar el perfil
-    const updateProfile = async () => {
+    },
+    async updateProfile(){
       try {
-        // Usar la nueva contraseña si fue cambiada, si no mantener la original
-        const updatedPassword = password.value
-          ? password.value
+        const updatedPassword = this.password
+          ? this.password
           : null;
-
-        // Preparar el payload para la solicitud PUT
+  
         const payload = {
-          username: username.value,
-          firstName: firstName.value,
-          lastName: lastName.value,
-          email: email.value,
+          username: this.username,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          email: this.email,
           password: updatedPassword, // Actualizar con la nueva o mantener la original
-          verification: verification.value, // Asegurar que sea booleano
-          activation: activation.value,
+          verification: this.verification, // Asegurar que sea booleano
+          activation: this.activation,
         };
-
-        console.log("VERIFICACION: " + verification.value);
-
         // Hacer la solicitud PUT para actualizar el perfil
         await axios.put(
-          `http://localhost:9999/api/v1/user/${identificador}`,
+          `http://localhost:9999/api/v1/user/${this.identificador}`,
           payload
         );
-
+  
         Swal.fire("Éxito", "Perfil actualizado correctamente.", "success");
-        editMode.value = false; // Desactivar el modo de edición después de actualizar
+        this.editMode = false; // Desactivar el modo de edición después de actualizar
       } catch (error) {
         console.error("Error al actualizar el perfil:", error);
         Swal.fire("Error", "No se pudo actualizar el perfil.", "error");
       }
-    };
-
-
-    // Función para activar el modo de edición
-    const toggleEdit = () => {
-      editMode.value = true;
-    };
-
+    },
+    toggleEdit () {
+      this.editMode = true;
+    },
+  
     // Función para cancelar la edición
-    const cancelEdit = () => {
-      editMode.value = false;
-    };
-
-    const profileActivation = async () =>{
+    cancelEdit () {
+      this.editMode = false;
+    },
+    async profileActivation (){
       try {
         // Usar la nueva contraseña si fue cambiada, si no mantener la original
-        const updatedPassword = password.value
-          ? password.value
+        const updatedPassword = this.password
+          ? this.password
           : null;
 
         // Preparar el payload para la solicitud PUT
         const payload = {
-          username: username.value,
-          firstName: firstName.value,
-          lastName: lastName.value,
-          email: email.value,
+          username: this.username,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          email: this.email,
           password: updatedPassword, // Actualizar con la nueva o mantener la original
-          verification: verification.value, // Asegurar que sea booleano
+          verification: this.verification, // Asegurar que sea booleano
           activation: true,
         };
 
-        console.log("VERIFICACION: " + verification.value);
-
-        await AuthService.sendActivation(email.value);
+        await AuthService.sendActivation(this.email);
         // Hacer la solicitud PUT para actualizar el perfil
         await axios.put(
-          `http://localhost:9999/api/v1/user/${identificador}`,
+          `http://localhost:9999/api/v1/user/${this.identificador}`,
           payload
         );
-
-
+        this.getUserData(); // Actualizar los datos del usuario
         // Mostrar el SweetAlert cuando se complete el proceso
         Swal.fire("Éxito", "Proceso de activación completado.", "success").then(() => {
           // Cierra el modal programáticamente
           const modalElement = document.getElementById('exampleModal');
           const modal = Modal.getInstance(modalElement); // Obtener la instancia del modal
           modal.hide(); // Cerrar el modal
-        });      } catch (error) {
+        });      
+      } catch (error) {
         console.error("Error al actualizar el perfil:", error);
       }
-    }
-
-    const roleText = computed(() => {
-      return role.value === 1
+    },
+    roleText () {
+      return this.role === 1
         ? "Estudiante"
-        : role.value === 2
+        : this.role === 2
         ? "Docente"
         : "Otro";
-    });
+    },
 
-    // Cargar los datos del usuario al montar el componente
-    onMounted(() => {
-      if (identificador) {
-        getUserData();
-      }
-    });
-
-    return {
-      identificador,
-      firstName,
-      username,
-      lastName,
-      email,
-      roleText,
-      creationDate,
-      verification,
-      activation,
-      password, 
-      editMode,
-      toggleEdit,
-      cancelEdit,
-      updateProfile,
-      profileActivation,
-    };
   },
-  data() {
-    return {
-      profileImage:
-        "https://img.freepik.com/vector-premium/icono-circulo-usuario-anonimo-ilustracion-vector-estilo-plano-sombra_520826-1931.jpg",
-      userImage: new URL("@/assets/img/dg1.jpg", import.meta.url).href,
-    };
-  },
+  mounted(){
+    this.getidentificador()
+    if (this.identificador) {
+      this.getUserData();
+    }
+    },
 };
 </script>
 
@@ -361,7 +330,6 @@ export default {
   background-position: center;
   background-color: #ccc;
 }
-
 .profile-card {
   background-color: rgba(255, 255, 255, 0.9);
   padding: 2.5rem;
@@ -371,17 +339,14 @@ export default {
   width: 70%;
   height: fit-content;
 }
-
 .profile-info {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
 }
-
 .profile-header {
   text-align: center;
 }
-
 .profile-pic {
   width: 100px;
   height: 100px;
@@ -389,24 +354,20 @@ export default {
   object-fit: cover;
   background-color: #f0f0f0;
 }
-
 .field-group input {
   width: 100%;
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
-
 .verification-options label {
   margin-right: 10px;
 }
-
 .action-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 1.5rem;
 }
-
 .btn-cancel {
   background-color: #dc3545;
   color: white;
@@ -415,7 +376,6 @@ export default {
   border-radius: 5px;
   cursor: pointer;
 }
-
 .btn-submit {
   background-color: #28a745;
   color: white;
@@ -424,18 +384,9 @@ export default {
   border-radius: 5px;
   cursor: pointer;
 }
-
 .field-group i {
   cursor: pointer;
   color: #007bff;
   margin-left: 10px;
 }
-
-
-
-
-
-
-
-
 </style>
