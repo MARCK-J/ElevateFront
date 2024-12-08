@@ -21,7 +21,7 @@ import CourseStructure from "./Sections/CourseStructure.vue";
   <BaseLayout
     :title="title"
     :breadcrumb="[ 
-      { label: 'Cursos', route: '/' },
+      { label: 'Cursos', route: '/courses' },
       { label: title },
     ]"
   >

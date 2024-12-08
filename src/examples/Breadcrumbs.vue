@@ -1,4 +1,5 @@
 <script setup>
+import { RouterLink } from 'vue-router';
 defineProps({
   routes: {
     type: Array,
@@ -22,7 +23,7 @@ defineProps({
         :key="index"
         class="breadcrumb-item"
       >
-        <a v-if="index != routes.length - 1" :href="route">{{ label }}</a>
+        <RouterLink v-if="index != routes.length - 1" :to="route">{{ label }}</RouterLink>
         <template v-else>{{ label }}</template>
       </li>
     </ol>
