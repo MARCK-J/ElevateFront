@@ -162,6 +162,9 @@ export default {
   border-radius: 12px;
   width: 900px;
   max-width: 100%;
+  max-height: 80vh; /* Set a maximum height */
+  overflow-y: auto; /* Enable vertical scrolling */
+  position: relative; /* Ensure the close button is positioned correctly */
 }
 
 .close {
@@ -178,11 +181,13 @@ export default {
   align-items: center;
   flex-direction: row;
 }
+
 .Habilidades {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
 }
+
 .form-label {
   font-size: 1rem;
   font-weight: 500;
