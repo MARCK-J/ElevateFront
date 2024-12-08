@@ -48,8 +48,7 @@ export default {
       enrollmentID: 0,
       isFavorito: false,
       favoriteCourseId: 0,
-      getCertificate:false,
-
+      getCertificate: false,
     };
   },
   computed: {
@@ -63,7 +62,13 @@ export default {
       return this.rolId === 2;
     },
     isEstudiante() {
-      return this.rolId === 1;
+      if (this.rolId === 1) {
+        if (this.courseData.available) {
+          return true;
+        } else {
+          return false;
+        }
+      }
     },
     isInscrito() {
       return this.inscrito;
@@ -79,20 +84,21 @@ export default {
         this.getCertificate = false;
         return 0;
       }
-      const progressPercentage = (this.completedLessons / this.lessons.length) * 100;
+      const progressPercentage =
+        (this.completedLessons / this.lessons.length) * 100;
       this.getCertificate = progressPercentage === 100;
       return Math.floor(progressPercentage); // Redondea hacia abajo para obtener un valor entero
-    }
+    },
   },
   methods: {
     verCertificado() {
       const fullname = this.userData.firstName + " " + this.userData.lastName;
-      console.log('nombre completo ' + fullname);
-      console.log('Curso ' + this.courseData.title);
+      console.log("nombre completo " + fullname);
+      console.log("Curso " + this.courseData.title);
       this.$router.push({
         name: "Certificado",
         query: { courseTitle: this.courseData.title, name: fullname },
-      });      
+      });
     },
     fetchCourseId() {
       const route = useRoute();
@@ -196,23 +202,29 @@ export default {
       }
     },
     async toggleCompleted(lesson) {
-      console.log('Al marcar como completado: '+lesson.lessonsId);
+      console.log("Al marcar como completado: " + lesson.lessonsId);
       try {
         const response = await axios.put(
-          `http://localhost:9999/api/v1/lessons/${lesson.lessonsId}/complete`,
-          );
+          `http://localhost:9999/api/v1/lessons/${lesson.lessonsId}/complete`
+        );
 
         if (response.data.code === "200-OK") {
           lesson.completed = true; // Marca la lección como completada
           console.log(`Lección ${lesson.lessonsId} marcada como completada.`);
         } else {
-          console.error("Error al marcar la lección como completada:", response.data.message);
+          console.error(
+            "Error al marcar la lección como completada:",
+            response.data.message
+          );
         }
       } catch (error) {
-        console.error("Error en la solicitud para marcar la lección como completada:", error);
+        console.error(
+          "Error en la solicitud para marcar la lección como completada:",
+          error
+        );
       }
     },
-    
+
     async fetchUserData() {
       try {
         const response = await axios.get(
@@ -434,29 +446,37 @@ export default {
     async toggleFavorito() {
       if (!this.isFavorito) {
         try {
-        const response = await axios.post(
-          "http://localhost:9999/api/v1/favorites/add",
-          {
-            courseId: this.courseId,
-            studentUserId: this.userId,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
+          const response = await axios.post(
+            "http://localhost:9999/api/v1/favorites/add",
+            {
+              courseId: this.courseId,
+              studentUserId: this.userId,
             },
-          }
-        );
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+            }
+          );
 
-        if (response.data.code === "200-OK") {
-          Swal.fire("Éxito", "Añadio con exito a la lista de favoritos!!!", "success");
-          this.isFavorito = true;
-        } else {
-          Swal.fire("Error", "No se pudo agregar a favoritos", "error");
+          if (response.data.code === "200-OK") {
+            Swal.fire(
+              "Éxito",
+              "Añadio con exito a la lista de favoritos!!!",
+              "success"
+            );
+            this.isFavorito = true;
+          } else {
+            Swal.fire("Error", "No se pudo agregar a favoritos", "error");
+          }
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Se presento el siguiente error." + error,
+            "error"
+          );
         }
-      } catch (error) {
-        Swal.fire("Error", "Se presento el siguiente error." + error, "error" );
-      }
       } else {
         // Mostrar SweetAlert de confirmación
         const result = await Swal.fire({
@@ -511,15 +531,25 @@ export default {
         :key="star"
         class="star"
         :class="{ filled: star <= this.courseData.rating }"
-      >
+        >
         ★
       </span>
+      <div class="course-status">
+        <span
+          :class="
+            courseData.available
+              ? 'status-bubble text-success'
+              : 'status-bubble text-danger'
+          "
+        >
+          {{ courseData.available ? "Disponible" : "No Disponible" }}
+        </span>
+      </div>
     </div>
     <div v-if="isEstudiante">
       <button class="favorite-button" @click="toggleFavorito">
         {{ isFavorito ? "Favorito ⭐" : "Guardar en favoritos" }}
       </button>
-      
     </div>
 
     <div v-if="isDocente" class="opcionesDocentes">
@@ -636,10 +666,8 @@ export default {
 
       <!-- Progress bar at the top right of the lessons part -->
       <div v-if="isEstudiante" class="progress-bar-wrapper">
-        <span class="progress-text">Progress {{progress}} %</span>
+        <span class="progress-text">Progress {{ progress }} %</span>
         <ProgressBar :progress="progress" />
-
-        
       </div>
 
       <div class="info-curso py-5">
@@ -706,7 +734,10 @@ export default {
               </div>
             </div>
           </div>
-          <div v-if="isEstudiante && this.getCertificate == true" class="certificado">
+          <div
+            v-if="isEstudiante && this.getCertificate == true"
+            class="certificado"
+          >
             <h2>Certificado de finalización de curso:</h2>
             <br />
             <h3>
@@ -758,11 +789,18 @@ export default {
 </template>
 
 <style scoped>
+.text-success {
+  color: green;
+}
+
+.text-danger {
+  color: red;
+}
 .rating {
   display: flex;
   align-items: center;
 }
-.rating p{
+.rating p {
   margin: 0;
   font-size: larger;
   padding-right: 15px;
@@ -778,7 +816,6 @@ export default {
 .star.filled {
   color: orange;
 }
-
 
 .favorite-button {
   background-color: #4aa4d8;
@@ -1247,5 +1284,23 @@ h1.display-3 {
   to {
     opacity: 1;
   }
+}
+
+.status-bubble {
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-weight: bold;
+  display: inline-block;
+  margin-left: 15px ;
+}
+
+.text-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.text-danger {
+  background-color: #f8d7da;
+  color: #721c24;
 }
 </style>
