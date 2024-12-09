@@ -3,7 +3,7 @@
     title="Listado de Cursos"
     :breadcrumb="[ { label: 'Cursos', route: '/' }, { label: 'Busqueda de cursos' } ]"
   >
-    <div class="">
+    <div>
       <div class="row justify-space-between py-0">
         <div class="input-group">
           <span class="input-group-text">
@@ -14,6 +14,7 @@
             :type="inputType"
             class="form-control input-group-dynamic mb-2"
             :placeholder="inputPlaceholder"
+            @input="validateInput"
             required
           />
         </div>
@@ -40,9 +41,8 @@
             aria-expanded="showDropdown"
           >
             Filtrar por:
-            {{
-              selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1)
-            }}
+            {{" "}}
+            {{ selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1) }}
           </MaterialButton>
 
           <ul
@@ -187,138 +187,126 @@ export default {
     },
   },
   methods: {
-    async fetchCategories() {
-      try {
-        const response = await axios.get("http://localhost:9999/api/v1/category/all", {
+  async fetchCategories() {
+    try {
+      const response = await axios.get("http://localhost:9999/api/v1/category/all", {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      if (response.data.code === "200-OK") {
+        this.categories = response.data.result;
+      } else {
+        console.error("Error al obtener categorías:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de categorías:", error);
+    }
+  },
+  async fetchCourses(page = 0) {
+    try {
+      let response;
+      const query = this.searchQuery.toLowerCase();
+      const filter = this.selectedFilter;
+      if (filter === "title") {
+        response = await axios.get(`http://localhost:9999/api/v1/courses/title?title=${query}&page=${page}&size=${this.itemsPerPage}&sort=title`, {
           headers: {
             Accept: "application/json",
           },
         });
-        if (response.data.code === "200-OK") {
-          this.categories = response.data.result;
-        } else {
-          console.error("Error al obtener categorías:", response.data.message);
-        }
-      } catch (error) {
-        console.error("Error en la solicitud de categorías:", error);
+      } else if (filter === "rating") {
+        response = await axios.get(`http://localhost:9999/api/v1/courses/rating?rating=${query}&page=${page}&size=${this.itemsPerPage}&sort=rating`, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+      } else if (filter === "duration") {
+        response = await axios.get(`http://localhost:9999/api/v1/courses/duration?duration=${query}&page=${page}&size=${this.itemsPerPage}&sort=duration`, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
       }
-    },
-    async fetchCourses(page = 0) {
-      try {
-        let response;
-        const query = this.searchQuery.toLowerCase();
-        const filter = this.selectedFilter;
-        if (filter === "title") {
-          response = await axios.get(`http://localhost:9999/api/v1/courses/title?title=${query}&page=${page}&size=${this.itemsPerPage}&sort=title`, {
-            headers: {
-              Accept: "application/json",
-            },
-          });
-        } else if (filter === "rating") {
-          response = await axios.get(`http://localhost:9999/api/v1/courses/rating?rating=${query}&page=${page}&size=${this.itemsPerPage}&sort=rating`, {
-            headers: {
-              Accept: "application/json",
-            },
-          });
-        } else if (filter === "duration") {
-          response = await axios.get(`http://localhost:9999/api/v1/courses/duration?duration=${query}&page=${page}&size=${this.itemsPerPage}&sort=duration`, {
-            headers: {
-              Accept: "application/json",
-            },
-          });
-        }
-        if (response.data.code === "200-OK") {
-          const courses = response.data.result.content;
-          this.courses = courses.map(course => {
-            const category = this.categories.find(cat => cat.id === course.categoryCourseId);
-            return {
-              ...course,
-              categoryName: category ? category.nameCategory : "Sin categoría",
-            };
-          });
-          this.totalPages = response.data.result.totalPages;
-          this.currentPage = response.data.result.currentPage;
-        } else {
-          console.error("Error al obtener cursos:", response.data.message);
-        }
-      } catch (error) {
-        console.error("Error en la solicitud de cursos:", error);
+      if (response.data.code === "200-OK") {
+        const courses = response.data.result.content;
+        this.courses = courses.map(course => {
+          const category = this.categories.find(cat => cat.id === course.categoryCourseId);
+          return {
+            ...course,
+            categoryName: category ? category.nameCategory : "Sin categoría",
+          };
+        });
+        this.totalPages = response.data.result.totalPages;
+        this.currentPage = response.data.result.currentPage;
+      } else {
+        console.error("Error al obtener cursos:", response.data.message);
       }
-    },
-    async executeSearch() {
-      this.currentPage = 0;
-      await this.fetchCourses(this.currentPage);
-    },
-    closeDropdown() {
-      this.showDropdown = false;
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages - 1) {
-        this.currentPage++;
-        this.fetchCourses(this.currentPage);
-      }
-    },
-    prevPage() {
-      if (this.currentPage > 0) {
-        this.currentPage--;
-        this.fetchCourses(this.currentPage);
-      }
-    },
+    } catch (error) {
+      console.error("Error en la solicitud de cursos:", error);
+    }
   },
-  async mounted() {
-    await this.fetchCategories();
-    this.fetchCourses();
+  async executeSearch() {
+    // Validar que la puntuación no sea negativa si se está buscando por rating
+    const rating = parseFloat(this.searchQuery);
+    if (this.selectedFilter === "rating" && (isNaN(rating) || rating < 0)) {
+      Swal.fire({
+        icon: "error",
+        title: "Puntuación no válida",
+        text: "La puntuación debe ser un número positivo.",
+      });
+      return;
+    }
+
+    // Realizamos la búsqueda
+    this.currentPage = 0;
+    await this.fetchCourses(this.currentPage);
   },
+  closeDropdown() {
+    this.showDropdown = false;
+  },
+  nextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.fetchCourses(this.currentPage);
+    }
+  },
+  prevPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.fetchCourses(this.currentPage);
+    }
+  },
+  validateInput(event) {
+    // Permitir solo números y puntos en el campo rating
+    if (this.selectedFilter === "rating") {
+      const allowedKeys = ["Backspace", "Tab", "ArrowLeft", "ArrowRight", "Delete"];
+      const key = event.key;
+
+      // Evitar que se ingrese la tecla "e", "E", "-", o cualquier letra
+      if (/[a-zA-Z]/.test(key) || key === "e" || key === "E" || key === "-") {
+        event.preventDefault();
+      }
+
+      // Filtrar solo números cuando seleccionamos rating
+      if (!allowedKeys.includes(key) && !/[0-9.]/.test(key)) {
+        event.preventDefault();
+      }
+    }
+  },
+},
+mounted() {
+  this.fetchCategories();
+  this.fetchCourses();
+},
+
 };
 </script>
 
 <style scoped>
-.text-truncate {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.card {
-  height: 300px; /* Altura específica para las tarjetas */
-  overflow: hidden; /* Ocultar el contenido que se desborda */
-  background-color: bisque;
-}
-
-.card-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.card-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .pagination-container {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 20px;
-}
-
-.pagination-container button {
-  padding: 10px 20px;
-  margin: 0 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.pagination-container button:disabled {
-  cursor: not-allowed;
-  background-color: #cccccc;
-}
-
-.pagination-container span {
-  font-size: 1rem;
 }
 </style>
