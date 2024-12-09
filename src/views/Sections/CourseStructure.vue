@@ -63,12 +63,11 @@ export default {
     },
     isEstudiante() {
       if (this.rolId === 1) {
-        if (this.courseData.available) {
-          return true;
-        } else {
-          return false;
-        }
+        return true;
       }
+    },
+    isAvailable(){
+      return this.courseData.available;
     },
     isInscrito() {
       return this.inscrito;
@@ -287,6 +286,10 @@ export default {
     },
     async confirmInscription() {
       this.showPopup = false;
+      if (!this.userData.activation) {
+        Swal.fire("Error", "Debe verificar su cuenta para poder inscribirse al curso.", "error");
+        return;
+      }
       try {
         const response = await axios.post(
           "http://localhost:9999/api/v1/enrollments/create",
@@ -603,7 +606,7 @@ export default {
               <p class="lead mb-4">
                 {{ courseData.description }}
               </p>
-              <div v-if="isEstudiante">
+              <div v-if="isEstudiante && isAvailable">
                 <div
                   v-if="isInscrito"
                   class="d-flex align-items-center justify-content-around"
@@ -665,7 +668,7 @@ export default {
       </section>
 
       <!-- Progress bar at the top right of the lessons part -->
-      <div v-if="isEstudiante" class="progress-bar-wrapper">
+      <div v-if="isInscrito" class="progress-bar-wrapper">
         <span class="progress-text">Progress {{ progress }} %</span>
         <ProgressBar :progress="progress" />
       </div>
@@ -735,7 +738,7 @@ export default {
             </div>
           </div>
           <div
-            v-if="isEstudiante && this.getCertificate == true"
+            v-if="isInscrito && this.getCertificate == true"
             class="certificado"
           >
             <h2>Certificado de finalización de curso:</h2>
