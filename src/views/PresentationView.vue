@@ -50,7 +50,7 @@ onUnmounted(() => {
         <div class="row">
           <div class="col-lg-7 text-center mx-auto position-relative">
             <h1 class="custom-title">
-              ELEVATE 2 SPRINT 4
+              ELEVATE
             </h1>
             <p class="custom-subtitle">
               Donde tu aprendizaje se eleva
@@ -128,17 +128,20 @@ onUnmounted(() => {
             color="twitter"
             label="Tweet"
             class="me-2"
+            :route="{href: 'https://x.com/ElevateHWN', target: '_blank'}"
           />
           <MaterialSocialButton
             component="facebook-square"
             color="facebook"
             label="Share"
             class="me-2"
+            :route="{href: 'https://www.facebook.com/ElevateWellnessClub?locale=es_LA', target: '_blank'}"
           />
           <MaterialSocialButton
-            component="pinterest"
-            color="pinterest"
-            label="Pin it"
+            component="instagram"
+            color="instagram"
+            label="Follow"
+            :route="{href: 'https://www.instagram.com/elevate_wellness_club?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==', target: '_blank'}"
           />
         </div>
       </div>

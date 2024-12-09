@@ -1,7 +1,7 @@
 <script setup>
 defineProps({
   route: {
-    type: String,
+    type: Object,
     required: false,
   },
   color: {
@@ -18,8 +18,9 @@ defineProps({
   },
 });
 </script>
+
 <template>
-  <a :href="route" class="btn me-2" :class="`btn-${color}`" target="_blank">
+  <a :href="route.href" class="btn me-2" :class="`btn-${color}`" target="_blank">
     <i
       class="fab"
       :class="`fa-${component} ${
