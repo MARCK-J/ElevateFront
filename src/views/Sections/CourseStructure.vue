@@ -66,7 +66,7 @@ export default {
         return true;
       }
     },
-    isAvailable(){
+    isAvailable() {
       return this.courseData.available;
     },
     isInscrito() {
@@ -287,7 +287,11 @@ export default {
     async confirmInscription() {
       this.showPopup = false;
       if (!this.userData.activation) {
-        Swal.fire("Error", "Debe verificar su cuenta para poder inscribirse al curso.", "error");
+        Swal.fire(
+          "Error",
+          "Debe verificar su cuenta para poder inscribirse al curso.",
+          "error"
+        );
         return;
       }
       try {
@@ -494,8 +498,32 @@ export default {
         });
 
         if (result.isConfirmed) {
-          this.isFavorito = false; // Quitar de favoritos
-          Swal.fire("Eliminado", "Se ha quitado de tus favoritos.", "success");
+          // Realizar la petición para quitar de favoritos
+          // Realizar la petición para quitar de favoritos
+          const response = await axios.delete(
+            "http://localhost:9999/api/v1/favorites/delete",
+            {
+              data: {
+                courseId: this.courseId,
+                studentUserId: this.userId,
+              },
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+            }
+          );
+
+          if (response.data.code === "200-OK") {
+            this.isFavorito = false; // Quitar de favoritos
+            Swal.fire(
+              "Eliminado",
+              "Se ha quitado de tus favoritos.",
+              "success"
+            );
+          } else {
+            Swal.fire("Error", "No se pudo quitar de favoritos.", "error");
+          }
         }
       }
     },
@@ -534,7 +562,7 @@ export default {
         :key="star"
         class="star"
         :class="{ filled: star <= this.courseData.rating }"
-        >
+      >
         ★
       </span>
       <div class="course-status">
@@ -1294,7 +1322,7 @@ h1.display-3 {
   border-radius: 15px;
   font-weight: bold;
   display: inline-block;
-  margin-left: 15px ;
+  margin-left: 15px;
 }
 
 .text-success {
