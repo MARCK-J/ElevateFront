@@ -28,7 +28,7 @@
                 <!-- Duración -->
                 <div class="field-group">
                   <label for="lesson-duration" class="form-label">Duración</label>
-                  <input id="lesson-duration" type="text" class="form-control" v-model="durationLesson" placeholder="Ej. 1h 30m" required />
+                  <input id="lesson-duration" type="text" class="form-control" v-model="durationLesson" placeholder="Ej. 30 minutos" pattern="^[1-9][0-9]* minutos$" required />
                 </div>
 
                 <!-- Contenido -->
@@ -94,6 +94,13 @@ export default {
   },
   methods: {
     async createLesson() {
+      // Validar la duración
+      const durationPattern = /^[1-9][0-9]* minutos$/;
+      if (!durationPattern.test(this.durationLesson)) {
+        Swal.fire("Error", "La duración debe ser un número positivo seguido de la palabra 'minutos'.", "error");
+        return;
+      }
+
       try {
         // Datos de la nueva lección
         const newLesson = {
