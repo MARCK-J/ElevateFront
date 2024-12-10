@@ -195,6 +195,11 @@ export default {
       return `${year}-${month}-${day}`; // Devuelve la fecha en formato YYYY-MM-DD
     },
     async createPersona() {
+      // Validación de correo electrónico
+      if (!this.validateEmail(this.email)) {
+        this.showError("Por favor, ingresa un correo electrónico válido.");
+        return;
+      }
       try{
         if (
           !this.firstName ||
@@ -275,6 +280,10 @@ export default {
         /[A-Z]/.test(password) &&
         /[^a-zA-Z0-9]/.test(password)
       );
+    },
+    validateEmail(email) {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return emailRegex.test(email);
     },
     validateForm() {
       this.validations.forEach((validation) => {
