@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router"; // Importa useRouter
+import Swal from "sweetalert2"; // Importa SweetAlert2
 
 // import Prism Editor
 import { PrismEditor } from "vue-prism-editor"; //
@@ -74,6 +75,7 @@ const copy = async (event) => {
   }
 };
 
+
 const highlighter = (code) => {
   return prism.highlight(code, prism.languages.html);
 };
@@ -81,7 +83,7 @@ const highlighter = (code) => {
 // Redirige a la ruta 'info-curso' cuando se hace clic en la pestaña 'lecciones'
 const router = useRouter();
 const goToLecciones = () => {
-  router.push({ name: 'info-curso' });
+  router.push({ name: "info-curso" });
 };
 </script>
 
@@ -94,30 +96,11 @@ const goToLecciones = () => {
         </div>
         <div class="col-lg-3">
           <div class="nav-wrapper position-relative end-0">
-            <ul class="nav nav-pills nav-fill flex-row p-1" role="tablist">
-            
-            </ul>
+            <ul class="nav nav-pills nav-fill flex-row p-1" role="tablist"></ul>
           </div>
-         
         </div>
         <div>
-            <button class="favorite-button" @click="guardarEnFavoritos">⭐ Guardar en favoritos</button>
-          </div>
-          
-          <div class="rating">
-            
-            <input value="5" name="rate" id="star5" type="radio">
-            <label title="text" for="star5"></label>
-            <input value="4" name="rate" id="star4" type="radio">
-            <label title="text" for="star4"></label>
-            <input value="3" name="rate" id="star3" type="radio" checked="">
-            <label title="text" for="star3"></label>
-            <input value="2" name="rate" id="star2" type="radio">
-            <label title="text" for="star2"></label>
-            <input value="1" name="rate" id="star1" type="radio">
-            <label title="text" for="star1"></label>
-            <h4 class="tituloEstrella">Calificacion del curso:</h4>
-          </div>
+        </div>
       </div>
     </div>
     <div class="tab-content tab-space">
@@ -129,6 +112,8 @@ const goToLecciones = () => {
     </div>
   </div>
 </template>
+
+
 
 <style>
 .my-editor {
@@ -145,66 +130,6 @@ const goToLecciones = () => {
 .prism-editor__textarea:focus {
   outline: none;
 }
-.favorite-button {
-  background-color: #4aa4d8;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 12px;
-  transition: background-color 0.3s ease;
-}
-
-.favorite-button:hover {
-  background-color: #ff9900;
-}
-
-/* From Uiverse.io by andrew-demchenk0 */ 
-.rating:not(:checked) > input {
-  position: absolute;
-  appearance: none;
-}
-
-.rating:not(:checked) > label {
-  float:right;
-  cursor: pointer;
-  font-size: 30px;
-  color: #666;
-}
-
-.tituloEstrella{
-  float:right;
-  
-}
-
-
-.rating:not(:checked) > label:before {
-  content: '★';
-}
-
-.rating > input:checked + label:hover,
-.rating > input:checked + label:hover ~ label,
-.rating > input:checked ~ label:hover,
-.rating > input:checked ~ label:hover ~ label,
-.rating > label:hover ~ input:checked ~ label {
-  color: #e58e09;
-}
-
-.rating:not(:checked) > label:hover,
-.rating:not(:checked) > label:hover ~ label {
-  color: #ff9e0b;
-}
-
-.rating > input:checked ~ label {
-  color: #ffa723;
-}
-
-
 
 
 </style>

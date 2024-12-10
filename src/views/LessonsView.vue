@@ -40,13 +40,10 @@
             <h3>Evaluaciones de la lección</h3>
       <!-- Espacio para los quizzes -->
       <div class="quizzes-section">
-        <div v-if="quizzes.length > 0">
+        <div>
           <div v-for="quiz in quizzes" :key="quiz.quizId" class="quiz-button">
             <button @click="goToQuiz(quiz.quizId)" class="btn btn-evaluate">{{ quiz.title }}</button>
           </div>
-        </div>
-        <div v-else>
-          <p>Aun no hay un quizz en esta leccion</p>
         </div>
       </div>
           </div>
