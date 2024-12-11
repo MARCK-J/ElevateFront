@@ -28,7 +28,16 @@
                 <!-- Duración -->
                 <div class="field-group">
                   <label for="lesson-duration" class="form-label">Duración</label>
-                  <input id="lesson-duration" type="text" class="form-control" v-model="durationLesson" placeholder="Ej. 1h 30m" required />
+                  <input 
+                    id="lesson-duration" 
+                    type="text" 
+                    class="form-control" 
+                    v-model="durationLesson" 
+                    placeholder="Ej. 1:30 (horas:minutos)" 
+                    pattern="^\d{1,2}:(?:[0-5]\d)$" 
+                    required 
+                  />
+                  <small class="form-text text-muted">Formato: horas:minutos (por ejemplo, 1:30, minutos deben ser menores a 60)</small>
                 </div>
 
                 <!-- Contenido -->
