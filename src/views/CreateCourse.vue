@@ -178,7 +178,7 @@ const initialCourseState = {
   description: "",
   availability: true,
   category: "",
-  skills: [""],
+  skills: [],
   rating: 1, // Rating por defecto
   duration: 0, // Duración por defecto
 };
@@ -214,6 +214,15 @@ onMounted(fetchCategories);
 
 // Función para crear el curso
 const createCourse = async () => {
+  if (!course.value.skills || course.value.skills.length === 0) {
+    Swal.fire({
+      title: "Error",
+      text: "Debe proporcionar al menos una habilidad.",
+      icon: "error",
+      confirmButtonText: "Aceptar",
+    });
+    return;
+  }
   const abilities = course.value.skills.join(";");
   const payload = {
     title: course.value.title,
@@ -246,6 +255,7 @@ const createCourse = async () => {
     });
     // Restablecer el formulario a su estado inicial
     course.value = { ...initialCourseState };
+    course.value.skills = []; // Asegurarse de vaciar las habilidades
 
     console.log("Curso creado exitosamente:", response.data);
   } catch (error) {
