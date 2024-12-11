@@ -60,7 +60,20 @@ export default {
       return this.store.getTipoPersona;
     },
     isDocente() {
-      return this.rolId === 2;
+      const teacherId = this.store.getIdentificador;
+      if(this.rolId === 2){
+        console.log('El teacher ID de la persona es '+ teacherId);
+        console.log('El teacher del curso es: ' + this.courseData.teacherUserId);
+        const courseTeacherId = this.courseData.teacherUserId;
+        if(teacherId == courseTeacherId){
+          console.log('Es docente del curso');
+          return true;
+        }
+        else{
+          console.log('No es docente del curso');
+          return false;
+        }
+      }
     },
     isEstudiante() {
       return this.rolId === 1;
