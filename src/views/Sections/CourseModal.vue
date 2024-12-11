@@ -55,7 +55,7 @@
                 <!-- Orden -->
                 <div class="field-group">
                   <label for="lesson-order" class="form-label">Orden</label>
-                  <input id="lesson-order" type="number" class="form-control" v-model="orderLesson" placeholder="Orden de la lección" required />
+                  <input id="lesson-order" type="number" class="form-control" v-model="orderLesson" placeholder="Orden de la lección" min="1" required />
                 </div>
               </div>
             </div>
